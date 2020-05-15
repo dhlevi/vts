@@ -1,0 +1,271 @@
+/* 
+Fonts:
+font-family: 'Lato', sans-serif;
+font-family: 'Questrial', sans-serif;
+font-family: 'Raleway', sans-serif;
+*/
+
+.primary-color
+{
+    background: #344955;
+    color: white;
+}
+
+.primary-color-dark
+{
+    background: #232f34;
+    color: white;
+}
+
+.primary-color-light
+{
+    background: #4A6572;
+    color: white;
+}
+
+.content-background
+{
+    background: #d8dedf;
+    color: black;
+}
+
+.secondary-color
+{
+    background: #F9AA33;
+    color: black;
+}
+
+.secondary-color-text
+{
+    color: #F9AA33 !important;
+}
+
+.sidenav a 
+{
+    transition: all 0.5s ease;
+    color: white !important;
+}
+
+.sidenav a:hover 
+{
+    background: #F9AA33 !important;
+    color: black !important;
+    border-radius: 100px;
+    margin-left: 5px;
+    margin-right: 4px;
+}
+
+.dashboard-card
+{
+    height: calc(50vh - 118px); 
+    overflow-y: auto;
+}
+
+.dashboard-card::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.dashboard-card::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.dashboard-card::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+#enginesChart .ct-label
+{
+    color: white;
+}
+
+#enginesChart .ct-grid
+{
+    stroke: #ffffff94;
+}
+
+#enginesChart .ct-series-a .ct-line, .ct-series-a .ct-point
+{
+    stroke: orange;
+    stroke-width: 2px;
+}
+
+#enginesChart .ct-series-b .ct-line, .ct-series-b .ct-point
+{
+    stroke: green;
+    stroke-width: 2px;
+}
+
+#enginesChart .ct-series-c .ct-line, .ct-series-c .ct-point
+{
+    stroke: red;
+    stroke-width: 2px;
+}
+
+.engine .ct-label
+{
+    color: white;
+}
+
+.engine .ct-grid
+{
+    stroke: #ffffff94;
+}
+
+.engine .ct-series-a .ct-line, .ct-series-a .ct-point
+{
+    stroke: orange;
+    stroke-width: 2px;
+}
+
+.mem-chart .ct-label
+{
+    color: white;
+}
+
+.ct-series-a .ct-bar, .ct-series-a .ct-line, .ct-series-a .ct-point, .ct-series-a .ct-slice-donut
+{
+    stroke: orange;
+}
+
+.ct-series-a .ct-bar, .ct-series-b .ct-line, .ct-series-b .ct-point, .ct-series-b .ct-slice-donut
+{
+    stroke: #25353b;
+}
+
+.tag-bar
+{
+    border-top: solid 1px #344955;
+    border-bottom: solid 1px #344955;
+    padding-top: 5px;
+    background: #25353b;
+    cursor: pointer;
+}
+@media only screen and (min-width: 993px)
+{
+    .container
+    {
+        width: 85%;
+    }
+}
+
+.collection .collection-item
+{
+    background-color: #344955;
+    padding: 5px 10px;
+    color: white;
+    border-bottom: 1px solid #e0e0e02b;
+}
+
+.collection::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.collection::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.collection::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.toolbar
+{
+    max-height: 50px;
+    height: 50px;
+    overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    padding: 10px;
+}
+
+.toolbar a 
+{
+    transition: all 0.5s ease;
+    border-radius: 25px;
+    color: black;
+}
+
+.toolbar a:hover 
+{
+    background: #344955;
+    color: white;
+    border-radius: 25px;
+    font-size: 24px;
+    padding: 5px;
+}
+
+.toolbar::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.toolbar::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.toolbar::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.designer-canvas
+{
+    background-color: #4A6572;
+    overflow: auto;
+}
+
+.designer-canvas::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.designer-canvas::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.designer-canvas::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.reader
+{
+    background: #004d40;
+    color: white;
+}
+
+.processor
+{
+    background: #f57f17;
+    color: black;
+}
+
+.writer
+{
+    background: #b71c1c;
+    color: white;
+}

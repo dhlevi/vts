@@ -1,0 +1,79 @@
+{
+	"priority": 1,
+	"processors": 
+	[
+		{
+			"type"	: "oracleReader",
+			"processorID": 1,
+			"connection": "jdbc:oracle:thin:@ora2:1521:dev",
+			"user": "the",
+			"password": "password",
+			"table": "IAPP_SITE_POLY",
+			"whereClause": "site_poly_id < 200010"
+		},
+		{
+			"type": "areaCalculator",
+			"inputProcessorIDs": [ 1 ],
+			"processorID": 2,
+			"attribute": {
+                            "name": "CALCULATED_AREA",
+                            "alias": "test alias for calculated area"
+                        }
+		},
+		{
+			"type": "lengthCalculator",
+			"inputProcessorIDs": [ 2 ],
+			"processorID": 3
+		},
+		{
+			"type": "convexHullCreator",
+			"inputProcessorIDs": [ 1 ],
+			"processorID": 4
+		},
+		{
+			"type": "bufferFeature",
+			"inputProcessorIDs": [ 4 ],
+			"distance": 100,
+			"processorID": 5
+		},
+		{
+			"type": "bbox",
+			"inputProcessorIDs": [ 5 ],
+			"processorID": 6
+		},
+		{
+			"type": "centerOfMass",
+			"inputProcessorIDs": [ 6 ],
+			"processorID": 7
+		},
+		{
+			"type": "aggregator",
+			"inputProcessorIDs": [ 6 ],
+			"processorID": 8
+		},
+		{
+			"type": "featureValidator",
+			"inputProcessorIDs": [ 3, 4, 5, 6, 7, 8 ],
+			"processorID": 9
+		},
+		{
+			"type": "overlayOperator",
+			"inputProcessorIDs": [ 9 ],
+			"inputOperatorProcessorIDs": [ 5 ],
+			"overlayOperation": "union",
+			"processorID": 10
+		},
+		{
+			"type": "spatialFilter",
+			"inputProcessorIDs": [ 7, 9 ],
+			"filterTypes": [ "Point" ],
+			"processorID": 11
+		},
+		{
+			"type": "voronoi",
+			"inputProcessorIDs": [ 1 ],
+			"tolerance": 1.0,
+			"processorID": 12
+		}
+	]
+}

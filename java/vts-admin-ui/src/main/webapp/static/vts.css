@@ -1,0 +1,60 @@
+ul.dropdown-content.select-dropdown li span 
+{
+    color: #ff8f00; /* no need for !important :) */
+}
+
+.checkbox-orange:checked + label:before 
+{
+  top: -4px;
+  left: -3px;
+  width: 12px;
+  height: 22px;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  border-right: 2px solid #ff8f00; /* You need to change the colour here */
+  border-bottom: 2px solid #ff8f00; /* And here */
+  -webkit-transform: rotate(40deg);
+  -moz-transform: rotate(40deg);
+  -ms-transform: rotate(40deg);
+  -o-transform: rotate(40deg);
+  transform: rotate(40deg);
+  -webkit-backface-visibility: hidden;
+  -webkit-transform-origin: 100% 100%;
+  -moz-transform-origin: 100% 100%;
+  -ms-transform-origin: 100% 100%;
+  -o-transform-origin: 100% 100%;
+  transform-origin: 100% 100%; 
+}
+  
+.checkbox-orange[type="checkbox"] + label:before
+{
+  border: 2px solid #ff8f00;
+  background: transparent;
+}
+
+.checkbox-orange[type="checkbox"]:checked + label:before
+{
+  border: 2px solid transparent;
+  border-bottom: 2px solid #ff8f00;
+  border-right: 2px solid #ff8f00;
+  background: transparent;
+}
+
+.checkbox-orange.filled-in[type="checkbox"] + label:after
+{
+  border: 2px solid #ff8f00;
+  background: transparent;
+}
+
+.checkbox-orange.filled-in[type="checkbox"]:checked + label:after
+{
+  background: #ff8f00;
+}
+
+.checkbox-orange.filled-in[type="checkbox"]:checked + label:before
+{
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
