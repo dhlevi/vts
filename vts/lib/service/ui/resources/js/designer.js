@@ -36,6 +36,14 @@ function addNode(node)
             processor.attributes.distance = 0;
             processor.attributes.units = 'kilometers';
         break;
+        case 'projector':
+            processor.attributes.sourceProjection = '';
+            processor.attributes.newProjection = '';
+        break;
+        case 'fileWriter':
+            processor.attributes.path = '';
+            processor.attributes.dataType = 'json';
+        break;
     }
 
     //need to set a name
@@ -55,7 +63,7 @@ function addNode(node)
 		name = Math.floor(Math.random() * 1000) + 1;
 	}
 
-	processor.name = name;
+	processor.name = '' + name;
 
     app.request.processors.push(processor);
 
@@ -537,11 +545,44 @@ function getProcessorPanel(processor, top, left, canvas)
 	else if(title.toLowerCase().includes("reader")) procType = "reader";
 	else procType = "processor";
 
-	let processorHtml  = "<div class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 200px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
+	let processorHtml  = "<div onclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 200px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
 		processorHtml += "<div class=\"card " + procType + " z-depth-0\" style=\"border: 1px solid #e0e0e0;\">";
 		processorHtml += "<div class='card-image' style='height: 60px;'>";
 		processorHtml += "<span class=\"card-title\" style='bottom: -10px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";
         processorHtml += "</div></div></div>";
 
 	$("#" + canvas).append(processorHtml);
+}
+
+function editNode(processorId)
+{
+    app.request.processors.forEach(processor => 
+    {
+        if (processor.name === processorId)
+        {
+            let result = processor.type.replace( /([A-Z])/g, " $1" );
+            let title = result.charAt(0).toUpperCase() + result.slice(1);
+
+            app.selectedNode =
+            {
+                title: processor.name + ' | ' + title,
+                processor: JSON.parse(JSON.stringify(processor))
+            };
+            // display
+            $('#node_editor').show();
+        }
+    });
+}
+
+function saveNodeUpdates()
+{
+    app.request.processors.forEach(processor => 
+    {
+        if (processor.name === app.selectedNode.processor.name)
+        {
+            processor.attributes = app.selectedNode.processor.attributes;
+        }
+    });
+
+    $('#node_editor').hide();
 }

@@ -139,6 +139,11 @@ font-family: 'Raleway', sans-serif;
     stroke: #25353b;
 }
 
+#requestCountChart .ct-series-a .ct-label
+{
+    color: white;
+}
+
 .tag-bar
 {
     border-top: solid 1px #344955;
@@ -268,4 +273,39 @@ font-family: 'Raleway', sans-serif;
 {
     background: #b71c1c;
     color: white;
+}
+
+.node-editor
+{
+    width: 300px;
+    position: absolute;
+    right: 10px;
+    border-radius: 3px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+#nodeEditorContent
+{
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#nodeEditorContent::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+#nodeEditorContent::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+#nodeEditorContent::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
 }

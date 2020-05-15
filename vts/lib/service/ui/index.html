@@ -38,8 +38,11 @@
                 <div class="container">
                     <component v-bind:is="currentTabComponent"
                                v-bind:engines="engines"
+                               v-bind:requests="requests"
+                               v-bind:tasks="tasks"
                                v-bind:selected-engine="selectedEngine"
                                v-bind:tools="tools"
+                               v-bind:selected-node="selectedNode"
                                v-bind:key="componentKey"></component>
                 </div>
             </main>
@@ -52,9 +55,12 @@
         <script src="resources/js/components/engines-component.js"></script>
         <script src="resources/js/components/edit-engine-component.js"></script>
         <script src="resources/js/components/designer-component.js"></script>
+        <script src="resources/js/components/requests-component.js"></script>
+        <script src="resources/js/components/tasks-component.js"></script>
         <script src="resources/js/vts.js"></script>
         <script src="resources/js/vts-dashboard.js"></script>
         <script src="resources/js/vts-engines.js"></script>
         <script src="resources/js/designer.js"></script>
+        <script src="resources/js/vts-requests.js"></script>
     </body>
 </html>

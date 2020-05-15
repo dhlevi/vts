@@ -40,14 +40,11 @@ Vue.component('dashboard',
             <div class="card primary-color-dark hoverable">
                 <div class="card-content white-text dashboard-card">
                     <span class="card-title">Requests</span>
-                    <p>From here you can see a listing of the active requests.
-                        Display as a shockline graph perhaps
-                    </p>
+                    <div id="requestCountChart"></div>
                 </div>
                 <div class="card-action">
-                    <a href="#">Submit</a>
                     <a href="#" onclick="app.tabSwitch('designer')">Create</a>
-                    <a href="#">Manage</a>
+                    <a href="#" onclick="app.tabSwitch('requests')">Manage</a>
                 </div>
             </div>
             <div class="card primary-color-dark hoverable">
@@ -59,9 +56,8 @@ Vue.component('dashboard',
                     </p>
                 </div>
                 <div class="card-action">
-                    <a href="#">Submit</a>
                     <a href="#" onclick="app.tabSwitch('designer')">Create</a>
-                    <a href="#">Manage</a>
+                    <a href="#" onclick="app.tabSwitch('tasks')">Manage</a>
                 </div>
             </div>
         </div>

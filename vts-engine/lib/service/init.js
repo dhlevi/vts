@@ -7,15 +7,17 @@ const bodyParser = require('body-parser');
 const winston    = require('winston');
 const expWinston = require('express-winston');
 const os         = require('os');
-const Queue      = require('./queue');
+
+// controllers, helpers, etc.
+const EngineController = require('./engineController');
 
 // schemas
-const engineModel = require('../model/engine');
-const engineSchema = engineModel.engineSchema;
-const Engine = mongoose.model('Engine', engineSchema);
-
-// controllers
-//const EngineController = require('./controllers/engineController');
+const engineModel   = require('../model/engine');
+const engineSchema  = engineModel.engineSchema;
+const Engine        = mongoose.model('Engine', engineSchema);
+const requestModel  = require('../model/request');
+const requestSchema = requestModel.requestSchema;
+const Request       = mongoose.model('Request', requestSchema);
 
 // configure express app
 
@@ -72,8 +74,11 @@ let logpath = './logs/';
 //let engineController = new EngineController(app);
 let startTime = Date.now();
 let engine;
-// initialize processing queue
-let queue = new Queue();
+let totalRequests = 0;
+let queuedRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+let runningRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+let engineController;
 
 // server launch point
 exports.launch = function (args) 
@@ -153,6 +158,8 @@ exports.launch = function (args)
 
             engine.save();
         }
+
+        engineController = new EngineController(engine);
     })
     .catch(err =>
     {
@@ -162,9 +169,6 @@ exports.launch = function (args)
 
     // set up minio or defaults? Probably controller specific
     // maybe store all of these configs in the DB so they can be shared with engines
-    
-    // register endpoints
-    //engineController.init();
 
     app.get("/", (req, res, next) => 
     {
@@ -172,8 +176,9 @@ exports.launch = function (args)
         {
             message: "Welcome to the VTS Engine. You're probably looking for the VTS Rest Service.",
             uptime: Math.ceil((Date.now() - startTime) / 60000),
-            totalRequests: 0,
-            runningRequests: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            totalRequests: totalRequests,
+            queuedRequests: queuedRequests,
+            runningRequests: runningRequests,
             maxMemory: Math.ceil(os.totalmem() / 1000000),
             usedMemory: Math.ceil((os.totalmem() - os.freemem()) / 1000000),
             links: 
@@ -181,7 +186,6 @@ exports.launch = function (args)
                 { rel: 'self', title: 'API Top Level', method: 'GET', href: '/' },
                 { rel: 'self', title: 'API Ping', method: 'GET', href: '/Ping' }
             ]
-            //engineLinks: engineController.links()
         });
     });
 
@@ -247,17 +251,7 @@ exports.launch = function (args)
                     engine.save();
                     
                     // run the flush, reset to running
-
-                    // if there is a running process
-                    // kill the worker thread
-
-                    // empty the queue if anything is on it
-                    // make sure to update the requests so
-                    // they're pushed back to VTS to reassign
-                    if (!queue.isEmpty())
-                    {
-                        queue = new Queue();
-                    }
+                    engineController.flush();
 
                     engine.currentState = engine.requestedState;
                     engine.save();
@@ -277,12 +271,36 @@ exports.launch = function (args)
     setInterval(function ()
     {
         // get all requests that are in a submitted state for this engine (ignore any other state)
-        // for each one, queue them up, then fire off the processors
-
-        // place on the queue with:
-        // queue.enqueue(res);
-        // dequeue with
-        // if !queue.isEmpty()
-        // let submission = queue.dequeue();
+        Request.find({ engine: engine.id, status: 'Submitted' }).then(requests =>
+        {
+            totalRequests += requests.length;
+            queuedRequests = queuedRequests.splice(1);
+            queuedRequests.push(requests.length);
+            // increment running requests when a request is dequeued
+            requests.forEach(request =>
+            {
+                if (!engineController.flushing)
+                {
+                    request.status = 'Queued';
+                    request.metadata.revision += 1;
+                    request.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Request Queued by engine ' + engine.name });
+                    request.save().then(updatedRequest =>
+                    {
+                        // Add the updated request to the queue.
+                        // The queue process will dequeue and spin off
+                        // worker threads as needed.
+                        engineController.enqueue(updatedRequest);
+                    })
+                    .catch(error =>
+                    {
+                        console.log('Faild to update request status: ' + error);
+                    });
+                }
+            })
+        })
+        .catch(error =>
+        {
+            console.log('Faild to fetch requests: ' + error);
+        });
     }, 5000);
 }

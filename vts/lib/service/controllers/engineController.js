@@ -39,6 +39,7 @@ EngineController.prototype.init = async function()
                                                });
 
                         engine['runningRequests'] = engineData.runningRequests;
+                        engine['queuedRequests'] = engineData.queuedRequests;
                         engine['uptime'] = engineData.uptime;
                         engine['totalRequests'] = engineData.totalRequests;
                         engine['maxMemory'] = engineData.maxMemory;

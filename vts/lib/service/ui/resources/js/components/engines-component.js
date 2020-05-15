@@ -15,15 +15,13 @@ Vue.component('engines',
     },
     template:   
     `
-    <div>
-        <div class="row">
-            <div class="col s12">
-                <engine-panel v-for="(engine, index) in engines"
-                            v-bind:engine="engine"
-                            v-bind:index="index"
-                            v-bind:key="index">
-                </engine-panel>
-            </div>
+    <div class="row">
+        <div class="col s12">
+            <engine-panel v-for="(engine, index) in engines"
+                        v-bind:engine="engine"
+                        v-bind:index="index"
+                        v-bind:key="index">
+            </engine-panel>
         </div>
     </div>
     `
@@ -60,7 +58,13 @@ Vue.component('engine-panel',
                 }
             };
 
-            new Chartist.Line('#engine_' + this.index + '_Chart', this.engine.runningRequests ? this.engine.runningRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], options);
+            let lineData =
+            {
+                labels: ['Queued Requests', 'Running Requests'],
+                series: [this.engine.queuedRequests ? this.engine.queuedRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], this.engine.runningRequests ? this.engine.runningRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+            };
+
+            new Chartist.Line('#engine_' + this.index + '_Chart', lineData, options);
             new Chartist.Pie('#engine_' + this.index + '_memchart', {
                 label: ['Used Memory', 'Total Memory'],
                 series: [this.engine.usedMemory, this.engine.maxMemory - this.engine.usedMemory]

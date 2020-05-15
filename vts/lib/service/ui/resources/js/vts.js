@@ -8,6 +8,9 @@ let app = new Vue(
     data: 
     {
         engines: [],
+        requests: [],
+        requestCounts: [0, 0, 0, 0, 0],
+        tasks: [],
         selectedEngine: { id: '' },
         request: 
         {  
@@ -22,16 +25,20 @@ let app = new Vue(
             messages: [],
             tags: [],
             cachePurged: false,
+            engine: ''
         },
+        selectedNode: { title: '' },
         lastTab: 'dashboard',
         currentTab: 'dashboard',
         tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'logs', 'designer'],
         componentKey: 0,
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'http' },
-                { name: 'fileReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'all_inbox' },
+                { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'all_inbox' },
                 { name: 'dbReader', tooltip: 'Database Reader (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'storage' },
+                { name: 'projector', tooltip: 'Reproject feature geometry', icon: 'scatter_plot' },
                 { name: 'buffer', tooltip: 'Buffer features', icon: 'settings_overscan' },
-                { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' }],
+                { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' },
+                { name: 'fileWriter', tooltip: 'Write results to a file', icon: 'publish' }],
         self: this
     },
     methods: 
@@ -39,13 +46,18 @@ let app = new Vue(
         tabSwitch: function (tab) 
         {
             // load engines should already be happening every 5 seconds.
-            if (this.currentTab === 'designer')
+            if (tab === 'designer')
             {
                 refresh = false;
             }
             else
             {
                 refresh = true;
+            }
+
+            if (tab === 'requests')
+            {
+                loadRequests();
             }
 
             this.lastTab = this.currentTab;

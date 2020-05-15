@@ -1,13 +1,65 @@
 function buildDashboard()
 {
     buildEngineChart();
+    buildRequestCountChart();
+}
+
+function buildRequestCountChart()
+{
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests/Counts',
+        type: "get",
+        dataType: 'json',
+        contentType:'application/json',
+        success: function (results)
+        {
+            app.requestCounts = results;
+            if(app.currentTab === 'dashboard')
+            {
+                let data = 
+                {
+                    labels: ['submitted', 'queued', 'running', 'complete', 'failed'],
+                    series: [results[1], results[2], results[3], results[4], results[5]]
+                };
+                  
+                let options = 
+                {
+                    labelInterpolationFnc: function(value) 
+                    {
+                        return value[0]
+                    }
+                };
+
+                let responsiveOptions = 
+                [
+                    ['screen and (min-width: 640px)', {
+                      chartPadding: 30,
+                      labelOffset: 100,
+                      labelDirection: 'explode',
+                      labelInterpolationFnc: function(value) 
+                      {
+                        return value;
+                      }
+                    }],
+                    ['screen and (min-width: 1024px)', {
+                      labelOffset: 80,
+                      chartPadding: 20
+                    }]
+                ];
+                  
+                new Chartist.Pie('#requestCountChart', data, options, responsiveOptions);
+            }
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Could not get current request counts'});
+        }
+    });
 }
 
 function buildEngineChart()
 {
-    // call the API, get the engines and thier current status
-    // only engines with a active route can be tracked
-
     $.ajax
 	({
 		url: serviceUrl + 'Engines', // get all engines
@@ -31,17 +83,6 @@ function buildEngineChart()
                     let requestData = engine.runningRequests ? engine.runningRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     data.series.push(requestData);
                 });
-
-                // test data
-                //let data = 
-                //{
-                //    labels: ['Engine1', 'Engine2', 'Engine3'],
-                //    series: [
-                //    [12, 4, 6, 17, 15, 10, 12, 5, 33, 12],
-                //    [13, 12, 19, 15, 14, 16, 5, 4, 3, 7],
-                //    [12, 11, 3, 4, 2, 0, 0, 5, 2, 1]
-                //    ]
-                //};
 
                 let options = 
                 {
