@@ -309,3 +309,11 @@ font-family: 'Raleway', sans-serif;
     background-color: #4A6572;
     border: 2px solid #232f34;
 }
+
+.request-item
+{
+    border-bottom: solid 1px #344955;
+    padding-top: 5px;
+    background: #25353b;
+    cursor: pointer;
+}

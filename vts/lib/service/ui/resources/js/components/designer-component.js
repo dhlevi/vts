@@ -57,6 +57,7 @@ Vue.component('node-editor',
             <div class="">
                 <a href="#" onclick="saveNodeUpdates()" title="Save"><i class="material-icons green-text">save</i></a>
                 <a href="#" onclick="$('#node_editor').hide();" title="Cancel"><i class="material-icons red-text">close</i></a>
+                <a href="#" v-bind:onclick="'deleteSelectedNode(\\'' + selectedNode.processor.name + '\\');'" title="Delete"><i class="material-icons red-text">delete</i></a>
             </div>
         </div>
     </div>

@@ -11,5 +11,5 @@ module.exports.processorSchema = new Schema(
     messages: [{ message: String, sender: String, timestamp: { type: Date, default: Date.now }}],
     inputNodes: { type: Object, required: true }, // the UUID's for the input nodes (where do we get our Geometry from?)
     outputNodes: { type: Object, required: true }, // the UUID's for the output nodes (Where do we send it when we're done?)
-    attributes: { type: Object, required: true }
+    attributes: { type: Object, required: false }
 });

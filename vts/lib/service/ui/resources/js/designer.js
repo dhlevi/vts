@@ -40,6 +40,12 @@ function addNode(node)
             processor.attributes.sourceProjection = '';
             processor.attributes.newProjection = '';
         break;
+        case 'difference':
+            processor.inputNodes['clipper'] = [];
+        break;
+        case 'intersect':
+            processor.inputNodes['intersector'] = [];
+        break;
         case 'fileWriter':
             processor.attributes.path = '';
             processor.attributes.dataType = 'json';
@@ -75,6 +81,32 @@ function addNode(node)
 	jsPlumb.reset();
     
     setupCanvas();
+
+    $('#node_editor').hide();
+}
+
+function deleteSelectedNode(processorName)
+{
+    for (let idx in app.request.processors)
+    {
+        let processor = app.request.processors[idx];
+        if (processor.name === processorName)
+        {
+            app.request.processors.splice(idx, 1);
+            break;
+        }
+    }
+
+    // this can't be the optimal way to refresh the canvas...
+	$("#canvas").empty();
+
+	jsPlumb.empty("canvas");
+	jsPlumb.revalidate("canvas");
+	jsPlumb.reset();
+    
+    setupCanvas();
+
+    $('#node_editor').hide();
 }
 
 let plumbInst;
@@ -463,14 +495,16 @@ function addProcessorToDiagram(processor, top, left, sourceEndpoint, targetEndpo
 	let outputNodes = 1;
 
 	// main content, by type
-	if(processor.type == "overlayOperator" ||
-	   processor.type == "spatialRelationFilter") inputNodes = 2;
+	if(processor.type === "overlayOperator" ||
+       processor.type === "spatialRelationFilter" ||
+       processor.type === 'difference' ||
+       processor.type === 'clipper') inputNodes = 2;
 
-	if(processor.type == "spatialFilter" ||
-	   processor.type == "spatialRelationFilter" ||
-	   processor.type == "featureValidator" ||
-	   processor.type == "conditionalFilter" ||
-	   processor.type == "overlayOperator") outputNodes = 2;
+	if(processor.type === "spatialFilter" ||
+	   processor.type === "spatialRelationFilter" ||
+	   processor.type === "featureValidator" ||
+	   processor.type === "conditionalFilter" ||
+	   processor.type === "overlayOperator") outputNodes = 2;
 
 	// technically, we don't need any of this logic. Just replace the hard coded node definitions
 	// with some math to adjust node placement on the left or right according to how many nodes we have.
