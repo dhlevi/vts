@@ -15,7 +15,7 @@ Vue.component('edit-engine',
     },
     template:
     `
-    <div class="row">
+    <div class="container row">
         <div class="card primary-color-dark">
             <div class="card-content white-text">
                 <span class="card-title">{{selectedEngine.id}} | <span style="color: grey; font-size: 15px;">{{selectedEngine._id}}</span></span>

@@ -8,9 +8,10 @@ const winston    = require('winston');
 const expWinston = require('express-winston');
 
 // controllers
-const EngineController = require('./controllers/engineController');
+const processors        = require('./controllers/processors');
+const EngineController  = require('./controllers/engineController');
 const RequestController = require('./controllers/requestController');
-const TaskController = require('./controllers/taskController');
+const TaskController    = require('./controllers/taskController');
 
 // configure express app
 
@@ -171,5 +172,7 @@ exports.launch = function (args)
     server = app.listen(port, () =>
     {
         console.log('VTS service started correctly, and is waiting for requests!');
+        // activate processors
+        processors.requestProcessor();
     });
 }

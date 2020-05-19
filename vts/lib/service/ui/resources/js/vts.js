@@ -12,6 +12,9 @@ let app = new Vue(
         requestCounts: [0, 0, 0, 0, 0],
         tasks: [],
         selectedEngine: { id: '' },
+        toolSearch: '',
+        requestSearch: '',
+        taskSearch: '',
         request: 
         {  
             priority: 3,
@@ -35,10 +38,10 @@ let app = new Vue(
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'http' },
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'all_inbox' },
                 { name: 'dbReader', tooltip: 'Database Reader (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'storage' },
+                { name: 'randomReader', tooltip: 'Creates a random point, line or polygon feature to start a process', icon: 'storage' },
                 // processors
                 { name: 'projector', tooltip: 'Reproject feature geometry', icon: 'scatter_plot' },
                 { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' },
-                { name: 'featureHolder', tooltip: 'Holds features for merging datasets', icon: 'horizontal_split' },
                 { name: 'buffer', tooltip: 'Buffer features', icon: 'settings_overscan' },
                 { name: 'hullCreator', tooltip: 'Create a convex or concave hull from features', icon: 'filter_tilt_shift' },
                 { name: 'difference', tooltip: 'find the difference between two feature sets', icon: 'flip_to_back' },
@@ -54,11 +57,47 @@ let app = new Vue(
                 { name: 'merge', tooltip: 'Combine features into a multifeature geometry', icon: 'attach_file' },
                 { name: 'flatten', tooltip: 'Merge multi features into single feature geometry', icon: 'call_merge' },
                 { name: 'explode', tooltip: 'Convert all features coordinates into points', icon: 'border_clear' },
+                { name: 'flip', tooltip: 'Flips all features xy coords', icon: '' },
+                { name: 'reducePrecision', tooltip: 'Truncates the precision of coordinates', icon: '' },
+                { name: 'bezierCurve', tooltip: 'Creates a bezier curve from a linestring', icon: '' },
+                { name: 'lineToPolygon', tooltip: 'Creates a polygon from a linestring', icon: '' },
+                { name: 'polygonToLine', tooltip: 'Converts a polygon into a linestring', icon: '' },
+                { name: 'lineChunk', tooltip: 'Breaks a linestring into chunks', icon: '' },
+                { name: 'sector', tooltip: 'Creates a circular sector polygon from a point', icon: '' },
+                { name: 'unkink', tooltip: 'Breaks self-intersecting polygons into multipolygon features', icon: '' },
+                { name: 'tin', tooltip: 'Creates a TIN (triangulated irregular network) from a set of points', icon: '' },
+                { name: 'donutExtractor', tooltip: 'Creates a new set of data containing extracted donuts', icon: '' },
+                { name: 'donutRemover', tooltip: 'Removes all donuts from polygons', icon: '' },
+                // measurement
+                { name: 'along', tooltip: 'Creates a point as a new feature at a given distance along a line', icon: '' },
+                { name: 'area', tooltip: 'Gets the area of a feature', icon: '' },
+                { name: 'boundingBox', tooltip: 'Creates a bounding box encompassing all features', icon: '' },
+                { name: 'bearing', tooltip: 'Finds the bearing between a control point (or points) and all provided features', icon: '' },
+                { name: 'center', tooltip: 'Finds the center of a feature', icon: '' },
+                { name: 'centerOfMass', tooltip: 'Finds the center of mass for a feature', icon: '' },
+                { name: 'centerAll', tooltip: 'Finds the center of all features', icon: '' },
+                { name: 'centerOfMassAll', tooltip: 'Finds the center of mass for all features', icon: '' },
+                { name: 'centroid', tooltip: 'Finds the centroid of a feature by taking the mean of all vertices', icon: '' },
+                { name: 'destination', tooltip: 'Given a distance and bearing, finds the destination point for all point features', icon: '' },
+                { name: 'length', tooltip: 'Calculates the length of a feature', icon: '' },
+                // array operators
+                { name: 'filter', tooltip: 'Filter features non-spatially by an attribute', icon: ''},
+                { name: 'spatialFilter', tooltip: 'Filter features spatially by their type', icon: ''},
+                { name: 'spatialRelationFilter', tooltip: 'Filter features spatially by their relation', icon: ''},
+                // attribute tools
+                { name: 'attributeCreator', tooltip: 'Add an attribute to all features', icon: ''},
+                { name: 'attributeRemover', tooltip: 'Remove an attribute from all features', icon: ''},
+                { name: 'attributeRenamer', tooltip: 'Rename an attribute from all features', icon: ''},
+                { name: 'attributeCalculator', tooltip: 'Add an attribute that contains a calculation', icon: ''},
+                { name: 'timestamper', tooltip: 'Timestamp all features', icon: ''},
+                // special tools
+                { name: 'logger', tooltip: 'Create a log message for all features', icon: ''},
+                { name: 'featureHolder', tooltip: 'Holds features for merging datasets', icon: 'horizontal_split' },
                 // writer
                 { name: 'fileWriter', tooltip: 'Write results to a file (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'publish' },
                 { name: 'httpWriter', tooltip: 'Write results to an HTTP service', icon: 'backup' },
-                { name: 'dbWriter', tooltip: 'Write results to a DB (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'dns' }],
-        self: this
+                { name: 'dbWriter', tooltip: 'Write results to a DB (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'dns' },
+                { name: 'cacheWriter', tooltip: 'Write results to the VTS cache and serve', icon: 'dns' }]
     },
     methods: 
     {

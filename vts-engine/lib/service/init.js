@@ -222,85 +222,85 @@ exports.launch = function (args)
     server = app.listen(port, () =>
     {
         console.log('VTS engine started correctly!');
-    });
 
-    // state change listener
-    setInterval(function () 
-    {
-        Engine.find({ id: engine.id })
-        .then(engines => 
+        // state change listener
+        setInterval(function () 
         {
-            engine = engines[0];
-            
-            if (engine.currentState !== engine.requestedState) 
+            Engine.find({ id: engine.id })
+            .then(engines => 
             {
-                engine.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Received request to transition from ' + engine.currentState + ' to ' + engine.requestedState});
-
-                if (engine.requestedState === 'Running')
+                engine = engines[0];
+                
+                if (engine.currentState !== engine.requestedState) 
                 {
-                    engine.currentState = 'Running';
-                }
-                else if (engine.requestedState === 'Stopped')
-                {
-                    engine.currentState = 'Stopped';
-                }
-                else if (engine.requestedState === 'Flushing')
-                {
-                    engine.requestedState = engine.currentState;
-                    engine.currentState = 'Flushing';
-                    engine.save();
-                    
-                    // run the flush, reset to running
-                    engineController.flush();
+                    engine.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Received request to transition from ' + engine.currentState + ' to ' + engine.requestedState});
 
-                    engine.currentState = engine.requestedState;
-                    engine.save();
-                }
-
-                engine.save();
-            }
-        })
-        .catch(err =>
-        {
-            console.log('Engine registration failed. Shutting down...');
-            process.exit(0);
-        });
-    }, 5000);
-
-    // request submission check
-    setInterval(function ()
-    {
-        // get all requests that are in a submitted state for this engine (ignore any other state)
-        Request.find({ engine: engine.id, status: 'Submitted' }).then(requests =>
-        {
-            totalRequests += requests.length;
-            queuedRequests = queuedRequests.splice(1);
-            queuedRequests.push(requests.length);
-            // increment running requests when a request is dequeued
-            requests.forEach(request =>
-            {
-                if (!engineController.flushing)
-                {
-                    request.status = 'Queued';
-                    request.metadata.revision += 1;
-                    request.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Request Queued by engine ' + engine.name });
-                    request.save().then(updatedRequest =>
+                    if (engine.requestedState === 'Running')
                     {
-                        // Add the updated request to the queue.
-                        // The queue process will dequeue and spin off
-                        // worker threads as needed.
-                        engineController.enqueue(updatedRequest);
-                    })
-                    .catch(error =>
+                        engine.currentState = 'Running';
+                    }
+                    else if (engine.requestedState === 'Stopped')
                     {
-                        console.log('Faild to update request status: ' + error);
-                    });
+                        engine.currentState = 'Stopped';
+                    }
+                    else if (engine.requestedState === 'Flushing')
+                    {
+                        engine.requestedState = engine.currentState;
+                        engine.currentState = 'Flushing';
+                        engine.save();
+                        
+                        // run the flush, reset to running
+                        engineController.flush();
+
+                        engine.currentState = engine.requestedState;
+                        engine.save();
+                    }
+
+                    engine.save();
                 }
             })
-        })
-        .catch(error =>
+            .catch(err =>
+            {
+                console.log('Engine registration failed. Shutting down...');
+                process.exit(0);
+            });
+        }, 5000);
+
+        // request submission check
+        setInterval(function ()
         {
-            console.log('Faild to fetch requests: ' + error);
-        });
-    }, 5000);
+            // get all requests that are in a submitted state for this engine (ignore any other state)
+            Request.find({ engine: engine.id, status: 'Submitted' }).then(requests =>
+            {
+                totalRequests += requests.length;
+                queuedRequests = queuedRequests.splice(1);
+                queuedRequests.push(requests.length);
+                // increment running requests when a request is dequeued
+                requests.forEach(request =>
+                {
+                    if (!engineController.flushing)
+                    {
+                        request.status = 'Queued';
+                        request.metadata.revision += 1;
+                        request.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Request Queued by engine ' + engine.name });
+                        request.save().then(updatedRequest =>
+                        {
+                            // Add the updated request to the queue.
+                            // The queue process will dequeue and spin off
+                            // worker threads as needed.
+                            engineController.enqueue(updatedRequest);
+                        })
+                        .catch(error =>
+                        {
+                            console.log('Faild to update request status: ' + error);
+                        });
+                    }
+                })
+            })
+            .catch(error =>
+            {
+                console.log('Faild to fetch requests: ' + error);
+            });
+        }, 5000);
+    });
 }

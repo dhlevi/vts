@@ -1,6 +1,6 @@
 Vue.component('designer',
 {
-    props: ['tools', 'selectedNode'],
+    props: ['tools', 'selectedNode', 'toolSearch'],
     data: function () 
     {
         return {};
@@ -13,26 +13,38 @@ Vue.component('designer',
     },
     template:   
     `
-    <div>
-        <div id="toolbar" class="row">
+    <div class="row">
+        <div class="col s2">
+            <div id="tools" class="row">
+                <div class="input-field col s12">
+                    <input id="search" v-model="toolSearch" type="text" class="validate">
+                    <label for="search">Search</label>
+                </div>
+            </div>
+            <div class="row" style="height: calc(100vh - 208px);">
+                <ul style="overflow: auto; height: 100%">
+                    <toolbar-buttons v-for="(tool, index) in tools"
+                                    v-bind:tool="tool"
+                                    v-bind:index="index"
+                                    v-bind:tool-search="toolSearch"
+                                    v-bind:key="index">
+                    </toolbar-buttons>
+                </ul>
+            </div>
+        </div>
+        <div class="col s10 primary-color-light" style="height: calc(100vh - 157px);">
             <div class="card toolbar z-depth-2 hoverable">
                 <a href="#" onclick="finalizeRequest();" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
                 <a href="#" onclick="runRequest();" title="Send as an ad hoc request"><i class="material-icons">send</i></a>
-                __
-                <toolbar-buttons v-for="(tool, index) in tools"
-                                 v-bind:tool="tool"
-                                 v-bind:index="index"
-                                 v-bind:key="index">
-                </toolbar-buttons>
+                <a href="#" onclick="saveRequest();" title="Save Diagram"><i class="material-icons">save</i></a>
+                <a href="#" onclick="clearDiagram();" title="New Diagram"><i class="material-icons">clear</i></a>
             </div>
-        </div>
-        <div class="row primary-color-light">
             <div id="creatorContainer">
                 <div class="designer-canvas jtk-demo-canvas canvas-wide flowchart-demo jtk-surface jtk-surface-nopan zoomItem" id="canvas">
                 </div>
             </div>
+            <node-editor v-bind:selected-node="selectedNode"></node-editor>
         </div>
-        <node-editor v-bind:selected-node="selectedNode"></node-editor>
     </div>
     `
 });
@@ -80,9 +92,9 @@ Vue.component('node-attribute',
 
 Vue.component('toolbar-buttons',
 {
-    props: ['tool', 'index'],
+    props: ['tool', 'index', 'toolSearch'],
     template:   
     `
-    <a href="#" v-bind:onclick="'addNode(\\'' + tool.name + '\\');'" v-bind:title="tool.tooltip"><i class="material-icons">{{tool.icon}}</i></a>
+    <li v-if="toolSearch === '' || tool.name.toLowerCase().includes(toolSearch.toLowerCase())" v-bind:onclick="'addNode(\\'' + tool.name + '\\');'" v-bind:title="tool.tooltip" style="border-bottom: 1px solid #4a6572; cursor: pointer; text-transform: capitalize;"><i class="material-icons">{{tool.icon}}</i> {{tool.name.replace( /([A-Z])/g, " $1" )}}</li>
     `
 });

@@ -200,7 +200,6 @@ font-family: 'Raleway', sans-serif;
 .toolbar a 
 {
     transition: all 0.5s ease;
-    border-radius: 25px;
     color: black;
 }
 
@@ -208,7 +207,6 @@ font-family: 'Raleway', sans-serif;
 {
     background: #344955;
     color: white;
-    border-radius: 25px;
     font-size: 24px;
     padding: 5px;
 }

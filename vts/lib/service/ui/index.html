@@ -35,16 +35,16 @@
                 <header-component></header-component>
             </header>
             <main>
-                <div class="container">
-                    <component v-bind:is="currentTabComponent"
-                               v-bind:engines="engines"
-                               v-bind:requests="requests"
-                               v-bind:tasks="tasks"
-                               v-bind:selected-engine="selectedEngine"
-                               v-bind:tools="tools"
-                               v-bind:selected-node="selectedNode"
-                               v-bind:key="componentKey"></component>
-                </div>
+                <component v-bind:is="currentTabComponent"
+                            v-bind:engines="engines"
+                            v-bind:requests="requests"
+                            v-bind:tasks="tasks"
+                            v-bind:selected-engine="selectedEngine"
+                            v-bind:tools="tools"
+                            v-bind:selected-node="selectedNode"
+                            v-bind:tool-search="toolSearch"
+                            v-bind:request-searcg="requestSearch"
+                            v-bind:key="componentKey"></component>
             </main>
             <footer>
             </footer>

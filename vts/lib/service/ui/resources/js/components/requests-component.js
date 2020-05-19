@@ -13,7 +13,7 @@ Vue.component('requests',
     },
     template:   
     `
-    <div class="row">
+    <div class="container row">
         <div class="col s12">
             <div class="card primary-color-dark">
                 <div class="card-content white-text" style="height: calc(100vh - 110px); overflow: auto;">

@@ -1,3 +1,21 @@
+function clearDiagram()
+{
+    app.request.processors = [];
+    refreshDiagram();
+}
+
+function refreshDiagram()
+{
+    $("#canvas").empty();
+
+	jsPlumb.empty("canvas");
+	jsPlumb.revalidate("canvas");
+	jsPlumb.reset();
+    
+    setupCanvas();
+
+    $('#node_editor').hide();
+}
 function addNode(node)
 {
     let processor = 
@@ -17,28 +35,36 @@ function addNode(node)
     {
         case 'httpReader':
             processor.attributes.url = '';
-            processor.attributes.dataType = 'json';
-            processor.attributes.authenticationType = 'basic';
-            processor.attributes.user = '';
-            processor.attributes.password = '';
+            processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml
+            processor.attributes.sourceProjection = '';
         break;
         case 'fileReader':
             processor.attributes.path = '';
-            processor.attributes.dataType = 'json';
+            processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml
+            processor.attributes.sourceProjection = '';
         break;
         case 'dbReader':
             processor.attributes.connection = '';
-            processor.attributes.source = 'oracle';
+            processor.attributes.source = 'oracle'; // oracle, postgres, mongo, couch, h2, mysql
             processor.attributes.user = '';
             processor.attributes.password = '';
+            processor.attributes.sourceTable = '';
+            processor.attributes.sourceProjection = '';
         break;
-        case 'buffer':
-            processor.attributes.distance = 0;
-            processor.attributes.units = 'kilometers';
+        case 'randomReader':
+            processor.attributes.dataType = 'polygon'; // point, line, polygon
         break;
         case 'projector':
             processor.attributes.sourceProjection = '';
             processor.attributes.newProjection = '';
+        break;
+        case 'buffer':
+            processor.attributes.distance = 0;
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+        break;
+        case 'hullCreator':
+            processor.attributes.isConvex = true;
+            processor.outputNodes['hull'] = [];
         break;
         case 'difference':
             processor.inputNodes['clipper'] = [];
@@ -46,9 +72,120 @@ function addNode(node)
         case 'intersect':
             processor.inputNodes['intersector'] = [];
         break;
+        case 'scale':
+            processor.attributes.factor = 1;
+            processor.attributes.location = 'centroid'; // sw/se/nw/ne/center/centroid
+        break;
+        case 'rotate':
+            processor.attributes.angle = 0;
+        break;
+        case 'translate':
+            processor.attributes.distance = 0;
+            processor.attributes.direction = 0;
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+        break;
+        case 'bezierCurve':
+            processor.outputNodes['curves'] = [];
+        break;
+        case 'lineChunk':
+            processor.attributes.length = 0;
+            processor.attributes.reverse = false;
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+        break;
+        case 'sector':
+            processor.outputNodes['sectors'] = [];
+        break;
+        case 'tin':
+            processor.outputNodes['tin'] = [];
+        break;
+        case 'along':
+            processor.attributes.length = 0;
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+            processor.outputNodes['points'] = [];
+        break;
+        case 'area':
+            processor.attributes.fieldName = 'AREA_SQ_M';
+        break;
+        case 'bearing':
+            processor.inputNodes['bearingPoints'] = [];
+            processor.attributes.fieldName = 'BEARING';
+        break;
+        case 'donutExtractor':
+            processor.outputNodes['donuts'] = [];
+        break;
+        case 'center':
+            processor.outputNodes['centers'] = [];
+        break;
+        case 'centerOfMass':
+            processor.outputNodes['centers'] = [];
+        break;
+        case 'centerAll':
+            processor.outputNodes['centers'] = [];
+        break;
+        case 'centerOfMassAll':
+            processor.outputNodes['centers'] = [];
+        break;
+        case 'centroid':
+            processor.outputNodes['centroids'] = [];
+        break;
+        case 'destination':
+            processor.attributes.dstance = 0;
+            processor.attributes.bearing = 0;
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+            processor.inputNodes['destinations'] = [];
+            processor.attributes.fieldName = 'DESTINATION';
+        break;
+        case 'length':
+            processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
+            processor.attributes.fieldName = 'LENGTH';
+        break;
+        case 'attributeCreator':
+            processor.attributes.fieldName = 'NAME';
+            processor.attributes.defaultValue = '';
+        break;
+        case 'attributeRemover':
+            processor.attributes.fieldName = 'NAME';
+        break;
+        case 'attributeRenamer':
+            processor.attributes.fromName = 'NAME';
+            processor.attributes.toName = 'NEW_NAME';
+        break;
+        case 'attributeCalculator':
+            processor.attributes.calculation = 'NAME + NAME2';
+            processor.attributes.toName = 'CALC';
+        break;
+        case 'timestamper':
+            processor.attributes.fieldName = 'TIMESTAMP';
+        break;
+        case 'filter':
+            processor.attributes.query = 'NAME === "Test"';
+            processor.outputNodes['false'] = [];
+        break;
+        case 'spatialFilter':
+            processor.attributes.type = 'Polygon'; // point, line, poly, multi's
+            processor.outputNodes['false'] = [];
+        break;
+        case 'spatialRelationFilter':
+            processor.attributes.type = 'intersects'; // within, contains, intersects, touches
+            processor.inputNodes['relator'] = [];
+            processor.outputNodes['false'] = [];
+        break;
         case 'fileWriter':
             processor.attributes.path = '';
-            processor.attributes.dataType = 'json';
+            processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml
+        break;
+        case 'httpWriter':
+            processor.attributes.url = '';
+            processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml
+            processor.attributes.upsert = false; // upsert means we'll put for existig, insert for new. If false, always post
+        break;
+        case 'dbWriter':
+            processor.attributes.connection = '';
+            processor.attributes.source = 'oracle'; // oracle, postgres, mongo, couch, h2, mysql
+            processor.attributes.user = '';
+            processor.attributes.password = '';
+            processor.attributes.destinationTable = '';
+            processor.attributes.upsert = false;
         break;
     }
 
@@ -73,16 +210,7 @@ function addNode(node)
 
     app.request.processors.push(processor);
 
-    // this can't be the optimal way to refresh the canvas...
-	$("#canvas").empty();
-
-	jsPlumb.empty("canvas");
-	jsPlumb.revalidate("canvas");
-	jsPlumb.reset();
-    
-    setupCanvas();
-
-    $('#node_editor').hide();
+    refreshDiagram();
 }
 
 function deleteSelectedNode(processorName)
@@ -97,16 +225,7 @@ function deleteSelectedNode(processorName)
         }
     }
 
-    // this can't be the optimal way to refresh the canvas...
-	$("#canvas").empty();
-
-	jsPlumb.empty("canvas");
-	jsPlumb.revalidate("canvas");
-	jsPlumb.reset();
-    
-    setupCanvas();
-
-    $('#node_editor').hide();
+    refreshDiagram();
 }
 
 let plumbInst;
@@ -489,23 +608,8 @@ function addProcessorToDiagram(processor, top, left, sourceEndpoint, targetEndpo
 	else if(title.toLowerCase().includes("reader")) procType = "reader";
 	else procType = "processor";
 
-	getProcessorPanel(processor, top, left, "canvas");
-
-	let inputNodes = 1;
-	let outputNodes = 1;
-
-	// main content, by type
-	if(processor.type === "overlayOperator" ||
-       processor.type === "spatialRelationFilter" ||
-       processor.type === 'difference' ||
-       processor.type === 'clipper') inputNodes = 2;
-
-	if(processor.type === "spatialFilter" ||
-	   processor.type === "spatialRelationFilter" ||
-	   processor.type === "featureValidator" ||
-	   processor.type === "conditionalFilter" ||
-	   processor.type === "overlayOperator") outputNodes = 2;
-
+    getProcessorPanel(processor, top, left, "canvas");
+    
 	// technically, we don't need any of this logic. Just replace the hard coded node definitions
 	// with some math to adjust node placement on the left or right according to how many nodes we have.
 
@@ -579,7 +683,7 @@ function getProcessorPanel(processor, top, left, canvas)
 	else if(title.toLowerCase().includes("reader")) procType = "reader";
 	else procType = "processor";
 
-	let processorHtml  = "<div onclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 200px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
+	let processorHtml  = "<div onclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 250px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
 		processorHtml += "<div class=\"card " + procType + " z-depth-0\" style=\"border: 1px solid #e0e0e0;\">";
 		processorHtml += "<div class='card-image' style='height: 60px;'>";
 		processorHtml += "<span class=\"card-title\" style='bottom: -10px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";

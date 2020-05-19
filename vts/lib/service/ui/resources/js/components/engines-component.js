@@ -15,7 +15,7 @@ Vue.component('engines',
     },
     template:   
     `
-    <div class="row">
+    <div class="container row">
         <div class="col s12">
             <engine-panel v-for="(engine, index) in engines"
                         v-bind:engine="engine"

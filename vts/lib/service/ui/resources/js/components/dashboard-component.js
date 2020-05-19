@@ -7,7 +7,7 @@ Vue.component('dashboard',
     },
     template:   
     `
-    <div class="row">
+    <div class=" container row">
         <div class="col s12 l6">
             <div class="card primary-color-dark hoverable">
                 <div class="card-content white-text dashboard-card">

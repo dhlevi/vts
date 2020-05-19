@@ -233,7 +233,7 @@ EngineController.prototype.init = async function()
             {
                 if (engine)
                 {
-                    engine.delete();
+                    engine.remove();
 
                     // should also delete any engine related cache
                     // and update any scheduled tasks or requests that

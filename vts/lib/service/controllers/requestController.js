@@ -84,8 +84,8 @@ RequestController.prototype.init = function()
             let requestData = req.body;
             // validate request
 
-            // find an elidgable engine
-            Engine.find({ acceptsRequests: true })
+            // find an elidgable engine thats running and not about to shut down
+            Engine.find({ acceptsRequests: true, currentState: 'Running', requestedState: 'Running' })
             .then(existingEngines => 
             {
                 // send to mongo
@@ -161,7 +161,7 @@ RequestController.prototype.init = function()
             {
                 if (request) 
                 {
-                    request.delete().then(deletedResult =>
+                    request.remove().then(deletedResult =>
                     {
                         res.json(deletedResult);
                     })
