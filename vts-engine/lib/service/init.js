@@ -10,7 +10,7 @@ const os         = require('os');
 
 // controllers, helpers, etc.
 const EngineController = require('./engineController');
-
+const processors      = require('./processors');
 // schemas
 const engineModel   = require('../model/engine');
 const engineSchema  = engineModel.engineSchema;
@@ -164,6 +164,7 @@ exports.launch = function (args)
     .catch(err =>
     {
         console.log('Engine registration failed. Shutting down...');
+        console.error(err);
         process.exit(0);
     });
 
@@ -302,5 +303,24 @@ exports.launch = function (args)
                 console.log('Faild to fetch requests: ' + error);
             });
         }, 5000);
+
+        // queue check. Process next queued item
+        setInterval(function()
+        {
+            if (engineController.queue && !engineController.queue.isEmpty()) // while?
+            {
+                // dequeue
+                let dequeuedRequest = engineController.queue.dequeue();
+                // refresh request, in case of any changes
+                Request.findById(dequeuedRequest._id).then(request =>
+                {
+                    processors.requestProcessor(request);
+                })
+                .catch(error =>
+                {
+                    console.error('Error occured refreshing request: ' + error);
+                });
+            }
+        }, 30000);
     });
 }

@@ -18,8 +18,16 @@
     "url": "https://github.com/dhlevi/vts-engine.git"
   },
   "dependencies": {
+    "@tmcw/togeojson": "^4.0.0",
+    "@turf/turf": "^5.1.6",
+    "chalk": "^4.0.0",
+    "clear": "^0.1.0",
+    "clui": "^0.3.6",
+    "configstore": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "express-winston": "^4.0.3",
+    "fgdb": "^1.0.0",
     "helmet": "^3.22.0",
     "inquirer": "^7.1.0",
     "lodash": "^4.17.15",
@@ -27,15 +35,16 @@
     "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
     "morgan": "^1.10.0",
+    "os": "^0.1.1",
+    "proj4": "^2.6.2",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
+    "shapefile": "^0.6.6",
+    "touch": "^3.1.0",
+    "unzipper": "^0.10.11",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "express-winston": "^4.0.3",
-    "chalk": "^4.0.0",
-    "clear": "^0.1.0",
-    "clui": "^0.3.6",
-    "configstore": "^5.0.1",
-    "os": "^0.1.1"
+    "xml2js": "^0.4.23",
+    "xmldom": "^0.3.0"
   }
 }

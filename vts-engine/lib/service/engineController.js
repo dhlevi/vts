@@ -25,7 +25,7 @@ EngineController.prototype.enqueue = function(request)
         this.engine.messages.push({message: 'Queued request ' + request.name, sender: 'VTS', timestamp: new Date()});
         this.engine.save();
     });
-}
+};
 
 EngineController.prototype.flush = function()
 {
@@ -36,7 +36,7 @@ EngineController.prototype.flush = function()
     // empty the queue if anything is on it
     // make sure to update the requests so
     // they're pushed back to VTS to reassign
-    while (!queue.isEmpty())
+    while (!this.queue.isEmpty())
     {
         let request = queue.dequeue();
         request.status = "Submitted";
@@ -47,9 +47,9 @@ EngineController.prototype.flush = function()
         request.save();
     }
 
-    queue = new Queue();
+    this.queue = new Queue();
 
     this.flushing = false;
-}
+};
 
 module.exports = EngineController;
