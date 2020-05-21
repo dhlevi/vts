@@ -64,7 +64,6 @@ function addNode(node)
         break;
         case 'hullCreator':
             processor.attributes.isConvex = true;
-            processor.outputNodes['hull'] = [];
         break;
         case 'difference':
             processor.inputNodes['clipper'] = [];
@@ -78,7 +77,6 @@ function addNode(node)
         break;
         case 'voronoi':
             processor.attributes.bbox = '-180,-85,180,-85';
-            processor.outputNodes['voronoi']
         break;
         case 'scale':
             processor.attributes.factor = 1;
@@ -106,9 +104,6 @@ function addNode(node)
             processor.attributes.reverse = false;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
         break;
-        case 'tin':
-            processor.outputNodes['tin'] = [];
-        break;
         case 'along':
             processor.attributes.length = 0;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
@@ -119,24 +114,6 @@ function addNode(node)
         break;
         case 'donutExtractor':
             processor.outputNodes['donuts'] = [];
-        break;
-        case 'center':
-            processor.outputNodes['centers'] = [];
-        break;
-        case 'centerOfMass':
-            processor.outputNodes['centers'] = [];
-        break;
-        case 'centerAll':
-            processor.outputNodes['centers'] = [];
-        break;
-        case 'centerOfMassAll':
-            processor.outputNodes['centers'] = [];
-        break;
-        case 'centroid':
-            processor.outputNodes['centroids'] = [];
-        break;
-        case 'boundingBox':
-            processor.outputNodes['boundingBox'] = [];
         break;
         case 'destination':
             processor.attributes.dstance = 0;

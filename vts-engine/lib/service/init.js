@@ -332,22 +332,25 @@ exports.launch = function (args)
         setInterval(function()
         {
             let cacheDir = process.cwd() + '/cache/';
-            fs.readdir(cacheDir, dir =>
+            fs.readdir(cacheDir, (err, dirs) =>
             {
                 // does ID exists in request? if not, delete everything.
-                Request.find({ name: dir }).then(requests =>
+                dirs.forEach(dir =>
                 {
-                    // that ID doesn't exist anymore... so cleanup!
-                    if (requests.length === 0)
+                    Request.find({ name: dir }).then(requests =>
                     {
-                        rimraf(process.cwd() + '/cache/' + request.name, function () { console.log('Cleared cache for ' + request.name); });
-                    }
-                })
-                .catch(error =>
-                {
-                    console.log('Faild to fetch requests: ' + error);
+                        // that ID doesn't exist anymore... so cleanup!
+                        if (requests.length === 0)
+                        {
+                            rimraf(process.cwd() + '/cache/' + dir, function () { console.log('Cleared cache for ' + dir); });
+                        }
+                    })
+                    .catch(error =>
+                    {
+                        console.log('Faild to fetch requests: ' + error);
+                    });
                 });
             });
-        }, 60000 * 30); // 30 minute cleanup cycle
+        }, 1000 * 60 * 30); // 30 minute cleanup cycle
     });
 }

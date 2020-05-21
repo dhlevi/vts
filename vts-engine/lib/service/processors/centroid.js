@@ -6,13 +6,12 @@ const turf           = require('@turf/turf');
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
-    processor.outputNodes.centers = [];
 
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -22,14 +21,16 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
+            let centerPoint = turf.centroid(feature);
+
             // create a new feature cache
             // generate an ID
             let id = uuidv4();
             processor.outputNodes.features.push(id);
             // shove the feature on the disk
-            let data = JSON.stringify(feature);
+            let data = JSON.stringify(centerPoint);
 
-            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
             // create the directory structure
             fs.mkdirSync(cachePath, { recursive: true }, function(err) 
             {
@@ -37,17 +38,6 @@ module.exports.process = async function(request, processor)
             });
 
             fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
-            {
-                if (err) throw err;
-            });
-
-            let centerPoint = turf.centroid(feature);
-            // generate an ID
-            let centerId = uuidv4();
-            processor.outputNodes.centers.push(centerId);
-            // shove the feature on the disk
-            let centerData = JSON.stringify(centerPoint);
-            fs.writeFileSync(cachePath + '/' + centerId + '.json', centerData, (err) => 
             {
                 if (err) throw err;
             });

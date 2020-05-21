@@ -6,7 +6,6 @@ const turf           = require('@turf/turf');
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
-    processor.inputNodes.intersector = [];
 
     let clippers = [];
     let features = [];
@@ -14,7 +13,7 @@ module.exports.process = async function(request, processor)
     // load the clippers
     processor.inputNodes.intersector.forEach(clipperNode =>
     {
-        let clippersPath = process.cwd() + '/cache/' + request.name + '/' + clipperNode.name;
+        let clippersPath = process.cwd() + '/cache/' + request.name + '/' + clipperNode.name + '/' + clipperNode.node + '/';
         let clipperFiles = fs.readdirSync(clippersPath);
 
         clipperFiles.forEach(file =>
@@ -32,7 +31,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -51,7 +50,7 @@ module.exports.process = async function(request, processor)
     {
         features.forEach((feature, index) =>
         {
-            let difference = turf.intersect(clipper, feature);
+            let difference = turf.intersect(feature, clipper);
             features[index] = difference;
         });
     });
@@ -66,7 +65,7 @@ module.exports.process = async function(request, processor)
         // shove the feature on the disk
         let data = JSON.stringify(feature);
 
-        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
         fs.mkdirSync(cachePath, { recursive: true }, function(err) 
         {

@@ -73,151 +73,155 @@ Vue.component('map-viewer',
                 if (engineUrl)
                 {
                     let request = new XMLHttpRequest();
-                    request.open('GET', engineUrl + '/Requests/' + app.request.name + '/Features/' + processor.name, false);
-                    request.send(null);
 
-                    if (request.status === 200) 
+                    Object.keys(processor.outputNodes).forEach(node =>
                     {
-                        let json = JSON.parse(request.responseText);
-
-                        // strip out any null features
-                        json.features = json.features.filter(function (el) 
+                        request.open('GET', engineUrl + '/Requests/' + app.request.name + '/Features/' + processor.name + '/' + node, false);
+                        request.send(null);
+    
+                        if (request.status === 200) 
                         {
-                            return el != null;
-                        });
-
-                        // this will probably break if a collection has multiple feature types
-                        let arcgisJson = Terraformer.ArcGIS.convert(json);
-
-                        let graphics = [];
-                        let geometryType;
-                        arcgisJson.forEach((graphic, index) =>
-                        {
-                            // handle multifeature geoms
-                            let graphicArray = [];
-                            if (!Array.isArray(graphic))
+                            let json = JSON.parse(request.responseText);
+    
+                            // strip out any null features
+                            json.features = json.features.filter(function (el) 
                             {
-                                graphicArray.push(graphic);
-                            }
-                            else 
+                                return el != null;
+                            });
+    
+                            // this will probably break if a collection has multiple feature types
+                            let arcgisJson = Terraformer.ArcGIS.convert(json);
+    
+                            let graphics = [];
+                            let geometryType;
+                            arcgisJson.forEach((graphic, index) =>
                             {
-                                graphicArray = graphic;
-                            }
-
-                            graphicArray.forEach(subGraphic =>
-                            {
-                                subGraphic.attributes.ObjectID = index;
-                                if (subGraphic.geometry.hasOwnProperty('paths')) 
+                                // handle multifeature geoms
+                                let graphicArray = [];
+                                if (!Array.isArray(graphic))
                                 {
-                                    subGraphic.geometry.type = 'polyline';
-                                    geometryType = 'polyline';
+                                    graphicArray.push(graphic);
                                 }
-                                else if (subGraphic.geometry.hasOwnProperty('rings')) 
+                                else 
                                 {
-                                    subGraphic.geometry.type = 'polygon';
-                                    geometryType = 'polygon';
-                                }
-                                else
-                                {
-                                    subGraphic.geometry.type = 'point';
-                                    geometryType = 'point';
+                                    graphicArray = graphic;
                                 }
     
-                                graphics.push(new Graphic(subGraphic));
+                                graphicArray.forEach(subGraphic =>
+                                {
+                                    subGraphic.attributes.ObjectID = index;
+                                    if (subGraphic.geometry.hasOwnProperty('paths')) 
+                                    {
+                                        subGraphic.geometry.type = 'polyline';
+                                        geometryType = 'polyline';
+                                    }
+                                    else if (subGraphic.geometry.hasOwnProperty('rings')) 
+                                    {
+                                        subGraphic.geometry.type = 'polygon';
+                                        geometryType = 'polygon';
+                                    }
+                                    else
+                                    {
+                                        subGraphic.geometry.type = 'point';
+                                        geometryType = 'point';
+                                    }
+        
+                                    graphics.push(new Graphic(subGraphic));
+                                });
                             });
-                        });
-
-                        let r = Math.floor(Math.random() * Math.floor(256));
-                        let g = Math.floor(Math.random() * Math.floor(256));
-                        let b = Math.floor(Math.random() * Math.floor(256));
-
-                        var renderer = geometryType === 'point' ?
-        				{
-  							type: "simple",
-  							symbol:
-  							{
-                                type: "simple-marker",
-                                size: 6,
-                                color: [r, g, b, 0.45],
-                                outline: { cap: "round", join: "round", width: 1, color: [60, 60, 60, 0.65] }
-  							}
-                        } 
-                        : geometryType === 'polygon' ?
-        				{
-                            type: "simple",
-                            symbol:
+    
+                            let r = Math.floor(Math.random() * Math.floor(256));
+                            let g = Math.floor(Math.random() * Math.floor(256));
+                            let b = Math.floor(Math.random() * Math.floor(256));
+    
+                            var renderer = geometryType === 'point' ?
                             {
-                              type: "simple-fill",
-                              style: "diagonal-cross",
-                              outline: {
-                                color: [r, g, b, 1]
-                              },
-                              color: [r, g, b, 0.25]
-                            }
-                        } 
-                        :
-        				{
-                            type: "simple",
-                            symbol:
+                                  type: "simple",
+                                  symbol:
+                                  {
+                                    type: "simple-marker",
+                                    size: 6,
+                                    color: [r, g, b, 0.45],
+                                    outline: { cap: "round", join: "round", width: 1, color: [60, 60, 60, 0.65] }
+                                  }
+                            } 
+                            : geometryType === 'polygon' ?
                             {
-                                type: "simple-line",
-                                color: [r, g, b, 0.35],
-                                width: "1px",
-                                style: "solid"
-                            }
-                        };
-
-                        let popup = 
-                        {
-                            title: processor.name + ' | ' + processor.type,
-							content:
-							[
-								{
-									type: "text",
-									text: "A cached geometry from a VTS process"
-								},
-								{
-									type: "fields",
-									fieldInfos: [ ]
-								}
-							]
-                        };
-
-                        let fields = [];
-                        Object.keys(graphics[0].attributes).forEach(attribute =>
-                        {
-                            let result = attribute.replace( /([A-Z])/g, " $1" );
-                            let title = result.charAt(0).toUpperCase() + result.slice(1);
-
-                            popup.content[1].fieldInfos.push(
+                                type: "simple",
+                                symbol:
+                                {
+                                  type: "simple-fill",
+                                  style: "diagonal-cross",
+                                  outline: {
+                                    color: [r, g, b, 1]
+                                  },
+                                  color: [r, g, b, 0.25]
+                                }
+                            } 
+                            :
                             {
-                                fieldName: attribute,
+                                type: "simple",
+                                symbol:
+                                {
+                                    type: "simple-line",
+                                    color: [r, g, b, 0.35],
+                                    width: "1px",
+                                    style: "solid"
+                                }
+                            };
+    
+                            let popup = 
+                            {
+                                title: processor.name + ' | ' + processor.type + ' - ' + node,
+                                content:
+                                [
+                                    {
+                                        type: "text",
+                                        text: "A cached geometry from a VTS process"
+                                    },
+                                    {
+                                        type: "fields",
+                                        fieldInfos: [ ]
+                                    }
+                                ]
+                            };
+    
+                            let fields = [];
+                            Object.keys(graphics[0].attributes).forEach(attribute =>
+                            {
+                                let result = attribute.replace( /([A-Z])/g, " $1" );
+                                let title = result.charAt(0).toUpperCase() + result.slice(1);
+    
+                                popup.content[1].fieldInfos.push(
+                                {
+                                    fieldName: attribute,
+                                    visible: true,
+                                    label: title
+                                });
+    
+                                fields.push(
+                                {
+                                    name: attribute,
+                                    alias: title,
+                                    type: name.toLowerCase() === 'objectid' ? 'oid' : 'string'
+                                });
+                            });
+                            
+                            layers.push(new FeatureLayer(
+                            {
+                                title: processor.name + ' | ' + processor.type + ' - ' + node,
+                                source: graphics,
+                                copyright: 'Government of British Columbia',
                                 visible: true,
-                                label: title
-                            });
-
-                            fields.push(
-                            {
-                                name: attribute,
-                                alias: title,
-                                type: name.toLowerCase() === 'objectid' ? 'oid' : 'string'
-                            });
-                        });
-                        
-                        layers.push(new FeatureLayer(
-                        {
-                            title: processor.name + ' | ' + processor.type,
-                            source: graphics,
-                            copyright: 'Government of British Columbia',
-                            visible: true,
-                            geometryType: geometryType,
-                            objectIdField: 'ObjectID',
-                            renderer: renderer,
-                            popupTemplate: popup,
-                            fields: fields,
-                            outFields: ["*"]
-                        }));
-                    }
+                                geometryType: geometryType,
+                                objectIdField: 'ObjectID',
+                                renderer: renderer,
+                                popupTemplate: popup,
+                                fields: fields,
+                                outFields: ["*"]
+                            }));
+                        }
+                    });
                 }
             });
 

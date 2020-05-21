@@ -18,7 +18,7 @@ let DataController = function(app)
 
 DataController.prototype.init = function()
 {
-    this.app.get("/Requests/:id/Features/:processorId", (req, res, next) => 
+    this.app.get("/Requests/:id/Features/:processorId/:node", (req, res, next) => 
     {
         try
         {
@@ -27,7 +27,7 @@ DataController.prototype.init = function()
                 if (request) 
                 {
                     
-                    let featurePath = process.cwd() + '/cache/' + req.params.id + '/' + req.params.processorId;
+                    let featurePath = process.cwd() + '/cache/' + req.params.id + '/' + req.params.processorId + '/' + req.params.node;
                     let files = fs.readdirSync(featurePath);
                     let features = [];
 

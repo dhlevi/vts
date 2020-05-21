@@ -21,7 +21,7 @@ module.exports.process = async function(request, processor)
         // shove the feature on the disk
         let data = JSON.stringify(feature);
 
-        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
         fs.mkdirSync(cachePath, { recursive: true }, function(err) 
         {

@@ -12,7 +12,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -29,7 +29,7 @@ module.exports.process = async function(request, processor)
             // shove the feature on the disk
             let data = JSON.stringify(feature);
 
-            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
             // create the directory structure
             fs.mkdirSync(cachePath, { recursive: true }, function(err) 
             {
@@ -62,7 +62,9 @@ module.exports.process = async function(request, processor)
                             // shove the feature on the disk
                             let donutData = JSON.stringify(donut);
         
-                            fs.writeFileSync(cachePath + '/' + donutId + '.json', donutData, (err) => 
+                            let donutPath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/donuts/';
+
+                            fs.writeFileSync(donutPath + '/' + donutId + '.json', donutData, (err) => 
                             {
                                 if (err) throw err;
                             });

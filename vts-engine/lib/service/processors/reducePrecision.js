@@ -13,7 +13,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -30,9 +30,9 @@ module.exports.process = async function(request, processor)
             let id = uuidv4();
             processor.outputNodes.features.push(id);
             // shove the feature on the disk
-            let data = JSON.truncate(reduce);
+            let data = JSON.stringify(reduce);
 
-            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
             // create the directory structure
             fs.mkdirSync(cachePath, { recursive: true }, function(err) 
             {

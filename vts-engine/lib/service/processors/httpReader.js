@@ -57,7 +57,7 @@ module.exports.process = async function(request, processor)
                         });
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really
-    if (!result || (!results.hasOwnProperty('type') && !results.type.toLowerCase() === 'Featurecollection'))
+    if (!results || (!results.hasOwnProperty('type') && !results.type.toLowerCase() === 'Featurecollection'))
     {
         throw Error('not a feature collection');
     }
@@ -73,7 +73,7 @@ module.exports.process = async function(request, processor)
         // shove the feature on the disk
         let data = JSON.stringify(feature);
 
-        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
         fs.mkdirSync(cachePath, { recursive: true }, function(err) 
         {

@@ -44,7 +44,7 @@ let app = new Vue(
                 { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' },
                 { name: 'buffer', tooltip: 'Buffer features', icon: 'settings_overscan' },
                 { name: 'hullCreator', tooltip: 'Create a convex or concave hull from features', icon: 'filter_tilt_shift' },
-                { name: 'difference', tooltip: 'find the difference between two feature sets', icon: 'flip_to_back' },
+                { name: 'difference', tooltip: 'Clip the difference between two feature sets', icon: 'flip_to_back' },
                 { name: 'dissolve', tooltip: 'Dissolve all features', icon: 'donut_small' },
                 { name: 'intersect', tooltip: 'Intersect all features by another feature set', icon: 'branding_watermark' },
                 { name: 'simplify', tooltip: 'Simplify all features', icon: 'timeline' },

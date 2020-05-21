@@ -15,7 +15,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.relator.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -33,7 +33,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
-        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name;
+        let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.readdirSync(tempPath);
 
         files.forEach(file =>
@@ -89,19 +89,20 @@ module.exports.process = async function(request, processor)
     
                 // write to the appropriate outputNode
                 let id = uuidv4();
-    
+                let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
                 if (passed)
                 {
                     processor.outputNodes.features.push(id);
+                    cachePath += '/features/';
                 }
                 else
                 {
                     processor.outputNodes.false.push(id);
+                    cachePath += '/false/';
                 }
     
                 let data = JSON.stringify(feature);
     
-                let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
                 // create the directory structure
                 fs.mkdirSync(cachePath, { recursive: true }, function(err) 
                 {
