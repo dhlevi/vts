@@ -27,6 +27,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-winston": "^4.0.3",
+    "expression-eval": "^3.1.1",
     "fgdb": "^1.0.0",
     "helmet": "^3.22.0",
     "inquirer": "^7.1.0",

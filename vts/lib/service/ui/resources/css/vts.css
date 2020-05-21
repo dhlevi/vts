@@ -315,3 +315,45 @@ font-family: 'Raleway', sans-serif;
     background: #25353b;
     cursor: pointer;
 }
+
+.tool-menu
+{
+    overflow: auto; height: 100%
+}
+.tool-menu li
+{
+    transition: all 0.5s ease;
+    
+    border-bottom: 1px solid rgb(74, 101, 114);
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+.tool-menu li:hover 
+{
+    border-bottom: 1px solid rgb(74, 101, 114);
+    cursor: pointer;
+    text-transform: capitalize;
+    
+    background: #F9AA33 !important;
+    color: black !important;
+}
+
+.tool-menu::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.tool-menu::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.tool-menu::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}

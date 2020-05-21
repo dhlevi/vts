@@ -1,7 +1,7 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
@@ -25,7 +25,18 @@ module.exports.process = async function(request, processor)
             let feature = JSON.parse(featureString);
 
             // inject new attribute, run calculation
-            feature.properties[fieldName] = calculation;
+            let value = null;
+            try
+            {
+                const ast = parse(calculation);
+                value = eval(ast, feature.properties);
+            }
+            catch(err)
+            {
+                console.log('Expression parse failed: ' + err);
+            }
+
+            feature.properties[fieldName] = value;
 
             // create a new feature cache
             // generate an ID

@@ -28,7 +28,7 @@ module.exports.process = async function(request, processor)
     });
 
     // union features
-    let union = turf.union(features);
+    let union = turf.union(...features);
 
     // create a new feature cache
     // generate an ID

@@ -47,7 +47,7 @@ module.exports.process = async function(request, processor)
         });
     });
 
-    let bbox = turf.bboxPolygon(turf.bbox(features));
+    let bbox = turf.bboxPolygon(turf.bbox(turf.featureCollection(features)));
 
     // cache the hull
     let id = uuidv4();

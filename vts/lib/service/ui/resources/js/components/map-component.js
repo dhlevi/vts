@@ -85,34 +85,129 @@ Vue.component('map-viewer',
                         let geometryType;
                         arcgisJson.forEach((graphic, index) =>
                         {
-                            graphic.attributes.ObjectID = index;
-                            if (graphic.geometry.hasOwnProperty('paths')) 
+                            // handle multifeature geoms
+                            let graphicArray = [];
+                            if (!Array.isArray(graphic))
                             {
-                                graphic.geometry.type = 'polyline';
-                                geometryType = 'polyline';
+                                graphicArray.push(graphic);
                             }
-                            else if (graphic.geometry.hasOwnProperty('rings')) 
+                            else 
                             {
-                                graphic.geometry.type = 'polygon';
-                                geometryType = 'polygon';
-                            }
-                            else
-                            {
-                                graphic.geometry.type = 'point';
-                                geometryType = 'point';
+                                graphicArray = graphic;
                             }
 
-                            graphics.push(new Graphic(graphic));
+                            graphicArray.forEach(subGraphic =>
+                            {
+                                subGraphic.attributes.ObjectID = index;
+                                if (subGraphic.geometry.hasOwnProperty('paths')) 
+                                {
+                                    subGraphic.geometry.type = 'polyline';
+                                    geometryType = 'polyline';
+                                }
+                                else if (subGraphic.geometry.hasOwnProperty('rings')) 
+                                {
+                                    subGraphic.geometry.type = 'polygon';
+                                    geometryType = 'polygon';
+                                }
+                                else
+                                {
+                                    subGraphic.geometry.type = 'point';
+                                    geometryType = 'point';
+                                }
+    
+                                graphics.push(new Graphic(subGraphic));
+                            });
                         });
 
+                        let r = Math.floor(Math.random() * Math.floor(256));
+                        let g = Math.floor(Math.random() * Math.floor(256));
+                        let b = Math.floor(Math.random() * Math.floor(256));
+
+                        var renderer = geometryType === 'point' ?
+        				{
+  							type: "simple",
+  							symbol:
+  							{
+                                type: "simple-marker",
+                                size: 6,
+                                color: [r, g, b, 0.45],
+                                outline: { cap: "round", join: "round", width: 1, color: [60, 60, 60, 0.65] }
+  							}
+                        } 
+                        : geometryType === 'polygon' ?
+        				{
+                            type: "simple",
+                            symbol:
+                            {
+                              type: "simple-fill",
+                              style: "diagonal-cross",
+                              outline: {
+                                color: [r, g, b, 1]
+                              },
+                              color: [r, g, b, 0.25]
+                            }
+                        } 
+                        :
+        				{
+                            type: "simple",
+                            symbol:
+                            {
+                                type: "simple-line",
+                                color: [r, g, b, 0.35],
+                                width: "1px",
+                                style: "solid"
+                            }
+                        };
+
+                        let popup = 
+                        {
+                            title: processor.name + ' | ' + processor.type,
+							content:
+							[
+								{
+									type: "text",
+									text: "A cached geometry from a VTS process"
+								},
+								{
+									type: "fields",
+									fieldInfos: [ ]
+								}
+							]
+                        };
+
+                        let fields = [];
+                        Object.keys(graphics[0].attributes).forEach(attribute =>
+                        {
+                            let result = attribute.replace( /([A-Z])/g, " $1" );
+                            let title = result.charAt(0).toUpperCase() + result.slice(1);
+
+                            popup.content[1].fieldInfos.push(
+                            {
+                                fieldName: attribute,
+                                visible: true,
+                                label: title
+                            });
+
+                            fields.push(
+                            {
+                                name: attribute,
+                                alias: title,
+                                type: name.toLowerCase() === 'objectid' ? 'oid' : 'string'
+                            });
+                        });
+                        
                         layers.push(new FeatureLayer(
                         {
-                            title: processor.name + '|' + processor.type,
+                            title: processor.name + ' | ' + processor.type,
                             source: graphics,
                             copyright: 'Government of British Columbia',
                             visible: true,
                             geometryType: geometryType,
-                            objectIdField: 'ObjectID'
+                            objectIdField: 'ObjectID',
+                            renderer: renderer,
+                            popupTemplate: popup,
+                            fields: fields,
+                            outFields: ["*"]
                         }));
                     }
                 }
@@ -184,23 +279,33 @@ Vue.component('map-viewer',
                 })
             });
 
-            /*let layerListBase = new LayerList(
+            let layerListBase = new LayerList(
             {
                 view: view,
-                listItemCreatedFunction: createActions
+                listItemCreatedFunction: function() 
+                {
+                }
+            });
+
+            layerListBase.on("trigger-action", function(event)
+            {
+                let actionId = event.action.id;
+                let layer = event.item.layer;
+
+                return layer.queryExtent().then(function(response) { view.goTo(response.extent); });
             });
 
             let layerList = new Expand(
             {
                 view: view,
                 content: layerListBase
-            });*/
+            });
 
             // bottom left
             // view.ui.add(ccWidget, "bottom-left");
             //top right
             view.ui.add(bgExpand,  "top-right");
-            //view.ui.add(layerList,  "top-right");
+            view.ui.add(layerList,  "top-right");
             view.ui.add(dlmExpand, "top-right");
             view.ui.add(amExpand, "top-right");
             // bottom right

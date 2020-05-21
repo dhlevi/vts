@@ -28,7 +28,7 @@ module.exports.process = async function(request, processor)
     });
 
     // dissolve features
-    let dissolved = turf.dissolve(features);
+    let dissolved = turf.dissolve(turf.featureCollection(features));
 
     // create a new feature cache
     // generate an ID

@@ -47,7 +47,7 @@ module.exports.process = async function(request, processor)
         });
     });
 
-    let center = turf.center(features);
+    let center = turf.center(turf.featureCollection(features));
 
     // cache the hull
     let centerId = uuidv4();

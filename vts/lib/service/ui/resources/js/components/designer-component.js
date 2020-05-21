@@ -22,7 +22,7 @@ Vue.component('designer',
                 </div>
             </div>
             <div class="row" style="height: calc(100vh - 208px);">
-                <ul style="overflow: auto; height: 100%">
+                <ul class="tool-menu">
                     <toolbar-buttons v-for="(tool, index) in tools"
                                     v-bind:tool="tool"
                                     v-bind:index="index"
@@ -32,7 +32,7 @@ Vue.component('designer',
                 </ul>
             </div>
         </div>
-        <div class="col s10 primary-color-light" style="height: calc(100vh - 157px);">
+        <div class="col s10 primary-color-light" style="height: calc(100vh - 90px);">
             <div class="card toolbar z-depth-2 hoverable">
                 <a href="#" onclick="finalizeRequest();" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
                 <a href="#" onclick="runRequest();" title="Send as an ad hoc request"><i class="material-icons">send</i></a>

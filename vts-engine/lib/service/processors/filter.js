@@ -1,7 +1,7 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
@@ -27,6 +27,15 @@ module.exports.process = async function(request, processor)
             let passed = true;
 
             // run the query, determine true or false
+            try
+            {
+                const ast = parse(query);
+                passed = eval(ast, feature.properties);
+            }
+            catch(err)
+            {
+                console.log('Expression parse failed: ' + err);
+            }
 
             // write to the appropriate outputNode
             let id = uuidv4();
