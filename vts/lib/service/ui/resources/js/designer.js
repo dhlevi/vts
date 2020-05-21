@@ -78,6 +78,7 @@ function addNode(node)
         break;
         case 'voronoi':
             processor.attributes.bbox = [-180,-85,180,-85];
+            processor.outputNodes['voronoi']
         break;
         case 'scale':
             processor.attributes.factor = 1;
@@ -150,6 +151,7 @@ function addNode(node)
         case 'attributeCreator':
             processor.attributes.fieldName = 'NAME';
             processor.attributes.defaultValue = '';
+            processor.attributes.type = 'string'; //string, number, date, boolean
         break;
         case 'attributeRemover':
             processor.attributes.fieldName = 'NAME';

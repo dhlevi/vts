@@ -79,6 +79,14 @@ Vue.component('map-viewer',
                     if (request.status === 200) 
                     {
                         let json = JSON.parse(request.responseText);
+
+                        // strip out any null features
+                        json.features = json.features.filter(function (el) 
+                        {
+                            return el != null;
+                        });
+
+                        // this will probably break if a collection has multiple feature types
                         let arcgisJson = Terraformer.ArcGIS.convert(json);
 
                         let graphics = [];

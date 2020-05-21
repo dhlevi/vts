@@ -9,6 +9,7 @@ Vue.component('requests',
     {
         this.$nextTick(function () 
         {
+            loadRequests();
         });
     },
     template:   

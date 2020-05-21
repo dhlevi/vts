@@ -23,8 +23,6 @@
     </dependency>
   </dependencies>
   <modules>
-  	
-    <module>vts-admin-ui</module>
     <module>vts-engine</module>
     <module>vts-shared</module>
   </modules>

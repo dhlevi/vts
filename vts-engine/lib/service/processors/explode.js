@@ -21,25 +21,30 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
+            // explode into a feature collection of points
             let points = turf.explode(feature);
 
-            // create a new feature cache
-            // generate an ID
-            let id = uuidv4();
-            processor.outputNodes.features.push(id);
-            // shove the feature on the disk
-            let data = JSON.stringify(points);
-
+            // write each feature in the collection
             let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
-            // create the directory structure
-            fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+            points.features.forEach(pointFeature =>
             {
-                if (err && err.code != 'EEXIST') throw err;
-            });
+                // create a new feature cache
+                // generate an ID
+                let id = uuidv4();
+                processor.outputNodes.features.push(id);
+                // shove the feature on the disk
+                let data = JSON.stringify(pointFeature);
 
-            fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
-            {
-                if (err) throw err;
+                // create the directory structure
+                fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+                {
+                    if (err && err.code != 'EEXIST') throw err;
+                });
+
+                fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
+                {
+                    if (err) throw err;
+                });
             });
         });
     });

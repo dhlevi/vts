@@ -7,8 +7,9 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let fieldName = processor.attributes.fieldName;
+    let fieldName = processor.attributes.fieldName; // support comma seperated list?
     let defaultValue = processor.attributes.defaultValue;
+    let type = processor.attributes.type; //string, number, date, boolean
 
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
@@ -25,7 +26,27 @@ module.exports.process = async function(request, processor)
             let feature = JSON.parse(featureString);
 
             // inject new attribute
-            feature.properties[fieldName] = defaultValue;
+            let fields = fieldName.split(',');
+            let values = defaultValue.split(',');
+            let types = type.split(',');
+
+            fields.forEach((field, index) =>
+            {
+                let fieldValue = values.length > index ? values[index] : '';
+                let fieldType  = types.length  > index ? types[index]  : 'string';
+
+                try
+                {
+                    feature.properties[field.trim()] = fieldType.toLowerCase() === 'number'  ? Number(fieldValue) :
+                                                       fieldType.toLowerCase() === 'boolean' ? Boolean(fieldValue) :
+                                                       fieldType.toLowerCase() === 'date'    ? new Date(fieldValue) :
+                                                       fieldValue;
+                }
+                catch(err)
+                {
+                    feature.properties[field.trim()] = fieldValue;
+                }
+            });
 
             // create a new feature cache
             // generate an ID

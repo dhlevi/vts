@@ -8,6 +8,7 @@ module.exports.process = async function(request, processor)
     processor.outputNodes.features = [];
     processor.outputNodes.tin = [];
 
+    let points = [];
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
     {
@@ -27,7 +28,7 @@ module.exports.process = async function(request, processor)
             let id = uuidv4();
             processor.outputNodes.features.push(id);
             // shove the feature on the disk
-            let data = JSON.stringify(triangulated);
+            let data = JSON.stringify(feature);
 
             let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
             // create the directory structure
@@ -41,19 +42,37 @@ module.exports.process = async function(request, processor)
                 if (err) throw err;
             });
 
-            let points = turf.explode(feature);
-            let tin = turf.tin(points);
-            
-            // generate an ID
-            let tinId = uuidv4();
-            processor.outputNodes.tin.push(tinId);
-            // shove the feature on the disk
-            let tinData = JSON.stringify(tin);
-
-            fs.writeFileSync(cachePath + '/' + tinId + '.json', tinData, (err) => 
+            // explode into a feature collection of points
+            // only works on poly/line/multipoint!
+            if (feature.geometry.type === 'Point')
             {
-                if (err) throw err;
-            });
+                points.push(feature);
+            }
+            else
+            {
+                let exploded = turf.explode(feature);
+                exploded.features.forEach(point =>
+                {
+                    points.push(point);
+                });
+            }
+        });
+    });
+
+    let tin = turf.tin(turf.featureCollection(points));
+    
+    tin.features.forEach(poly =>
+    {
+        // generate an ID
+        let tinId = uuidv4();
+        processor.outputNodes.tin.push(tinId);
+        // shove the feature on the disk
+        let tinData = JSON.stringify(poly);
+
+        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+        fs.writeFileSync(cachePath + '/' + tinId + '.json', tinData, (err) => 
+        {
+            if (err) throw err;
         });
     });
 };
