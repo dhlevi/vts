@@ -77,7 +77,7 @@ function addNode(node)
             processor.attributes.highQuality = false;
         break;
         case 'voronoi':
-            processor.attributes.bbox = [-180,-85,180,-85];
+            processor.attributes.bbox = '-180,-85,180,-85';
             processor.outputNodes['voronoi']
         break;
         case 'scale':

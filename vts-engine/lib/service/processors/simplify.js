@@ -7,8 +7,8 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let tolerance = processor.attributes.tolerance;
-    let highQuality = processor.attributes.highQuality;
+    let tolerance = Number(processor.attributes.tolerance);
+    let highQuality = Boolean(processor.attributes.highQuality);
 
     // load the features
     processor.inputNodes.features.forEach(inputNode =>

@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const winston    = require('winston');
 const expWinston = require('express-winston');
 const os         = require('os');
+const rimraf     = require('rimraf');
+const fs         = require('fs');
 
 // controllers, helpers, etc.
 const EngineController = require('./engineController');
@@ -325,5 +327,27 @@ exports.launch = function (args)
                 });
             }
         }, 30000);
+
+        // cache cleanup
+        setInterval(function()
+        {
+            let cacheDir = process.cwd() + '/cache/';
+            fs.readdir(cacheDir, dir =>
+            {
+                // does ID exists in request? if not, delete everything.
+                Request.find({ name: dir }).then(requests =>
+                {
+                    // that ID doesn't exist anymore... so cleanup!
+                    if (requests.length === 0)
+                    {
+                        rimraf(process.cwd() + '/cache/' + request.name, function () { console.log('Cleared cache for ' + request.name); });
+                    }
+                })
+                .catch(error =>
+                {
+                    console.log('Faild to fetch requests: ' + error);
+                });
+            });
+        }, 60000 * 30); // 30 minute cleanup cycle
     });
 }

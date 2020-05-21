@@ -41,6 +41,7 @@
     "proj4": "^2.6.2",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
+    "rimraf": "^3.0.2",
     "shapefile": "^0.6.6",
     "touch": "^3.1.0",
     "unzipper": "^0.10.11",

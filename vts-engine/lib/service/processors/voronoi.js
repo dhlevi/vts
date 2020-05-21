@@ -8,7 +8,23 @@ module.exports.process = async function(request, processor)
     processor.outputNodes.features = [];
     processor.outputNodes.voronoi = [];
 
-    let bbox = processor.attributes.bbox; // [-180,-85,180,-85];
+    let bbox = [];
+
+    try
+    {
+        let bboxCoords = processor.attributes.bbox.split(','); // '-180,-85,180,-85'
+        bboxCoords.forEach(coord =>
+        {
+            bbox.push(Number(coord));
+        });
+
+        if (bbox.length != 4) bbox = [-180,-85,180,-85];
+    }
+    catch(error)
+    {
+        bbox = [-180,-85,180,-85];
+    }
+
     let points = [];
 
     // cycle through each input node (data should be loaded by now)
@@ -67,6 +83,7 @@ module.exports.process = async function(request, processor)
 
     // Now that we have all of the points from all input sources, we can
     // create a hull. This will go on the hull output node
+    // add bbox //{ bbox: bbox }
     let voronoi = turf.voronoi(turf.featureCollection(points));
 
     voronoi.features.forEach(poly =>

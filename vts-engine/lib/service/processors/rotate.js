@@ -7,7 +7,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let angle = processor.attributes.angle;
+    let angle = Number(processor.attributes.angle);
     let pivot = processor.attributes.pivot;
 
     // load the features

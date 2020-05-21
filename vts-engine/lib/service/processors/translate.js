@@ -7,8 +7,8 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let distance = processor.attributes.distance;
-    let direction = processor.attributes.direction;
+    let distance = Number(processor.attributes.distance);
+    let direction = Number(processor.attributes.direction);
     let units = processor.attributes.units;
 
     // load the features

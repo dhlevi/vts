@@ -7,8 +7,8 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let length = processor.attributes.length;
-    let reverse = processor.attributes.reverse;
+    let length = Number(processor.attributes.length);
+    let reverse = Boolean(processor.attributes.reverse);
     let units = processor.attributes.units;
 
     // load the features

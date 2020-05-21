@@ -7,7 +7,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let factor = processor.attributes.factor;
+    let factor = Number(processor.attributes.factor);
     let location = processor.attributes.location;
 
     // load the features

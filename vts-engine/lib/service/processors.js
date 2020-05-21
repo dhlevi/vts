@@ -1,11 +1,4 @@
 const mongoose   = require('mongoose');
-// Processors
-const httpReader    = require('./processors/httpReader');
-const fileReader    = require('./processors/fileReader');
-const randomFeature = require('./processors/randomReader');
-const projector     = require('./processors/projector');
-const coordCleaner  = require('./processors/cleanCoords');
-const buffer  = require('./processors/buffer');
 // schemas
 const engineModel   = require('../model/engine');
 const engineSchema  = engineModel.engineSchema;

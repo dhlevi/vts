@@ -7,7 +7,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let distance = processor.attributes.distance;
+    let distance = Number(processor.attributes.distance);
     let units = processor.attributes.units;
 
     // cycle through each input node (data should be loaded by now)

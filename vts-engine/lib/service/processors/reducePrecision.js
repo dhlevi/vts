@@ -7,7 +7,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let precision = processor.attributes.precision;
+    let precision = Number(processor.attributes.precision);
 
     // cycle through each input node (data should be loaded by now)
     processor.inputNodes.features.forEach(inputNode =>
