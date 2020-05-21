@@ -1,3 +1,12 @@
+function uuid() 
+{
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) 
+	{
+		var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+		return v.toString(16);
+	});
+}
+
 function loadRequests()
 {
     $.ajax
@@ -48,11 +57,61 @@ function runRequest()
     });
 }
 
-function uuid() 
+function editRequest(requestId)
 {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) 
-	{
-		var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-		return v.toString(16);
-	});
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests/' + requestId,
+        type: "get",
+        dataType: 'json',
+        contentType:'application/json',
+        success: function (results)
+        {
+            app.request = results;
+            app.tabSwitch('designer');
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Could not get current request counts'});
+        }
+    });
+}
+
+function viewOnMap(requestId)
+{
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests/' + requestId,
+        type: "get",
+        dataType: 'json',
+        contentType:'application/json',
+        success: function (results)
+        {
+            app.request = results;
+            app.tabSwitch('map-viewer');
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Could not get current request counts'});
+        }
+    });
+}
+
+function deleteRequest(requestId)
+{
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests/' + requestId,
+        type: "delete",
+        crossDomain: true,
+        withCredentials: true,
+        success: function (result)
+        {
+            M.toast({ html: 'Request Deleted'});
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Request could not be deleted.'});
+        }
+    });
 }

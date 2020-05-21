@@ -10,7 +10,8 @@ const os         = require('os');
 
 // controllers, helpers, etc.
 const EngineController = require('./engineController');
-const processors      = require('./processors');
+const DataController   = require('./dataController');
+const processors       = require('./processors');
 // schemas
 const engineModel   = require('../model/engine');
 const engineSchema  = engineModel.engineSchema;
@@ -79,6 +80,7 @@ let queuedRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 let runningRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 let engineController;
+let dataController;
 
 // server launch point
 exports.launch = function (args) 
@@ -168,8 +170,8 @@ exports.launch = function (args)
         process.exit(0);
     });
 
-    // set up minio or defaults? Probably controller specific
-    // maybe store all of these configs in the DB so they can be shared with engines
+    dataController = new DataController(app);
+    dataController.init();
 
     app.get("/", (req, res, next) => 
     {
@@ -186,7 +188,8 @@ exports.launch = function (args)
             [
                 { rel: 'self', title: 'API Top Level', method: 'GET', href: '/' },
                 { rel: 'self', title: 'API Ping', method: 'GET', href: '/Ping' }
-            ]
+            ],
+            dataLinks: dataController.links()
         });
     });
 

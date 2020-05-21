@@ -33,7 +33,7 @@ let app = new Vue(
         selectedNode: { title: '' },
         lastTab: 'dashboard',
         currentTab: 'dashboard',
-        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'logs', 'designer'],
+        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'logs', 'designer', 'map-viewer'],
         componentKey: 0,
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'http' },
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'all_inbox' },
@@ -63,7 +63,6 @@ let app = new Vue(
                 { name: 'lineToPolygon', tooltip: 'Creates a polygon from a linestring', icon: '' },
                 { name: 'polygonToLine', tooltip: 'Converts a polygon into a linestring', icon: '' },
                 { name: 'lineChunk', tooltip: 'Breaks a linestring into chunks', icon: '' },
-                { name: 'sector', tooltip: 'Creates a circular sector polygon from a point', icon: '' },
                 { name: 'unkink', tooltip: 'Breaks self-intersecting polygons into multipolygon features', icon: '' },
                 { name: 'tin', tooltip: 'Creates a TIN (triangulated irregular network) from a set of points', icon: '' },
                 { name: 'donutExtractor', tooltip: 'Creates a new set of data containing extracted donuts', icon: '' },
@@ -72,7 +71,6 @@ let app = new Vue(
                 { name: 'along', tooltip: 'Creates a point as a new feature at a given distance along a line', icon: '' },
                 { name: 'area', tooltip: 'Gets the area of a feature', icon: '' },
                 { name: 'boundingBox', tooltip: 'Creates a bounding box encompassing all features', icon: '' },
-                { name: 'bearing', tooltip: 'Finds the bearing between a control point (or points) and all provided features', icon: '' },
                 { name: 'center', tooltip: 'Finds the center of a feature', icon: '' },
                 { name: 'centerOfMass', tooltip: 'Finds the center of mass for a feature', icon: '' },
                 { name: 'centerAll', tooltip: 'Finds the center of all features', icon: '' },
@@ -91,7 +89,7 @@ let app = new Vue(
                 { name: 'attributeCalculator', tooltip: 'Add an attribute that contains a calculation', icon: ''},
                 { name: 'timestamper', tooltip: 'Timestamp all features', icon: ''},
                 // special tools
-                { name: 'logger', tooltip: 'Create a log message for all features', icon: ''},
+                //{ name: 'logger', tooltip: 'Create a log message for all features', icon: ''},
                 { name: 'featureHolder', tooltip: 'Holds features for merging datasets', icon: 'horizontal_split' },
                 // writer
                 { name: 'fileWriter', tooltip: 'Write results to a file (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'publish' },

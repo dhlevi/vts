@@ -1,17 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
-const Projector      = require('../projector');
+const turf           = require('@turf/turf');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let sourceProjection = processor.attributes.sourceProjection;
-    let newProjection = processor.attributes.newProjection;
-    let projector = new Projector(sourceProjection, newProjection);
-
-    // cycle through each input node (data should be loaded by now)
+    // load the features
     processor.inputNodes.features.forEach(inputNode =>
     {
         // get the files in the disk cache
@@ -25,14 +21,14 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            projector.project(feature.geometry);
+            let line = turf.polygonToLine(feature);
 
-            // create a new feature
+            // create a new feature cache
             // generate an ID
             let id = uuidv4();
             processor.outputNodes.features.push(id);
             // shove the feature on the disk
-            let data = JSON.stringify(feature);
+            let data = JSON.stringify(line);
 
             let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
             // create the directory structure

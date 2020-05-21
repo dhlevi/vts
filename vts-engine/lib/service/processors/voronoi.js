@@ -6,9 +6,8 @@ const turf           = require('@turf/turf');
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
-    processor.outputNodes.hull = [];
 
-    let isConvex = processor.attributes.isConvex;
+    let bbox = processor.attributes.bbox; // [-180,-85,180,-85];
     let points = [];
 
     // cycle through each input node (data should be loaded by now)
@@ -27,7 +26,6 @@ module.exports.process = async function(request, processor)
 
             // add all feature points into the points array
             // we may have a geom collection, so assume collections
-            
             let features = [];
             if (feature.geometry.type === 'GeometryCollection')
             {
@@ -63,37 +61,18 @@ module.exports.process = async function(request, processor)
                     })
                 }
             });
-
-            // create a new feature cache
-            // generate an ID
-            let id = uuidv4();
-            processor.outputNodes.features.push(id);
-            // shove the feature on the disk
-            let data = JSON.stringify(feature);
-
-            let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
-            // create the directory structure
-            fs.mkdirSync(cachePath, { recursive: true }, function(err) 
-            {
-                if (err && err.code != 'EEXIST') throw err;
-            });
-
-            fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
-            {
-                if (err) throw err;
-            });
         });
     });
 
     // Now that we have all of the points from all input sources, we can
     // create a hull. This will go on the hull output node
-    let hull = isConvex ? turf.convex(turf.featureCollection(points)) : turf.featureCollection(points);
+    let voronoi = turf.voronoi(turf.featureCollection(points), { bbox: bbox } );
 
     // cache the hull
     let id = uuidv4();
     processor.outputNodes.hull.push(id);
     // shove the feature on the disk
-    let data = JSON.stringify(hull);
+    let data = JSON.stringify(voronoi);
 
     let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
     // create the directory structure

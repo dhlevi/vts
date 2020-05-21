@@ -22,11 +22,25 @@
         <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
         <!-- js plumb -->
         <script src='resources/js/jsplumb.js'></script>
+        <!-- Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+        <!-- ESRI Leaflet -->
+        <script src="https://unpkg.com/esri-leaflet@2.1.3/dist/esri-leaflet.js" integrity="sha512-pijLQd2FbV/7+Jwa86Mk3ACxnasfIMzJRrIlVQsuPKPCfUBCDMDUoLiBQRg7dAQY6D1rkmCcR8286hVTn/wlIg==" crossorigin=""></script>
         <!-- Vue Dev -->
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <!-- Vue Prod -->
         <!-- script src="https://cdn.jsdelivr.net/npm/vue"></script -->
-        <!-- smk util css -->
+
+        <!-- ArcGIS js api-->
+        <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/css/main.css">
+        <!-- <script src="https://js.arcgis.com/4.15/"></script> -->
+        <script src="https://unpkg.com/esri-loader"></script>
+        <script src="https://unpkg.com/terraformer@1.0.8"></script>
+        <script src="https://unpkg.com/terraformer-arcgis-parser@1.0.5"></script>
+        <script src="https://unpkg.com/terraformer-wkt-parser@1.1.2"></script>
+
+        <!-- vts -->
         <link rel="stylesheet" href="resources/css/vts.css" type='text/css'>
     </head>
     <body class="primary-color">
@@ -38,12 +52,13 @@
                 <component v-bind:is="currentTabComponent"
                             v-bind:engines="engines"
                             v-bind:requests="requests"
+                            v-bind:request="request"
                             v-bind:tasks="tasks"
                             v-bind:selected-engine="selectedEngine"
                             v-bind:tools="tools"
                             v-bind:selected-node="selectedNode"
                             v-bind:tool-search="toolSearch"
-                            v-bind:request-searcg="requestSearch"
+                            v-bind:request-search="requestSearch"
                             v-bind:key="componentKey"></component>
             </main>
             <footer>
@@ -57,6 +72,7 @@
         <script src="resources/js/components/designer-component.js"></script>
         <script src="resources/js/components/requests-component.js"></script>
         <script src="resources/js/components/tasks-component.js"></script>
+        <script src="resources/js/components/map-component.js"></script>
         <script src="resources/js/vts.js"></script>
         <script src="resources/js/vts-dashboard.js"></script>
         <script src="resources/js/vts-engines.js"></script>

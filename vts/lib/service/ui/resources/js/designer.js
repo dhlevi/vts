@@ -72,28 +72,38 @@ function addNode(node)
         case 'intersect':
             processor.inputNodes['intersector'] = [];
         break;
+        case 'simplify':
+            processor.attributes.tolerance = 1;
+            processor.attributes.highQuality = false;
+        break;
+        case 'voronoi':
+            processor.attributes.bbox = [-180,-85,180,-85];
+        break;
         case 'scale':
             processor.attributes.factor = 1;
             processor.attributes.location = 'centroid'; // sw/se/nw/ne/center/centroid
         break;
         case 'rotate':
             processor.attributes.angle = 0;
+            processor.attributes.pivot = 'centroid'; // sw/se/nw/ne/center/centroid
         break;
         case 'translate':
             processor.attributes.distance = 0;
             processor.attributes.direction = 0;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
         break;
+        case 'reducePrecision':
+            processor.attributes.precision = 6;
+        break;
         case 'bezierCurve':
+            processor.attributes.resolution = 10000;
+            processor.attributes.sharpness = 0.85;
             processor.outputNodes['curves'] = [];
         break;
         case 'lineChunk':
             processor.attributes.length = 0;
             processor.attributes.reverse = false;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
-        break;
-        case 'sector':
-            processor.outputNodes['sectors'] = [];
         break;
         case 'tin':
             processor.outputNodes['tin'] = [];
@@ -105,10 +115,6 @@ function addNode(node)
         break;
         case 'area':
             processor.attributes.fieldName = 'AREA_SQ_M';
-        break;
-        case 'bearing':
-            processor.inputNodes['bearingPoints'] = [];
-            processor.attributes.fieldName = 'BEARING';
         break;
         case 'donutExtractor':
             processor.outputNodes['donuts'] = [];
@@ -128,12 +134,14 @@ function addNode(node)
         case 'centroid':
             processor.outputNodes['centroids'] = [];
         break;
+        case 'boundingBox':
+            processor.outputNodes['boundingBox'] = [];
+        break;
         case 'destination':
             processor.attributes.dstance = 0;
             processor.attributes.bearing = 0;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
-            processor.inputNodes['destinations'] = [];
-            processor.attributes.fieldName = 'DESTINATION';
+            processor.outputNodes['destinations'] = [];
         break;
         case 'length':
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
@@ -152,7 +160,7 @@ function addNode(node)
         break;
         case 'attributeCalculator':
             processor.attributes.calculation = 'NAME + NAME2';
-            processor.attributes.toName = 'CALC';
+            processor.attributes.fieldName = 'CALC';
         break;
         case 'timestamper':
             processor.attributes.fieldName = 'TIMESTAMP';
@@ -166,7 +174,7 @@ function addNode(node)
             processor.outputNodes['false'] = [];
         break;
         case 'spatialRelationFilter':
-            processor.attributes.type = 'intersects'; // within, contains, intersects, touches
+            processor.attributes.type = 'crosses'; // within, contains, crosses, touches
             processor.inputNodes['relator'] = [];
             processor.outputNodes['false'] = [];
         break;

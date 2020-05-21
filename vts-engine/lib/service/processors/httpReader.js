@@ -80,7 +80,7 @@ module.exports.process = async function(request, processor)
             if (err && err.code != 'EEXIST') throw err;
         });
 
-        fs.writeFile(cachePath + '/' + id + '.json', data, (err) => 
+        fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
         {
             if (err) throw err;
         });

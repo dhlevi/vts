@@ -1,15 +1,14 @@
 const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
-const Projector      = require('../projector');
+const turf           = require('@turf/turf');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
+    processor.outputNodes.boundingBox = [];
 
-    let sourceProjection = processor.attributes.sourceProjection;
-    let newProjection = processor.attributes.newProjection;
-    let projector = new Projector(sourceProjection, newProjection);
+    let features = [];
 
     // cycle through each input node (data should be loaded by now)
     processor.inputNodes.features.forEach(inputNode =>
@@ -24,10 +23,10 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
-
-            projector.project(feature.geometry);
-
-            // create a new feature
+            
+            features.push(feature);
+            
+            // create a new feature cache
             // generate an ID
             let id = uuidv4();
             processor.outputNodes.features.push(id);
@@ -46,5 +45,25 @@ module.exports.process = async function(request, processor)
                 if (err) throw err;
             });
         });
+    });
+
+    let bbox = turf.bboxPolygon(turf.bbox(features));
+
+    // cache the hull
+    let id = uuidv4();
+    processor.outputNodes.boundingBox.push(id);
+    // shove the feature on the disk
+    let data = JSON.stringify(bbox);
+
+    let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name;
+    // create the directory structure
+    fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+    {
+        if (err && err.code != 'EEXIST') throw err;
+    });
+
+    fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
+    {
+        if (err) throw err;
     });
 };

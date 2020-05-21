@@ -56,8 +56,9 @@ Vue.component('view-requests',
         <i v-if="request.status === 'Completed'" class="material-icons circle green">sentiment_satisfied_alt</i>
         <i v-if="request.status === 'Failed'" class="material-icons circle red">sms_failed</i>
 
-        <a href="#!" class="secondary-content"><i class="material-icons white-text">map</i></a>
-        <a href="#!" class="secondary-content"><i class="material-icons white-text">close</i></a>
+        <a href="#!" v-bind:onclick="'viewOnMap(\\'' + request._id + '\\')'" class="secondary-content"><i class="material-icons white-text">map</i></a>
+        <a href="#!" v-bind:onclick="'deleteRequest(\\'' + request._id + '\\')'" class="secondary-content"><i class="material-icons white-text">close</i></a>
+        <a href="#!" v-bind:onclick="'editRequest(\\'' + request._id + '\\')'" class="secondary-content"><i class="material-icons white-text">edit</i></a>
         <span class="title" style="font-weight: bold;">{{request.name}}</span>
         <p style="padding: 0px; margin: 0px; font-size: 10px;">Engine: {{request.engine}} | Submitted by {{request.metadata.createUser}} | Status: {{request.status}}</p>
     </li>
