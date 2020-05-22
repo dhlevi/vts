@@ -22,11 +22,52 @@ RequestController.prototype.init = function()
     {
         try
         {
-            Request.find({ scheduledTask: false }).then(requests =>
-            {
-                let results = JSON.parse(JSON.stringify(requests));
+            let text     = req.query.text             || null;
+            let page     = Number(req.query.page)     || 0;
+            let pageSize = Number(req.query.pageSize) || 10;
+            let status   = req.query.status           || ['Created', 'Submitted', 'Queued', 'In Progress', 'Completed', 'Failed'];
+            let tasks    = req.query.tasks === 'true' || false;
 
-                requests.forEach(request =>
+            let aggregate = [];
+            let match = 
+            {
+                $match: 
+                {
+                    scheduledTask: tasks,
+                    status: { $in: (Array.isArray(status) ? status : [status]) }
+                }
+            };
+
+            aggregate.push(match);
+
+            if (text)
+            {
+                match.$match.$text = { $search: text, $caseSensitive: false };
+
+                aggregate.push({
+                    $addFields: { score: { $meta: 'textScore' } }
+                });
+
+                aggregate.push(
+                {
+                    $sort: { 'score': -1 }
+                });
+            }
+
+            aggregate.push(
+            {
+                $facet: 
+                {
+                    searchResults: [ { $skip: page * pageSize }, { $limit: pageSize }],
+                    meta: [ { $count: 'searchResultsTotal' } ]
+                }
+            });
+
+            Request.aggregate(aggregate).exec().then(requests =>
+            {
+                let results = JSON.parse(JSON.stringify(requests[0].searchResults));
+
+                results.forEach(request =>
                 {
                     requestModel.links(request);
                 });
@@ -84,13 +125,24 @@ RequestController.prototype.init = function()
             let requestData = req.body;
             // validate request
 
-            // find an elidgable engine thats running and not about to shut down
-            Engine.find({ acceptsRequests: true, currentState: 'Running', requestedState: 'Running' })
+            let search = { acceptsRequests: true, currentState: 'Running', requestedState: 'Running' };
+
+            if (requestData.scheduledTask)
+            {
+                search.acceptsScheduledTasks = true;
+                delete search.acceptsRequests;
+                delete search.currentState;
+                delete search.requestedState;
+            }
+            Engine.find(search)
             .then(existingEngines => 
             {
                 // send to mongo
+                delete requestData._id;
                 let newRequest = new Request(requestData);
-                newRequest.status = 'Submitted';
+                newRequest.status = !newRequest.status ? newRequest.status = 'Submitted' : newRequest.status;
+
+                // pick the least busy engine
                 newRequest.engine = existingEngines[0].id;
 
                 newRequest.save().then(savedRequest =>
@@ -129,6 +181,43 @@ RequestController.prototype.init = function()
                 if (request) 
                 {
                     let results = JSON.parse(JSON.stringify(request));
+                    requestModel.links(results);
+                    res.json(results);
+                }
+                else
+                {
+                    res.writeHead(404);
+                    res.end();
+                }
+            })
+            .catch(err =>
+            {
+                console.error(err);
+                res.writeHead(500);
+                res.end();
+            });
+        }
+        catch(err)
+        {
+            console.error(err);
+            res.writeHead(500);
+            res.end();
+        }
+    });
+
+    this.app.put("/Requests/:id", async (req, res, next) => 
+    {
+        try
+        {
+            Request.findById(req.params.id).then(async request =>
+            {
+                if (request) 
+                {
+                    let updatedRequest = new Request(req.body);
+
+                    updatedRequest = await request.update(updatedRequest);
+
+                    let results = JSON.parse(JSON.stringify(updatedRequest));
                     requestModel.links(results);
                     res.json(results);
                 }

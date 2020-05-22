@@ -50,16 +50,17 @@
             </header>
             <main>
                 <component v-bind:is="currentTabComponent"
-                            v-bind:engines="engines"
-                            v-bind:requests="requests"
-                            v-bind:request="request"
-                            v-bind:tasks="tasks"
-                            v-bind:selected-engine="selectedEngine"
-                            v-bind:tools="tools"
-                            v-bind:selected-node="selectedNode"
-                            v-bind:tool-search="toolSearch"
-                            v-bind:request-search="requestSearch"
-                            v-bind:key="componentKey"></component>
+                           v-bind:engines="engines"
+                           v-bind:requests="requests"
+                           v-bind:request="request"
+                           v-bind:tasks="tasks"
+                           v-bind:selected-engine="selectedEngine"
+                           v-bind:selected-task="selectedTask"
+                           v-bind:tools="tools"
+                           v-bind:selected-node="selectedNode"
+                           v-bind:tool-search="toolSearch"
+                           v-bind:key="componentKey">
+                </component>
             </main>
             <footer>
             </footer>
@@ -72,6 +73,7 @@
         <script src="resources/js/components/designer-component.js"></script>
         <script src="resources/js/components/requests-component.js"></script>
         <script src="resources/js/components/tasks-component.js"></script>
+        <script src="resources/js/components/edit-task-component.js"></script>
         <script src="resources/js/components/map-component.js"></script>
         <script src="resources/js/vts.js"></script>
         <script src="resources/js/vts-dashboard.js"></script>

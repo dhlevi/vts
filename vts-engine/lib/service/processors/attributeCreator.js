@@ -38,7 +38,7 @@ module.exports.process = async function(request, processor)
                 try
                 {
                     feature.properties[field.trim()] = fieldType.toLowerCase() === 'number'  ? Number(fieldValue) :
-                                                       fieldType.toLowerCase() === 'boolean' ? Boolean(fieldValue) :
+                                                       fieldType.toLowerCase() === 'boolean' ? fieldValue === 'true' :
                                                        fieldType.toLowerCase() === 'date'    ? new Date(fieldValue) :
                                                        fieldValue;
                 }

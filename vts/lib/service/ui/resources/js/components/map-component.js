@@ -151,7 +151,7 @@ Vue.component('map-viewer',
                                 symbol:
                                 {
                                   type: "simple-fill",
-                                  style: "diagonal-cross",
+                                  style: "solid", //diagonal-cross
                                   outline: {
                                     color: [r, g, b, 1]
                                   },

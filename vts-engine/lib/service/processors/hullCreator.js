@@ -7,7 +7,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let isConvex = Boolean(processor.attributes.isConvex);
+    let isConvex = processor.attributes.isConvex === 'true';
     let points = [];
 
     // cycle through each input node (data should be loaded by now)

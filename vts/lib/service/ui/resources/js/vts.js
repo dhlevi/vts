@@ -12,9 +12,8 @@ let app = new Vue(
         requestCounts: [0, 0, 0, 0, 0],
         tasks: [],
         selectedEngine: { id: '' },
+        selectedTask: { id: '' },
         toolSearch: '',
-        requestSearch: '',
-        taskSearch: '',
         request: 
         {  
             priority: 3,
@@ -113,7 +112,11 @@ let app = new Vue(
 
             if (tab === 'requests')
             {
-                loadRequests();
+                loadRequests(null, null, false);
+            }
+            else if (tab === 'tasks')
+            {
+                loadRequests(null, null, true);
             }
 
             this.lastTab = this.currentTab;

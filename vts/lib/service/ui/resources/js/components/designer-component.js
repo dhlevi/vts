@@ -17,7 +17,7 @@ Vue.component('designer',
         <div class="col s2">
             <div id="tools" class="row">
                 <div class="input-field col s12">
-                    <input id="search" v-model="toolSearch" type="text" class="validate">
+                    <input id="search" v-model="toolSearch" type="text" class="validate white-text">
                     <label for="search">Search</label>
                 </div>
             </div>
@@ -34,7 +34,7 @@ Vue.component('designer',
         </div>
         <div class="col s10 primary-color-light" style="height: calc(100vh - 90px);">
             <div class="card toolbar z-depth-2 hoverable">
-                <a href="#" onclick="finalizeRequest();" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
+                <a href="#" onclick="app.tabSwitch('edit-task');" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
                 <a href="#" onclick="runRequest();" title="Send as an ad hoc request"><i class="material-icons">send</i></a>
                 <a href="#" onclick="saveRequest();" title="Save Diagram"><i class="material-icons">save</i></a>
                 <a href="#" onclick="clearDiagram();" title="New Diagram"><i class="material-icons">clear</i></a>

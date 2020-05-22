@@ -7,17 +7,32 @@ function uuid()
 	});
 }
 
-function loadRequests()
+function loadRequests(text, status, tasks)
 {
+    let requestQuery = serviceUrl + 'Requests?tasks=' + tasks;
+
+    if (text && text.length > 0)
+    {
+        text += '&text=' + text;
+    }
+
+    if (status && status.length > 0)
+    {
+        requestQuery += '&status=' + status;
+    }
+
     $.ajax
     ({
-        url: serviceUrl + 'Requests',
+        url: requestQuery,
         type: "get",
         dataType: 'json',
         contentType:'application/json',
         success: function (results)
         {
-            app.requests = results;
+            if (tasks) app.tasks = results;
+            else app.requests = results;
+
+            return results;
         },
         error: function (status)
         {   
@@ -26,9 +41,31 @@ function loadRequests()
     });
 }
 
-function finalizeRequest()
+function saveTask()
 {
+    app.request.scheduledTask = true;
+    app.request.status = 'Created';
+    app.request.name = app.request.name && app.request.name.length > 0 ? app.request.name : uuid();
 
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests' + (app.request._id && app.request._id.length > 0 ? '/' + app.request._id : ''),
+        type: app.request._id && app.request._id.length > 0 ? 'put' : 'post',
+        data: JSON.stringify(app.request),
+        dataType: 'json',
+        contentType:'application/json',
+        crossDomain: true,
+        withCredentials: true,
+        success: function (result)
+        {
+            M.toast({ html: 'Task saved'});
+            app.tabSwitch('designer');
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Task could not be saved. It may be invalid or the service is experiencing an error'});
+        }
+    });
 }
 
 function runRequest()
