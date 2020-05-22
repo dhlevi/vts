@@ -50,10 +50,8 @@ Vue.component('dashboard',
             <div class="card primary-color-dark hoverable">
                 <div class="card-content white-text dashboard-card">
                     <span class="card-title">Scheduled Tasks</span>
-                    <p>This card will display all of the active sheduled tasks.
-                        From here, you can perform some quick actions such as 
-                        force triggering, editig, etc.
-                    </p>
+                    <p>Next Up:</p>
+                    <div id="nextTask"></div>
                 </div>
                 <div class="card-action">
                     <a href="#" onclick="app.tabSwitch('designer')">Create</a>

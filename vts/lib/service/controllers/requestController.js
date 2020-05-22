@@ -53,6 +53,13 @@ RequestController.prototype.init = function()
                     $sort: { 'score': -1 }
                 });
             }
+            else
+            {
+                aggregate.push(
+                {
+                    $sort: { 'nextRunTime': 1 }
+                });
+            }
 
             aggregate.push(
             {
@@ -93,18 +100,17 @@ RequestController.prototype.init = function()
     {
         try
         {
-            let now = new Date();
             let dateFilter = 
             {
                 $gte: new Date(new Date().getFullYear(),new Date().getMonth() , new Date().getDate())
             }
 
-            Promise.all([Request.count({ 'metadata.createdDate': dateFilter }), 
-                         Request.count({ status: 'Submitted', 'metadata.createdDate': dateFilter }), 
-                         Request.count({ status: 'Queued', 'metadata.createdDate': dateFilter }), 
-                         Request.count({ status: 'In Progress', 'metadata.createdDate': dateFilter }),
-                         Request.count({ status: 'Completed', 'metadata.createdDate': dateFilter }),
-                         Request.count({ status: 'Failed', 'metadata.createdDate': dateFilter })])
+            Promise.all([Request.count({ scheduledTask: false, 'metadata.createdDate': dateFilter }), 
+                         Request.count({ scheduledTask: false, status: 'Submitted', 'metadata.createdDate': dateFilter }), 
+                         Request.count({ scheduledTask: false, status: 'Queued', 'metadata.createdDate': dateFilter }), 
+                         Request.count({ scheduledTask: false, status: 'In Progress', 'metadata.createdDate': dateFilter }),
+                         Request.count({ scheduledTask: false, status: 'Completed', 'metadata.createdDate': dateFilter }),
+                         Request.count({ scheduledTask: false, status: 'Failed', 'metadata.createdDate': dateFilter })])
             .then((vals) => 
             {
                 res.json(vals);
@@ -141,7 +147,7 @@ RequestController.prototype.init = function()
                 delete requestData._id;
                 let newRequest = new Request(requestData);
                 newRequest.status = !newRequest.status ? newRequest.status = 'Submitted' : newRequest.status;
-
+                
                 // pick the least busy engine
                 newRequest.engine = existingEngines[0].id;
 
@@ -214,6 +220,9 @@ RequestController.prototype.init = function()
                 if (request) 
                 {
                     let updatedRequest = new Request(req.body);
+                    updatedRequest.metadata.revision += 1;
+                    updatedRequest.metadata.lastUpdatedDate = new Date();
+                    updatedRequest.metadata.lastUpdatedBy = 'VTS';
 
                     updatedRequest = await request.update(updatedRequest);
 

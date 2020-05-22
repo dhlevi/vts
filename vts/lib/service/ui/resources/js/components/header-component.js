@@ -38,6 +38,8 @@ Vue.component('header-component',
             <li><div class="divider"></div></li>
             <li><a class="subheader">Requests</a></li>
             <li><a href="#" onclick="app.tabSwitch('designer')"><i class="material-icons white-text">brush</i>Workflow Designer</a></li>
+            <li><a href="#" onclick="app.tabSwitch('requests')"><i class="material-icons white-text">send</i>View Requests</a></li>
+            <li><a href="#" onclick="app.tabSwitch('tasks')"><i class="material-icons white-text">schedule</i>View Scheduled Tasks</a></li>
         </ul>
     </div>
     `

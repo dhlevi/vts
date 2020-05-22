@@ -13,6 +13,7 @@ module.exports.requestSchema = new Schema(
     scheduledTask: { type: Boolean },
     interval: { type: Number },
     intervalUnit: { type: String, enum: ['Seconds', 'Minutes', 'Hours', 'Days'] },
+    nextRunTime: { type: Date, default: Date.now },
     messages: [{ message: String, sender: String, timestamp: { type: Date, default: Date.now }}], // Message log
     tags: [{ tag: String }], // Engine tags/chips, mainly for UI
     cachePurged: { type: Boolean, default: false },

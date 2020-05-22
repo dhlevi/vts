@@ -11,13 +11,15 @@ const requestModel  = require('../model/request');
 const requestSchema = requestModel.requestSchema;
 const Request       = mongoose.model('Request', requestSchema);
 
-let DataController = function(app)
+let DataController = function(app, logPath)
 {
     this.app = app;
+    this.logPath = logPath;
 };
 
 DataController.prototype.init = function()
 {
+    // get the cached geojson from a completed request processor node
     this.app.get("/Requests/:id/Features/:processorId/:node", (req, res, next) => 
     {
         try
@@ -57,6 +59,33 @@ DataController.prototype.init = function()
                 res.writeHead(500);
                 res.end();
             });
+        }
+        catch(err)
+        {
+            console.error(err);
+            res.writeHead(500);
+            res.end();
+        }
+    });
+
+    // Get the engines logs, for viewing in the admin UI
+    this.app.get("/Logs", (req, res, next) => 
+    {
+        try
+        {
+            let logFiles = fs.readdirSync(this.logPath);
+            let logs = [];
+
+            logFiles.forEach(log =>
+            {
+                // load the feature geometry, push into inputFeatures
+                let filePath = path.join(this.logPath, log);
+                let logString = fs.readFileSync(filePath, 'utf8');
+
+                logs.push(logString);
+            });
+
+            res.json(logs);
         }
         catch(err)
         {

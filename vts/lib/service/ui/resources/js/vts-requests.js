@@ -31,12 +31,37 @@ function loadRequests(text, status, tasks)
         {
             if (tasks) app.tasks = results;
             else app.requests = results;
-
-            return results;
         },
         error: function (status)
         {   
             M.toast({ html: 'ERROR: Could not get current request counts'});
+        }
+    });
+}
+
+function saveRequest()
+{
+    app.request.scheduledTask = false;
+    app.request.status = 'Created';
+    app.request.name = uuid();
+
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests' + (app.request._id && app.request._id.length > 0 ? '/' + app.request._id : ''),
+        type: app.request._id && app.request._id.length > 0 ? 'put' : 'post',
+        data: JSON.stringify(app.request),
+        dataType: 'json',
+        contentType:'application/json',
+        crossDomain: true,
+        withCredentials: true,
+        success: function (result)
+        {
+            M.toast({ html: 'Request Template saved'});
+            app.tabSwitch('designer');
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Request Template could not be saved. It may be invalid or the service is experiencing an error'});
         }
     });
 }

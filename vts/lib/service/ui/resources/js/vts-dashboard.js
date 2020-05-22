@@ -2,6 +2,54 @@ function buildDashboard()
 {
     buildEngineChart();
     buildRequestCountChart();
+    buildTaskNotification();
+}
+
+function buildTaskNotification()
+{
+    // display next running task on dashboard
+    // overwrite <div id="nextTask"></div>
+    $.ajax
+    ({
+        url: serviceUrl + 'Requests?tasks=true',
+        type: "get",
+        dataType: 'json',
+        contentType:'application/json',
+        success: function (results)
+        {
+            let list = '<ul class="collection">';
+            if (results && results.length > 0)
+            {
+                results.forEach(request =>
+                {
+                    let timeRemainingMessage = '';
+                    // time remaining, in seconds
+                    let timeRemaining = (new Date(request.nextRunTime).getTime() - new Date().getTime()) / 1000;
+
+                    // create a nice message
+                    if (timeRemaining > 86400) timeRemainingMessage =  Math.floor(timeRemaining / 86400) + ' Days';
+                    else if (timeRemaining > 3600) timeRemainingMessage = Math.floor(timeRemaining / 3600) + ' hours';
+                    else if (timeRemaining > 60) timeRemainingMessage = Math.floor(timeRemaining / 60) + ' minutes';
+                    else timeRemainingMessage = Math.floor(timeRemaining) + ' seconds';
+
+                    list += '<li class="collection-item request-item"><span>' + request.name + '</span> <span style="color: lightgray; font-style: italic; display: block; float: right">(' + timeRemainingMessage + ')</span></li>';
+                });
+            }
+            else
+            {
+                list += '<li>No Scheduled Tasks!</li>';
+            }
+
+            list += '</ul>';
+
+            $('#nextTask').empty(); 
+            $('#nextTask').append(list); //2020-05-22T21:41:02.558Z
+        },
+        error: function (status)
+        {   
+            M.toast({ html: 'ERROR: Could not get current request counts'});
+        }
+    });
 }
 
 function buildRequestCountChart()
@@ -80,7 +128,7 @@ function buildEngineChart()
                 {
                     data.labels.push(engine.id);
                     
-                    let requestData = engine.runningRequests ? engine.runningRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    let requestData = engine.queuedRequests ? engine.queuedRequests : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     data.series.push(requestData);
                 });
 

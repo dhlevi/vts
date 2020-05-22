@@ -172,7 +172,7 @@ exports.launch = function (args)
         process.exit(0);
     });
 
-    dataController = new DataController(app);
+    dataController = new DataController(app, logpath);
     dataController.init();
 
     app.get("/", (req, res, next) => 
@@ -352,5 +352,49 @@ exports.launch = function (args)
                 });
             });
         }, 1000 * 60 * 30); // 30 minute cleanup cycle
+
+        // scheduled task checker
+        setInterval(async function ()
+        {
+            let now = new Date();
+            Request.find({  scheduledTask: true, engine: engine.id }).then(requests =>
+            {
+                // Find out if any tasks need execution
+                requests.forEach(async request =>
+                {
+                    if ((now - request.nextRunTime) > 0)
+                    {
+                        // execute the task, and set the next run time
+                        request.status = 'Queued';
+                        request.metadata.revision += 1;
+                        request.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Request Queued by engine ' + engine.name });
+                        // clear out last run messages
+                        request.messages = [];
+
+                        // Convert the interval to milliseconds
+                        let interval = request.interval * (request.intervalUnit === 'Seconds' ? 1000 :
+                                                        request.intervalUnit === 'Minutes' ? (1000 * 60) :
+                                                        request.intervalUnit === 'Hours'   ? (1000 * 60 * 60) :
+                                                        (1000 * 60 * 60 * 24));
+                        request.nextRunTime = new Date(new Date().getTime() + interval);
+
+                        // delete any existing cache
+                        let cacheDir = process.cwd() + '/cache/' + request.name;
+                        await rimraf(cacheDir, function () { console.log('Cleared cache for ' + cacheDir); });
+                        // queue the request
+                        request.save().then(updatedRequest =>
+                        {
+                            // should we queue on the engine, or just fire
+                            // processors.requestProcessor(request); immediatley?
+                            engineController.enqueue(updatedRequest);
+                        })
+                    }
+                });
+            })
+            .catch(error =>
+            {
+                console.log('Faild to fetch requests: ' + error);
+            });
+        }, 1000); // run every second... might want to bump to 1 minute, an remove seconds from task run time
     });
 }

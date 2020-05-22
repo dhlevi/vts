@@ -11,7 +11,6 @@ const expWinston = require('express-winston');
 const processors        = require('./controllers/processors');
 const EngineController  = require('./controllers/engineController');
 const RequestController = require('./controllers/requestController');
-const TaskController    = require('./controllers/taskController');
 
 // configure express app
 
@@ -67,7 +66,6 @@ let logpath = './logs/';
 
 let engineController = new EngineController(app);
 let requestController = new RequestController(app);
-let taskController = new TaskController(app);
 let startTime = Date.now();
 
 // server launch point
@@ -111,17 +109,12 @@ exports.launch = function (args)
     // register endpoints
     engineController.init();
     requestController.init();
-    taskController.init();
 
     app.get("/", (req, res, next) => 
     {
         res.json(
         {
             message: "Welcome to the VTS rest service",
-            uptime: Math.ceil((Date.now() - startTime) / 60000),
-            totalRequests: requestController.totalRequests,
-            runningRequests: requestController.runningRequests,
-            scheduledTasks: taskController.totalScheduledTasks,
             links: 
             [
                 { rel: 'self', title: 'API Top Level', method: 'GET', href: '/' },
@@ -129,8 +122,7 @@ exports.launch = function (args)
                 { rel: 'self', title: 'API Login', method: 'POST', href: '/Login' }
             ],
             engineLinks: engineController.links(),
-            requestLinks: requestController.links(),
-            taskLinks: taskController.links()
+            requestLinks: requestController.links()
         });
     });
 
