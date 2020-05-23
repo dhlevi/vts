@@ -1,0 +1,28 @@
+FROM alpine:latest
+USER root
+
+# install curl
+RUN apk update \
+    && apk add --update curl rsync \
+    && rm -rf /var/cache/apk/* \
+    && apk upgrade
+
+# install nodejs, npm
+RUN apk add --update npm \
+# install git
+    && apk add --no-cache bash git openssh
+
+# create a directory to shove the code into
+RUN mkdir /vts
+RUN mkdir /logs
+
+# clone branch
+RUN git clone -b master https://github.com/dhlevi/vts.git /vts
+
+COPY ./entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
+
+#CMD tail -f /dev/null
+
+# docker build . -t vts-engine
+# docker run -p 8899:8899 -e PORT=8899 -e ID=SuperEngine -e ROUTE=http://localhost:8899 -e MONGO_CONNECTION=mongodb://admin:password@localhost:27017/vts vts-engine:latest
