@@ -30,7 +30,7 @@ function buildTaskNotification()
                     if (timeRemaining > 86400) timeRemainingMessage =  Math.floor(timeRemaining / 86400) + ' Days';
                     else if (timeRemaining > 3600) timeRemainingMessage = Math.floor(timeRemaining / 3600) + ' hours';
                     else if (timeRemaining > 60) timeRemainingMessage = Math.floor(timeRemaining / 60) + ' minutes';
-                    else timeRemainingMessage = Math.floor(timeRemaining) + ' seconds';
+                    else timeRemainingMessage = Math.floor(timeRemaining) > 0 ? Math.floor(timeRemaining) + ' seconds' : 'now';
 
                     list += '<li class="collection-item request-item"><span>' + request.name + '</span> <span style="color: lightgray; font-style: italic; display: block; float: right">(' + timeRemainingMessage + ')</span></li>';
                 });
@@ -161,7 +161,7 @@ function buildEngineChart()
                 }
                 else if (engines && engines.length > 1)
                 {
-                    'There are ' + engines.length + ' engines running'
+                    message = 'There are ' + engines.length + ' engines running'
                 }
 
                 $('#runningEnginesMessage').text(message);

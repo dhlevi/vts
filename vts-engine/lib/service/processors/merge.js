@@ -27,7 +27,7 @@ module.exports.process = async function(request, processor)
         });
     });
 
-    // dissolve features
+    // merge features
     let merged = turf.combine(turf.featureCollection(features));
 
     // create a new feature cache

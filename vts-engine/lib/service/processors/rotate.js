@@ -8,7 +8,7 @@ module.exports.process = async function(request, processor)
     processor.outputNodes.features = [];
 
     let angle = Number(processor.attributes.angle);
-    let pivot = processor.attributes.pivot;
+    let pivot = processor.attributes.pivot; // if not 'centroid', parse the coordinate 
 
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
@@ -24,7 +24,8 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            let rotated = turf.transformRotate(feature, angle, { pivot: pivot });
+            //{ pivot: pivot } - default is centroid, but can support a coordinate
+            let rotated = turf.transformRotate(feature, angle);
 
             // create a new feature cache
             // generate an ID

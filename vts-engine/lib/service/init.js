@@ -83,7 +83,7 @@ let engineController;
 let dataController;
 
 // server launch point
-exports.launch = function (args) 
+exports.launch = async function (args) 
 {
     // parse through the args
     args.forEach((arg, index) => {
@@ -137,7 +137,7 @@ exports.launch = function (args)
     // urls, etc.
 
     // register engine
-    Engine.find({ id: id })
+    await Engine.find({ id: id })
     .then(existingEngines => 
     {
         if (existingEngines.length === 0) 
@@ -156,6 +156,8 @@ exports.launch = function (args)
             engine = existingEngines[0];
             engine.currentState = 'Stopped';
             engine.requestedState = 'Running';
+            // flush the message buffer
+            engine.messages = [];
             engine.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Engine Starting...'});
 
             engine.save();
@@ -362,29 +364,34 @@ exports.launch = function (args)
                 {
                     if ((now - request.nextRunTime) > 0)
                     {
-                        // execute the task, and set the next run time
-                        request.status = 'Queued';
-                        request.metadata.revision += 1;
-                        request.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Request Queued by engine ' + engine.name });
                         // clear out last run messages
                         request.messages = [];
 
-                        // Convert the interval to milliseconds
-                        let interval = request.interval * (request.intervalUnit === 'Seconds' ? 1000 :
-                                                        request.intervalUnit === 'Minutes' ? (1000 * 60) :
-                                                        request.intervalUnit === 'Hours'   ? (1000 * 60 * 60) :
-                                                        (1000 * 60 * 60 * 24));
-                        request.nextRunTime = new Date(new Date().getTime() + interval);
+                        // reset processor state
+                        request.processors.forEach(processor =>
+                        {
+                            processor.processed = false;
+                        });
 
                         // delete any existing cache
                         let cacheDir = process.cwd() + '/cache/' + request.name;
                         await rimraf(cacheDir, function () { console.log('Cleared cache for ' + cacheDir); });
                         // queue the request
+
+                        // Convert the interval to milliseconds
+                        let interval = request.interval * (request.intervalUnit === 'Seconds' ? 1000 :
+                                                           request.intervalUnit === 'Minutes' ? (1000 * 60) :
+                                                           request.intervalUnit === 'Hours'   ? (1000 * 60 * 60) :
+                                                           (1000 * 60 * 60 * 24));
+                        request.nextRunTime = new Date(new Date().getTime() + interval);
+                        
                         request.save().then(updatedRequest =>
                         {
-                            // should we queue on the engine, or just fire
-                            // processors.requestProcessor(request); immediatley?
-                            engineController.enqueue(updatedRequest);
+                            // Just fire the request. We could use the queue mechanism
+                            // but we don't want scheduled tasks to get bogged down
+                            // in the wait if the server is under heavy load
+                            processors.requestProcessor(request);
+                            //engineController.enqueue(updatedRequest);
                         })
                     }
                 });
@@ -393,6 +400,6 @@ exports.launch = function (args)
             {
                 console.log('Faild to fetch requests: ' + error);
             });
-        }, 1000); // run every second... might want to bump to 1 minute, an remove seconds from task run time
+        }, 10000);
     });
 }

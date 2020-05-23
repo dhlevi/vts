@@ -37,13 +37,19 @@ EngineController.prototype.init = async function()
                                                })
                                                .catch(function (err) {
                                                });
-
-                        engine['runningRequests'] = engineData.runningRequests;
-                        engine['queuedRequests'] = engineData.queuedRequests;
-                        engine['uptime'] = engineData.uptime;
-                        engine['totalRequests'] = engineData.totalRequests;
-                        engine['maxMemory'] = engineData.maxMemory;
-                        engine['usedMemory'] = engineData.usedMemory;
+                        try
+                        {
+                            engine['runningRequests'] = engineData.runningRequests;
+                            engine['queuedRequests'] = engineData.queuedRequests;
+                            engine['uptime'] = engineData.uptime;
+                            engine['totalRequests'] = engineData.totalRequests;
+                            engine['maxMemory'] = engineData.maxMemory;
+                            engine['usedMemory'] = engineData.usedMemory;
+                        }
+                        catch(error)
+                        {
+                            console.log('Route "' + engine.route + '" failed for engine "' + engine.id + '"');
+                        }
                     }
                 }
 

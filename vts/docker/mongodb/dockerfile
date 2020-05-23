@@ -9,4 +9,4 @@ COPY setup.js /docker-entrypoint-initdb.d/
 #CMD tail -f /dev/null
 
 # docker build . -t mongodb
-# docker run -p 27017:27017 mongodb:latest mongod
+# docker run --name vts_mongo -p 27017:27017 mongodb:latest mongod

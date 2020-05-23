@@ -34,8 +34,8 @@ Vue.component('edit-task',
                 <div class="row">
                     <div class="input-field col s6 white-text">
                         <select v-model="request.intervalUnit" class="white-text">
-                            <option value="Seconds">Seconds</option>
-                            <option value="Minutes" selected>Minutes</option>
+                            <!-- option value="Seconds">Seconds</option -->
+                            <option value="Minutes">Minutes</option>
                             <option value="Hours">Hours</option>
                             <option value="Days">Days</option>
                         </select>

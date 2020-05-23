@@ -147,9 +147,10 @@ RequestController.prototype.init = function()
                 delete requestData._id;
                 let newRequest = new Request(requestData);
                 newRequest.status = !newRequest.status ? newRequest.status = 'Submitted' : newRequest.status;
-                
-                // pick the least busy engine
-                newRequest.engine = existingEngines[0].id;
+                // name cannot contain special chars, spaces, etc. Lower case, remove special, and replace space with dash
+                newRequest.name = newRequest.name.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().replace(/\s+/g, '-');
+                // pick the least busy engine, not a random one...
+                newRequest.engine = existingEngines[Math.floor(Math.random() * Math.floor(existingEngines.length - 1))].id;
 
                 newRequest.save().then(savedRequest =>
                 {

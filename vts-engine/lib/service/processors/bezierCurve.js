@@ -54,9 +54,14 @@ module.exports.process = async function(request, processor)
                 let splineId = uuidv4();
                 processor.outputNodes.curves.push(splineId);
                 // shove the feature on the disk
-                let splineData = JSON.truncate(spline);
+                let splineData = JSON.stringify(spline);
 
                 let splinePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/curves/';
+
+                fs.mkdirSync(splinePath, { recursive: true }, function(err) 
+                {
+                    if (err && err.code != 'EEXIST') throw err;
+                });
 
                 fs.writeFileSync(splinePath + '/' + splineId + '.json', splineData, (err) => 
                 {

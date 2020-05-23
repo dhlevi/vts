@@ -23,7 +23,7 @@ let app = new Vue(
             status: 'Submitted',
             scheduledTask: false,
             interval: 0,
-            intervalUnit: 'Seconds',
+            intervalUnit: 'Minutes',
             messages: [],
             tags: [],
             cachePurged: false,
