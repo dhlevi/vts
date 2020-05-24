@@ -11,6 +11,7 @@ module.exports.requestSchema = new Schema(
     // for scheduled tasks, interval is a number, invernalUnit is the unit of measure
     // possible values are Seconds, Minutes, Hours, Days
     scheduledTask: { type: Boolean },
+    description: { type: String },
     interval: { type: Number },
     intervalUnit: { type: String, enum: ['Seconds', 'Minutes', 'Hours', 'Days'] },
     nextRunTime: { type: Date, default: Date.now },

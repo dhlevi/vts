@@ -77,13 +77,39 @@ Vue.component('engine-panel',
               });
         })
     },
+    methods: 
+    {
+        pingEngine: function(engine)
+        {
+            if (!engine.route || !engine.route.startsWith('http')) return false;
+
+            try
+            {
+                let request = new XMLHttpRequest();
+                request.open('GET', engine.route + '/Ping', false);
+                request.send(null);
+            
+                return request.status === 200; 
+            }
+            catch(err)
+            {
+                console.log('Failed to ping engine ' + engine.id + ': '+ err);
+                // set engine status to stopped, as it does not appear to be responding
+                shutdownEngine(engine);
+
+                return false;
+            }
+        }
+    },
     template:   
     `
     <div class="card primary-color-dark hoverable">
         <div class="card-content white-text">
             <span class="card-title">{{engine.id}} | <span style="color: grey; font-size: 15px;">{{engine._id}}</span></span>
             <div class="row tag-bar" style="margin-bottom: 5px;" v-bind:onclick="'$(\\'#engine_' + index + '\\').slideToggle();'">
-                <p v-if="engine.route && engine.route.startsWith('http')">
+            <p v-if="!pingEngine(engine) && engine.route"><span class="chip red">Offline</span></p>
+            <p v-if="!engine.route || !engine.route.startsWith('http')"><span class="chip red">Unregistered</span></p>
+            <p v-if="engine.route && engine.route.startsWith('http') && pingEngine(engine)">
                     <i style="margin: 4px; position: absolute;" class="material-icons">menu</i>
                     <span style="margin-left: 35px;" v-if="engine.currentState === 'Running' && engine.requestedState === 'Running'" class="chip green">Running</span>
                     <span style="margin-left: 35px;" v-if="engine.currentState === 'Stopped' && engine.requestedState === 'Stopped'" class="chip red">Stopped</span>
@@ -93,9 +119,6 @@ Vue.component('engine-panel',
                     <span v-if="engine.acceptsRequests" class="chip">Ad-Hoc Requests supported</span>
                     <span v-if="engine.acceptsScheduledTasks" class="chip">Scheduled Tasks supported</span>
                     <span class="chip">{{engine.totalRequests}} request over {{engine.uptime}} Mins</span>
-                </p>
-                <p v-if="!engine.route || !engine.route.startsWith('http')">
-                    <span class="chip red">UNREGISTERED</span>
                 </p>
             </div>
             <div v-bind:id="'engine_' + index" style="display: none;">

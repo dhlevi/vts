@@ -1,4 +1,4 @@
-Vue.component('edit-task',
+Vue.component('edit-project',
 {
     props: ['request'],
     data: function () 
@@ -26,23 +26,6 @@ Vue.component('edit-task',
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6 white-text">
-                        <input v-model="request.interval" placeholder="Interval" id="interval" type="text" class="validate white-text">
-                        <label class="white-text" for="interval">Interval</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s6 white-text">
-                        <select v-model="request.intervalUnit" class="white-text">
-                            <!-- option value="Seconds">Seconds</option -->
-                            <option value="Minutes">Minutes</option>
-                            <option value="Hours">Hours</option>
-                            <option value="Days">Days</option>
-                        </select>
-                        <label>interval Unit</label>
-                    </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s12 white-text">
                         <input v-model="request.description" placeholder="Description" id="description" type="text" class="validate white-text">
                         <label class="white-text" for="description">Description</label>
@@ -50,7 +33,7 @@ Vue.component('edit-task',
                 </div>
             </div>
             <div class="card-action">
-                <a href="#" onclick="saveProject(true, 'Submitted');" title="Save"><i class="material-icons green-text">save</i></a>
+                <a href="#" onclick="saveProject(false, 'Created');" title="Save"><i class="material-icons green-text">save</i></a>
                 <a href="#" onclick="app.tabSwitch('designer');" title="Cancel"><i class="material-icons red-text">close</i></a>
             </div>
         </div>

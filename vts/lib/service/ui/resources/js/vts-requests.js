@@ -13,7 +13,7 @@ function loadRequests(text, status, tasks)
 
     if (text && text.length > 0)
     {
-        text += '&text=' + text;
+        requestQuery += '&text=' + text;
     }
 
     if (status && status.length > 0)
@@ -30,6 +30,7 @@ function loadRequests(text, status, tasks)
         success: function (results)
         {
             if (tasks) app.tasks = results;
+            else if (!tasks && status === 'Created') app.projects = results;
             else app.requests = results;
         },
         error: function (status)
@@ -39,37 +40,10 @@ function loadRequests(text, status, tasks)
     });
 }
 
-function saveRequest()
+function saveProject(isTask, status)
 {
-    app.request.scheduledTask = false;
-    app.request.status = 'Created';
-    app.request.name = uuid();
-
-    $.ajax
-    ({
-        url: serviceUrl + 'Requests' + (app.request._id && app.request._id.length > 0 ? '/' + app.request._id : ''),
-        type: app.request._id && app.request._id.length > 0 ? 'put' : 'post',
-        data: JSON.stringify(app.request),
-        dataType: 'json',
-        contentType:'application/json',
-        crossDomain: true,
-        withCredentials: true,
-        success: function (result)
-        {
-            M.toast({ html: 'Request Template saved'});
-            app.tabSwitch('designer');
-        },
-        error: function (status)
-        {   
-            M.toast({ html: 'ERROR: Request Template could not be saved. It may be invalid or the service is experiencing an error'});
-        }
-    });
-}
-
-function saveTask()
-{
-    app.request.scheduledTask = true;
-    app.request.status = 'Created';
+    app.request.scheduledTask = isTask;
+    app.request.status = status;
     app.request.name = app.request.name && app.request.name.length > 0 ? app.request.name : uuid();
 
     $.ajax
@@ -83,12 +57,12 @@ function saveTask()
         withCredentials: true,
         success: function (result)
         {
-            M.toast({ html: 'Task saved'});
+            M.toast({ html: 'Saved!'});
             app.tabSwitch('designer');
         },
         error: function (status)
         {   
-            M.toast({ html: 'ERROR: Task could not be saved. It may be invalid or the service is experiencing an error'});
+            M.toast({ html: 'ERROR: Request could not be saved. It may be invalid or the service is experiencing an error'});
         }
     });
 }

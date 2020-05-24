@@ -65,6 +65,7 @@ Vue.component('view-requests',
         <a href="#!" v-bind:onclick="'$(\\'#logs_' + index + '\\').slideToggle();'" class="secondary-content"><i class="material-icons white-text">textsms</i></a>
         <span class="title" style="font-weight: bold;">{{request.name}}</span>
         <p style="padding: 0px; margin: 0px; font-size: 10px;">Engine: {{request.engine}} | Submitted by {{request.metadata.createUser}} | Status: {{request.status}}</p>
+        <p v-if="request.description" style="padding: 0px; margin: 0px; font-size: 10px;">{{request.description}}</p>
         <ul v-bind:id="'logs_' + index" class="collection" style="display: none; max-height: 400px; overflow: auto;">
             <view-messages v-for="(message, index) in request.messages"
                            v-bind:message="message"

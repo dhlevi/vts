@@ -7,33 +7,39 @@ const { Worker } = require('worker_threads');
 
 module.exports.requestProcessor = async function(request)
 {
-    // return promise?
-    request = JSON.parse(JSON.stringify(request));
-
-    let worker = new Worker('./lib/service/requestWorker.js');
-
-    worker.on('error', code => new Error(`Worker error with exit code ${code}`));
-    worker.on('online', () => console.log(`Request Worker ${request.name} started...`) );
-    worker.on('message', (data) =>
+    return new Promise((resolve, reject) =>
     {
-        // update the request
-        Request.findById(data._id).then(req =>
+        request = JSON.parse(JSON.stringify(request));
+
+        let worker = new Worker('./lib/service/requestWorker.js');
+
+        worker.on('online', () => console.log(`Request Worker ${request.name} started...`) );
+        worker.on('error', code =>
         {
-            if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
-            {
-                console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
-            }
-            else
-            {
-                console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
-                req.update(data).catch(err => console.log(err));
-            }
+            reject(new Error(`Worker error with exit code ${code}`));
         });
+        worker.on('message', (data) =>
+        {
+            // update the request
+            Request.findById(data._id).then(req =>
+            {
+                if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
+                {
+                    console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
+                }
+                else
+                {
+                    console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
+                    req.update(data).catch(err => console.log(err));
+                }
+            });
+        });
+        worker.on('exit', code =>
+        {
+            console.log(`Request Worker ${request.name} stopped with exit code ${code}`);
+            resolve(code);
+        });
+    
+        worker.postMessage(request);
     });
-
-    worker.on('exit', code =>
-        console.log(`Request Worker ${request.name} stopped with exit code ${code}`)
-    );
-
-    worker.postMessage(request);
 };

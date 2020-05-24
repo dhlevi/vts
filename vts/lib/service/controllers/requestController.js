@@ -25,7 +25,7 @@ RequestController.prototype.init = function()
             let text     = req.query.text             || null;
             let page     = Number(req.query.page)     || 0;
             let pageSize = Number(req.query.pageSize) || 10;
-            let status   = req.query.status           || ['Created', 'Submitted', 'Queued', 'In Progress', 'Completed', 'Failed'];
+            let status   = req.query.status           || ['Submitted', 'Queued', 'In Progress', 'Completed', 'Failed'];
             let tasks    = req.query.tasks === 'true' || false;
 
             let aggregate = [];
@@ -34,7 +34,7 @@ RequestController.prototype.init = function()
                 $match: 
                 {
                     scheduledTask: tasks,
-                    status: { $in: (Array.isArray(status) ? status : [status]) }
+                    status: Array.isArray(status) ? { $in: status } : status
                 }
             };
 
@@ -148,7 +148,7 @@ RequestController.prototype.init = function()
                 let newRequest = new Request(requestData);
                 newRequest.status = !newRequest.status ? newRequest.status = 'Submitted' : newRequest.status;
                 // name cannot contain special chars, spaces, etc. Lower case, remove special, and replace space with dash
-                newRequest.name = newRequest.name.replace(/[^a-zA-Z0-9 ]/g, '').toLowerCase().replace(/\s+/g, '-');
+                newRequest.name = newRequest.name.replace(/[^a-zA-Z0-9 -]/g, '').toLowerCase().replace(/\s+/g, '-');
                 // pick the least busy engine, not a random one...
                 newRequest.engine = existingEngines[Math.floor(Math.random() * Math.floor(existingEngines.length - 1))].id;
 

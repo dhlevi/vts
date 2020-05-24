@@ -75,6 +75,7 @@ let logpath = './logs/';
 let startTime = Date.now();
 let engine;
 let totalRequests = 0;
+let currentRunningRequests = 0;
 let queuedRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 let runningRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
@@ -281,7 +282,9 @@ exports.launch = async function (args)
             {
                 totalRequests += requests.length;
                 queuedRequests = queuedRequests.splice(1);
-                queuedRequests.push(requests.length);
+                queuedRequests.push(engineController.queue.getLength());
+                runningRequests = runningRequests.splice(1);
+                runningRequests.push(currentRunningRequests);
                 // increment running requests when a request is dequeued
                 requests.forEach(request =>
                 {
@@ -311,25 +314,27 @@ exports.launch = async function (args)
         }, 5000);
 
         // queue check. Process next queued item
-        setInterval(function()
+        setInterval(async function()
         {
-            while (!dequeuing && engineController.queue && !engineController.queue.isEmpty())
+            // 'if' method spaces out workers, 'while' method gets smaller tasks done sooner...
+            if (engineController.queue && !engineController.queue.isEmpty())
             {
-                dequeuing = true;
                 // dequeue
                 let dequeuedRequest = engineController.queue.dequeue();
                 // refresh request, in case of any changes
-                Request.findById(dequeuedRequest._id).then(request =>
+                Request.findById(dequeuedRequest._id).then(async request =>
                 {
-                    processors.requestProcessor(request);
+                    currentRunningRequests++;
+                    processors.requestProcessor(request).then(code =>
+                    {
+                        currentRunningRequests--;
+                    });
                 })
                 .catch(error =>
                 {
                     console.error('Error occured refreshing request: ' + error);
                 });
             }
-
-            dequeuing = false;
         }, 10000);
 
         // cache cleanup
@@ -394,7 +399,11 @@ exports.launch = async function (args)
                             // Just fire the request. We could use the queue mechanism
                             // but we don't want scheduled tasks to get bogged down
                             // in the wait if the server is under heavy load
-                            processors.requestProcessor(request);
+                            currentRunningRequests++;
+                            processors.requestProcessor(request).then(code =>
+                            {
+                                currentRunningRequests--;
+                            });
                             //engineController.enqueue(updatedRequest);
                         })
                     }

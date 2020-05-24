@@ -36,7 +36,7 @@ Vue.component('designer',
             <div class="card toolbar z-depth-2 hoverable">
                 <a href="#" onclick="app.tabSwitch('edit-task');" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
                 <a href="#" onclick="runRequest();" title="Send as an ad hoc request"><i class="material-icons">send</i></a>
-                <a href="#" onclick="saveRequest();" title="Save Diagram"><i class="material-icons">save</i></a>
+                <a href="#" onclick="app.tabSwitch('edit-project');" title="Save Diagram"><i class="material-icons">save</i></a>
                 <a href="#" onclick="clearDiagram();" title="New Diagram"><i class="material-icons">clear</i></a>
             </div>
             <div id="creatorContainer">

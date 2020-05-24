@@ -24,15 +24,14 @@ Vue.component('dashboard',
             </div>
             <div class="card primary-color-dark hoverable">
                 <div class="card-content white-text dashboard-card">
-                    <span class="card-title">Logs / Messages</span>
-                    <p>From here you can see the last 10 or so log messages.
-                        Just a snapshot of course. Purging will dump log files
-                        and option to view detailed logs/search logs
+                    <span class="card-title">Projects</span>
+                    <p>A Project is a request that has been created, but not yet submitted.
+                       Projects will be persisted until manually deleted, and can be edited and
+                       re-run as a request, or saved as a scheduled task, at any time.
                     </p>
                 </div>
                 <div class="card-action">
-                    <a href="#">View Details</a>
-                    <a href="#">Purge</a>
+                    <a href="#" onclick="app.tabSwitch('projects')">Manage</a>
                 </div>
             </div>
         </div>

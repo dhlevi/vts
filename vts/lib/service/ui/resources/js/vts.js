@@ -11,6 +11,7 @@ let app = new Vue(
         requests: [],
         requestCounts: [0, 0, 0, 0, 0],
         tasks: [],
+        projects: [],
         selectedEngine: { id: '' },
         selectedTask: { id: '' },
         toolSearch: '',
@@ -32,7 +33,7 @@ let app = new Vue(
         selectedNode: { title: '' },
         lastTab: 'dashboard',
         currentTab: 'dashboard',
-        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'logs', 'designer', 'map-viewer'],
+        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'edit-task', 'projects', 'edit-project', 'designer', 'map-viewer'],
         componentKey: 0,
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'http' },
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'all_inbox' },
@@ -118,6 +119,10 @@ let app = new Vue(
             else if (tab === 'tasks')
             {
                 loadRequests(null, null, true);
+            }
+            else if (tab === 'projects')
+            {
+                loadRequests(null, 'Created', false);
             }
 
             this.lastTab = this.currentTab;
