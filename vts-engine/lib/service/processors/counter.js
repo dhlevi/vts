@@ -5,7 +5,9 @@ const path           = require('path');
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
+    let fieldName = processor.attributes.fieldName;
 
+    let count = 0;
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
     {
@@ -19,8 +21,9 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
-
-            // Re-Write all features
+            
+            count++;
+            feature.properties[fieldName] = count;
 
             // create a new feature cache
             // generate an ID

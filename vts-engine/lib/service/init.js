@@ -9,7 +9,6 @@ const expWinston = require('express-winston');
 const os         = require('os');
 const rimraf     = require('rimraf');
 const fs         = require('fs');
-
 // controllers, helpers, etc.
 const EngineController = require('./engineController');
 const DataController   = require('./dataController');
@@ -81,6 +80,8 @@ let runningRequests = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
 let engineController;
 let dataController;
+
+let dequeuing = false;
 
 // server launch point
 exports.launch = async function (args) 
@@ -312,8 +313,9 @@ exports.launch = async function (args)
         // queue check. Process next queued item
         setInterval(function()
         {
-            if (engineController.queue && !engineController.queue.isEmpty()) // while?
+            while (!dequeuing && engineController.queue && !engineController.queue.isEmpty())
             {
+                dequeuing = true;
                 // dequeue
                 let dequeuedRequest = engineController.queue.dequeue();
                 // refresh request, in case of any changes
@@ -326,7 +328,9 @@ exports.launch = async function (args)
                     console.error('Error occured refreshing request: ' + error);
                 });
             }
-        }, 30000);
+
+            dequeuing = false;
+        }, 10000);
 
         // cache cleanup
         setInterval(function()
@@ -402,4 +406,4 @@ exports.launch = async function (args)
             });
         }, 10000);
     });
-}
+};

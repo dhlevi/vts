@@ -1,13 +1,13 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let factor = Number(processor.attributes.factor);
     let location = processor.attributes.location;
 
     // load the features
@@ -23,6 +23,18 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
+
+            let factor = processor.attributes.factor;
+            if (factor.startsWith('$')) 
+            {
+                let expression = factor.slice(2,-1);
+                const ast = parse(expression);
+                factor = eval(ast, feature.properties);
+            } 
+            else
+            {
+                factor = Number(factor);
+            }
 
             let scaled = turf.transformScale(feature, factor, { origin: location });
 

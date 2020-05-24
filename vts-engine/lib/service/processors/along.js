@@ -1,7 +1,8 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
@@ -10,7 +11,6 @@ module.exports.process = async function(request, processor)
 
     let length = processor.attributes.length;
     let units = processor.attributes.units;
-    
 
     // load the features
     processor.inputNodes.features.forEach(inputNode =>
@@ -50,7 +50,21 @@ module.exports.process = async function(request, processor)
                 // extract polygon interior rings, make into geoms
                 if (currentFeature.geometry.type === 'LineString')
                 {
-                    let point = turf.along(currentFeature, length, {units: units});
+                    // if length is a calc, get the value from properties
+                    let along = 0;
+
+                    if (length.startsWith('$')) 
+                    {
+                        let expression = length.slice(2,-1);;
+                        const ast = parse(expression);
+                        along = eval(ast, feature.properties);
+                    } 
+                    else 
+                    {
+                        along = Number(length);
+                    }
+
+                    let point = turf.along(currentFeature, along, {units: units});
 
                     // create a new feature cache
                     // generate an ID
@@ -60,6 +74,12 @@ module.exports.process = async function(request, processor)
                     let pointData = JSON.stringify(point);
 
                     let pointsPath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/points/';
+
+                    fs.mkdirSync(pointsPath, { recursive: true }, function(err) 
+                    {
+                        if (err && err.code != 'EEXIST') throw err;
+                    });
+
                     fs.writeFileSync(pointsPath + '/' + pointId + '.json', pointData, (err) => 
                     {
                         if (err) throw err;

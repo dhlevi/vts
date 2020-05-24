@@ -37,7 +37,7 @@ module.exports.process = async function(request, processor)
 
             // shove the feature on the disk
             let centerData = JSON.stringify(centerPoint);
-            fs.writeFileSync(cachePath + '/' + centerId + '.json', centerData, (err) => 
+            fs.writeFileSync(cachePath + '/' + id + '.json', centerData, (err) => 
             {
                 if (err) throw err;
             });

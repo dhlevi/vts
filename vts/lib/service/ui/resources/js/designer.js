@@ -112,6 +112,9 @@ function addNode(node)
         case 'area':
             processor.attributes.fieldName = 'AREA_SQ_M';
         break;
+        case 'counter':
+            processor.attributes.fieldName = 'COUNT';
+        break;
         case 'donutExtractor':
             processor.outputNodes['donuts'] = [];
         break;

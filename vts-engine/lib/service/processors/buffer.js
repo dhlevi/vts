@@ -1,13 +1,14 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let distance = Number(processor.attributes.distance);
+    let distance = processor.attributes.distance;
     let units = processor.attributes.units;
 
     // cycle through each input node (data should be loaded by now)
@@ -24,8 +25,20 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
+            let bufferDistance = 0;
+            if (distance.startsWith('$')) 
+            {
+                let expression = distance.slice(2,-1);
+                const ast = parse(expression);
+                bufferDistance = eval(ast, feature.properties);
+            } 
+            else
+            {
+                bufferDistance = Number(distance);
+            }
+
             // apply the buffer
-            let bufferedFeature = turf.buffer(feature, distance, {units: units});
+            let bufferedFeature = turf.buffer(feature, bufferDistance, {units: units});
 
             // create a new feature
             // generate an ID

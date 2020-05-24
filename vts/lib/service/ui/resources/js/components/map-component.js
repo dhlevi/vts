@@ -187,25 +187,28 @@ Vue.component('map-viewer',
                             };
     
                             let fields = [];
-                            Object.keys(graphics[0].attributes).forEach(attribute =>
+                            if (graphics[0])
                             {
-                                let result = attribute.replace( /([A-Z])/g, " $1" );
-                                let title = result.charAt(0).toUpperCase() + result.slice(1);
-    
-                                popup.content[1].fieldInfos.push(
+                                Object.keys(graphics[0].attributes).forEach(attribute =>
                                 {
-                                    fieldName: attribute,
-                                    visible: true,
-                                    label: title
+                                    let result = attribute.replace( /([A-Z])/g, " $1" );
+                                    let title = result.charAt(0).toUpperCase() + result.slice(1);
+        
+                                    popup.content[1].fieldInfos.push(
+                                    {
+                                        fieldName: attribute,
+                                        visible: true,
+                                        label: title
+                                    });
+        
+                                    fields.push(
+                                    {
+                                        name: attribute,
+                                        alias: title,
+                                        type: name.toLowerCase() === 'objectid' ? 'oid' : 'string'
+                                    });
                                 });
-    
-                                fields.push(
-                                {
-                                    name: attribute,
-                                    alias: title,
-                                    type: name.toLowerCase() === 'objectid' ? 'oid' : 'string'
-                                });
-                            });
+                            }
                             
                             layers.push(new FeatureLayer(
                             {

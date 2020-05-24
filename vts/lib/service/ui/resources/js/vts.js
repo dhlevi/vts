@@ -87,6 +87,7 @@ let app = new Vue(
                 { name: 'attributeRenamer', tooltip: 'Rename an attribute from all features', icon: ''},
                 { name: 'attributeCalculator', tooltip: 'Add an attribute that contains a calculation', icon: ''},
                 { name: 'timestamper', tooltip: 'Timestamp all features', icon: ''},
+                { name: 'counter', tooltip: 'Counts all features, and saves the count in a property', icon: '' },
                 // special tools
                 //{ name: 'logger', tooltip: 'Create a log message for all features', icon: ''},
                 { name: 'featureHolder', tooltip: 'Holds features for merging datasets', icon: 'horizontal_split' },

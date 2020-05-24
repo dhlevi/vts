@@ -1,109 +1,39 @@
-const mongoose   = require('mongoose');
-// schemas
-const engineModel   = require('../model/engine');
-const engineSchema  = engineModel.engineSchema;
-const Engine        = mongoose.model('Engine', engineSchema);
+const mongoose      = require('mongoose');
 const requestModel  = require('../model/request');
 const requestSchema = requestModel.requestSchema;
 const Request       = mongoose.model('Request', requestSchema);
 
+const { Worker } = require('worker_threads');
+
 module.exports.requestProcessor = async function(request)
 {
-    // update request status
-    request.status = 'In Progress';
-    request.metadata.lastUpdatedDate = new Date();
-    request.metadata.lastUpdatedBy = request.Engine;
-    request.metadata.revision += 1;
-    request.messages.push({ message: 'Started processing Request', sender: request.Engine, timestame: new Date() });
-    request.metadata.history.push({ event: 'Request Dequeued', user: request.Engine, date: new Date() });
-    request = await request.save();
+    // return promise?
+    request = JSON.parse(JSON.stringify(request));
 
-    // cycle through processors
-    let completedProcessors = 0;
-    let failed = false;
-    while (completedProcessors !== request.processors.length)
+    let worker = new Worker('./lib/service/requestWorker.js');
+
+    worker.on('error', code => new Error(`Worker error with exit code ${code}`));
+    worker.on('online', () => console.log(`Request Worker ${request.name} started...`) );
+    worker.on('message', (data) =>
     {
-        for (let idx in request.processors)
+        // update the request
+        Request.findById(data._id).then(req =>
         {
-            let processor = request.processors[idx];
-            if (!processor.processed)
+            if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
             {
-                try
-                {
-                    await runProcessor(processor, request);
-                }
-                catch(error)
-                {
-                    console.log('Error occured during processing: ' + error);
-                    failed = true;
-                    completedProcessors = request.processors.length;
-                    request.messages.push({ message: 'Error occured during processing of processor ' + processor.name + ':' + processor.type + '. Error: ' + error, sender: request.Engine, timestame: new Date()});
-                    break;
-                }
+                console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
             }
             else
             {
-                completedProcessors++;
-            }
-        }
-
-        if (failed)
-        {
-            break;
-        }
-    }
-
-    // we're done. Update and close off
-    request.status = failed ? 'Failed' : 'Completed';
-    request.metadata.lastUpdatedDate = new Date();
-    request.metadata.lastUpdatedBy = request.Engine;
-    request.metadata.revision += 1;
-    request.messages.push({ message: failed ? 'Request processing failed due to errors' : 'Successfully processed Request', sender: request.Engine, timestame: new Date()});
-    request.metadata.history.push({ event: 'Request completed', user: request.Engine, date: new Date() });
-    request = request.save();
-};
-
-async function runProcessor(processor, request)
-{
-    // Are the input nodes complete? If not, run them first.
-    let inputNodes = Object.keys(processor.inputNodes);
-    inputNodes.forEach(key =>
-    {
-
-        // each input node (usually only one, 'features') will be an
-        // array of their ID and type, so "23" and node "features"
-        // So to check completion, we need to loop through input nodes
-        // then for each key, loop through their processors
-        // output nodes are just for holding feature ID's
-        processor.inputNodes[key].forEach(node =>
-        {
-            // use node.name to find the node and check if it's complete?
-            for(let idx in request.processors)
-            {
-                let inputProcessor = request.processors[idx];
-                if (node.name === inputProcessor.name && !inputProcessor.processed)
-                {
-                    runProcessor(inputProcessor, request);
-                }
+                console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
+                req.update(data).catch(err => console.log(err));
             }
         });
     });
 
-    // input nodes are complete, so now we can run this process
+    worker.on('exit', code =>
+        console.log(`Request Worker ${request.name} stopped with exit code ${code}`)
+    );
 
-    // features is the array storing all resulting feature ID's for the process. This is attached to the processor output
-    // This requires all processors to be very specific on their implementation
-    // of the process method! processor file names must match type 100%
-    await require('./processors/' + processor.type).process(request, processor);
-    
-    processor.processed = true;
-
-    // not implemented types
-    // filter
-    // attributeCalculator
-    // dbReader
-    // fileWriter
-    // httpWriter
-    // dbWriter
-    // cacheWriter
-}
+    worker.postMessage(request);
+};

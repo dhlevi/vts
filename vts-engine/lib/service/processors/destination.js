@@ -1,15 +1,14 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
     processor.outputNodes.destinations = [];
 
-    let distance = processor.attributes.distance;
-    let bearing = processor.attributes.bearing;
     let units = processor.attributes.units;
 
     // load the features
@@ -45,8 +44,34 @@ module.exports.process = async function(request, processor)
                 if (err) throw err;
             });
 
+            let distance = processor.attributes.distance;
+            let bearing = processor.attributes.bearing;
+
+            if (distance.startsWith('$')) 
+            {
+                let expression = distance.slice(2,-1);
+                const ast = parse(expression);
+                distance = eval(ast, feature.properties);
+            } 
+            else
+            {
+                distance = Number(distance);
+            }
+
+            if (bearing.startsWith('$')) 
+            {
+                let expression = bearing.slice(2,-1);
+                const ast = parse(expression);
+                bearing = eval(ast, feature.properties);
+            } 
+            else
+            {
+                bearing = Number(bearing);
+            }
+
             // get the center (for lines/poly etc.)
             let center = turf.centerOfMass(feature);
+
             // get the destination point
             let destination = turf.destination(center, distance, bearing, { units: units });
 

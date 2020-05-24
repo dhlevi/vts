@@ -1,13 +1,13 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let angle = Number(processor.attributes.angle);
     let pivot = processor.attributes.pivot; // if not 'centroid', parse the coordinate 
 
     // load the features
@@ -23,6 +23,18 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
+
+            let angle = processor.attributes.angle;
+            if (angle.startsWith('$')) 
+            {
+                let expression = angle.slice(2,-1);
+                const ast = parse(expression);
+                angle = eval(ast, feature.properties);
+            } 
+            else
+            {
+                angle = Number(angle);
+            }
 
             //{ pivot: pivot } - default is centroid, but can support a coordinate
             let rotated = turf.transformRotate(feature, angle);

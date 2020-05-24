@@ -1,13 +1,13 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let length = Number(processor.attributes.length);
     let reverse = processor.attributes.reverse === 'true';
     let units = processor.attributes.units;
 
@@ -24,6 +24,19 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
+
+            let length = processor.attributes.length;
+
+            if (length.startsWith('$')) 
+            {
+                let expression = length.slice(2,-1);
+                const ast = parse(expression);
+                length = eval(ast, feature.properties);
+            } 
+            else
+            {
+                length = Number(length);
+            }
 
             let line = turf.lineChunk(feature, length, { reverse: reverse, units: units });
 

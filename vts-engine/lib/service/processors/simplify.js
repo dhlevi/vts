@@ -1,13 +1,13 @@
-const { v4: uuidv4 } = require('uuid');
-const fs             = require('fs');
-const path           = require('path');
-const turf           = require('@turf/turf');
+const { v4: uuidv4 }  = require('uuid');
+const fs              = require('fs');
+const path            = require('path');
+const turf            = require('@turf/turf');
+const { parse, eval } = require('expression-eval');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
-    let tolerance = Number(processor.attributes.tolerance);
     let highQuality = processor.attributes.highQuality === 'true';
 
     // load the features
@@ -23,6 +23,18 @@ module.exports.process = async function(request, processor)
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
+
+            let tolerance = processor.attributes.tolerance;
+            if (tolerance.startsWith('$')) 
+            {
+                let expression = tolerance.slice(2,-1);
+                const ast = parse(expression);
+                tolerance = eval(ast, feature.properties);
+            } 
+            else
+            {
+                tolerance = Number(tolerance);
+            }
 
             let simplified = turf.simplify(feature, { tolerance: tolerance, highQuality: highQuality });
 
