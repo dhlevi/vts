@@ -1,5 +1,5 @@
 const rp             = require('request-promise-native');
-const request        = require('request');
+const request      = require('request');
 const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
@@ -9,15 +9,31 @@ const shapefile      = require('shapefile');
 const fgdb           = require('fgdb');
 const unzipper       = require('unzipper');
 const Projector      = require('../projector');
+const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
 {
     let url = processor.attributes.url;
     let dataType = processor.attributes.dataType;
     let projection = processor.attributes.sourceProjection;
+    let result;
 
-    // Execute a get from the requested URL
-    let results = await rp(url)
+    if (dataType.startsWith('shape'))
+    {
+        result = await convertShape(url, request.name);
+    }
+    else if (dataType === 'fgdb')
+    {
+        result = await convertFGDB(url, request.name, projection);
+    }
+    else if (dataType === 'kmz')
+    {
+        result = await convertKMZ(url, request.name);
+    }
+    else
+    {
+        // Execute a get from the requested URL
+        result = await rp(url)
                         .then(async function (result) 
                         {
                             // type may be json, kml, kmz, wkt, gml, or a zip
@@ -28,10 +44,6 @@ module.exports.process = async function(request, processor)
                             {
                                 result = await convertKML(result);
                             }
-                            else if (dataType === 'kmz')
-                            {
-                                result = await convertKMZ(result);
-                            }
                             else if (dataType === 'wkt')
                             {
                                 result = convertWKT(result);
@@ -40,14 +52,6 @@ module.exports.process = async function(request, processor)
                             {
                                 result = convertGML(result);
                             }
-                            else if (dataType === 'shape')
-                            {
-                                result = convertShape(result);
-                            }
-                            else if (dataType === 'fgdb')
-                            {
-                                result = convertFGDB(result);
-                            }
 
                             return JSON.parse(result);
                         })
@@ -55,9 +59,11 @@ module.exports.process = async function(request, processor)
                         {
                             throw Error(err)
                         });
+    }
+
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really
-    if (!results || (!results.hasOwnProperty('type') && !results.type.toLowerCase() === 'Featurecollection'))
+    if (!result || (!result.hasOwnProperty('type') && !result.type.toLowerCase() === 'Featurecollection'))
     {
         throw Error('not a feature collection');
     }
@@ -65,7 +71,7 @@ module.exports.process = async function(request, processor)
     // attach resulting blob to the processor 'features' output node.    
     // and/or write all features to the cache, and attach only the "id"
     processor.outputNodes.features = [];
-    results.features.forEach(feature => 
+    result.features.forEach(feature => 
     {
         // generate an ID
         let id = uuidv4();
@@ -89,9 +95,9 @@ module.exports.process = async function(request, processor)
 
 // Move all of these into a seperate import!
 
-function convertWKT() {}
+function convertWKT(result) { return result; }
 
-function convertGML() {}
+function convertGML(result) { return result; }
 
 async function convertKML(result) 
 {
@@ -108,211 +114,219 @@ async function convertKML(result)
     }
 }
 
-async function convertKMZ(result) 
+async function convertKMZ(url, processDir) 
 {
-    // unzip
-    fs.createReadStream('./processing/kmz.zip').pipe(unzipper.Extract({ path: './processing' }).on('close', function(finish)
+    let result = null;
+    let tempPath = process.cwd() + '/processing/' + processDir;
+    // unzip. Make processing dir if it doesn't exist
+    fs.mkdirSync(tempPath, { recursive: true });
+
+    // call the URL zip location and extract the files
+    const directory = await unzipper.Open.url(request, url);
+    for(let idx in directory.files)
     {
-        // convert
-        fs.readdir('./processing/', function (err, files) 
-        {
-            if(err)
-            {
-                console.error(err);
-                throw err;
-            }
-            else
-            {
-                let kml;
-                // locate the shapefile params
-                files.forEach(function (file) 
-                {
-                    if(file.endsWith('.kml')) kml = file;
-                });
+        let file = directory.files[idx];
+        const content = await file.buffer();
+        // write the raw content to the temp path
+        fs.writeFileSync(tempPath + '/' + file.path, content);
+    };
 
-                if(kml)
-                {
-                    let kmlFile = '' + fs.readFileSync('./processing/' + prj);
-                    let kml = new DOMParser().parseFromString(kmlFile);
-                    let json = kmlToGeoJson.kml(kml, { styles: true });
+    // convert
+    let files = fs.readdirSync(tempPath);
 
-                    return json;
-                }
-                else
-                {
-                    console.error('KML not found in zip');
-                }
-                //cleanupTempFiles('./processing', ['temp.zip', kml]);
-            }
-        });
-    }));
+    let kml;
+    // locate the kml file
+    files.forEach(function (file) 
+    {
+        if (file.endsWith('.kml')) kml = file;
+    });
+
+    if (kml)
+    {
+        let kmlFile = '' + fs.readFileSync(tempPath + '/' + kml);
+        let parsedKml = new DOMParser().parseFromString(kmlFile);
+
+        return kmlToGeoJson.kml(parsedKml, { styles: true });
+    }
+    else
+    {
+        console.error('KML not found in zip');
+    }
+
+    cleanupTempFiles(tempPath);
+
+    return result;
 }
 
-/*function convertShape() 
+async function convertShape(url, processDir) 
 {
-    // unzip
-    fs.createReadStream('./processing/shape.zip').pipe(unzipper.Extract({ path: './processing' }).on('close', function(finish)
+    let json = { type: "FeatureCollection", features: [] };
+    let tempPath = process.cwd() + '/processing/' + processDir;
+
+    // unzip. Make processing dir if it doesn't exist
+    fs.mkdirSync(tempPath, { recursive: true });
+
+    // call the URL zip location and extract the files
+    const directory = await unzipper.Open.url(request, url);
+    for(let idx in directory.files)
     {
-        // convert
-        fs.readdir('./processing/', function (err, files) 
-        {
-            if(err)
-            {
-                console.error(err);
-                throw err;
-            }
-            else
-            {
-                let shp;
-                let dbf;
-                let prj;
-                let shx;
-                let cpg;
-                let qpj;
-                let sbn;
-                let sbx;
-                // locate the shapefile params
-                files.forEach(function (file) 
-                {
-                    if(file.endsWith('.shp')) shp = file;
-                    if(file.endsWith('.dbf')) dbf = file;
-                    if(file.endsWith('.prj')) prj = file;
-                    if(file.endsWith('.shx')) shx = file;
-                    if(file.endsWith('.cpg')) cpg = file;
-                    if(file.endsWith('.qpj')) qpj = file;
-                    if(file.endsWith('.sbn')) sbn = file;
-                    if(file.endsWith('.sbx')) sbx = file;
-                });
+        let file = directory.files[idx];
+        const content = await file.buffer();
+        // write the raw content to the temp path
+        fs.writeFileSync(tempPath + '/' + file.path, content);
+    };
 
-                if(shp)
-                {
-                    console.log('Shapefile found in zip. Converting...');
-                    // parse the shape
-                    let json = { type: "FeatureCollection", features: []};
-                    
-                    shapefile.open('./processing/' + shp, './processing/' + dbf)
-                    .then(source => source.read()
-                    .then(function log(result) 
-                    {
-                        if (result.done) 
-                        {
-                            console.log('Completed, returning geojson response...');
-                            res.json(json);
-                            
-                            console.log('cleaning temp files');
-                            cleanupTempFiles('./processing', ['temp.zip', shp, dbf, prj, shx, cpg, qpj, sbn, sbx]);
+    // convert
+    let files = fs.readdirSync(tempPath);
 
-                            return;
-                        }
+    let shp, dbf, prj, shx, cpg, qpj, sbn, sbx;
 
-                        // project the feature if it's not in wgs84
-                        // however, if there is no prj file specified, we have to assume it's ok
-                        if(prj)
-                        {
-                            console.log('Reprojecting feature...');
-                            
-                            let fromProj = '' + fs.readFileSync('./processing/' + prj) + '';
-                            let toProj = 'EPSG:4326';
-
-                            //console.log('Projecting from: ' + fromProj);
-                            //console.log('             to: ' + toProj);
-
-                            let projector = new Projector(fromProj, toProj);
-                            projector.project(result.value.geometry)
-                        }
-
-                        json.features.push(result.value);
-                        source.read().then(log);
-                    })).catch(() => 
-                    { 
-                        console.error('Error during shapefile convert...');
-                        console.log('cleaning temp files');
-                        cleanupTempFiles('./processing', ['temp.zip', shp, dbf, prj, shx, cpg, qpj, sbn, sbx]);
-                        throw new Error(error);
-                    });
-                }
-                else
-                {
-                    console.error('Shapefile not found in zip');
-                    res.writeHead(500);
-                    res.end();
-                    console.log('cleaning temp files');
-                    cleanupTempFiles('./processing', ['temp.zip', shp, dbf, prj, shx, cpg, qpj, sbn, sbx]);
-                }
-            }
-        });
-    }));
-}
-
-function convertFGDB() 
-{
-    console.log('Unzipping FGDB...');
-    fs.createReadStream('./processing/fgdb.zip').pipe(unzipper.Extract({ path: './processing' }).on('close', function(finish)
+    // locate the shapefile params
+    files.forEach(function (file) 
     {
-        // find a directory with a .gdb extension
-        fs.readdir('./processing', function (err, files) 
+        if(file.endsWith('.shp')) shp = file;
+        else if(file.endsWith('.dbf')) dbf = file;
+        else if(file.endsWith('.prj')) prj = file;
+        else if(file.endsWith('.shx')) shx = file;
+        else if(file.endsWith('.cpg')) cpg = file;
+        else if(file.endsWith('.qpj')) qpj = file;
+        else if(file.endsWith('.sbn')) sbn = file;
+        else if(file.endsWith('.sbx')) sbx = file;
+    });
+
+    if(shp)
+    {
+        // parse the zip
+        await shapefile.open(tempPath + '/' + shp, tempPath + '/' + dbf)
+        .then(async source => 
         {
-            if (err) 
+            return await source.read().then(function log(result) 
             {
-                console.error('Error during FGDB convert...');
-                console.error(error);
-                console.log('cleaning temp files');
-                cleanupTempFiles('./processing', ['temp.zip']);
-                throw new Error(error);
-            }
-
-            let gdbPath = '';
-
-            for(let i = 0 ; i < files.length; i++)
-            {
-                let fromPath = path.join('./processing', files[i]);
-                if(fromPath.includes('.gdb')) gdbPath = fromPath;
-            }
-            
-            console.log('Found FGDB in path: ' + gdbPath);
-            console.log('Processing FGDB...');
-            fgdb(gdbPath)
-            .then(function(objectOfGeojson)
-            {
-                console.log('Successfully processed FGDB!');
-                
-                // there may be multiple feature classes, and we may need to do some projection...
-                let featureClassKeys = Object.keys(objectOfGeojson);
-                for(let i = 0; i < featureClassKeys.length; i++)
+                if (result.done)
                 {
-                    let key = featureClassKeys[i];
-                    let featureClass = objectOfGeojson[key];
-
-                    if(featureClass.bbox[0] > 180 || featureClass.bbox[0] < 180)
-                    {
-                        console.log('Reprojecting feature: ' + key);
-                        // not WGS84, reproject
-                        // we don't know the source projection, so assume BCAlbers?
-                        let projector = new Projector('EPSG:3005', 'EPSG:4326');
-                        for(let featureIdx = 0; featureIdx < featureClass.features.length; featureIdx++)
-                        {
-                            let feature = featureClass.features[featureIdx];
-                            projector.project(feature.geometry);
-                        }
-                    }
+                    parentPort.postMessage('Done parsing shape.');
                 }
 
-                console.log('Sending geojson response...');
-                // send the feature classes back. The Processor will create layers
-                // for each feature class
-                res.json(objectOfGeojson);
+                if(prj)
+                {
+                    let fromProj = '' + fs.readFileSync(tempPath + '/' + prj) + '';
+                    let toProj = 'EPSG:4326';
 
-                cleanupTempFiles('./processing', ['temp.zip']);
-                // cleanup temp folder too!
-            },
-            function(error)
+                    let projector = new Projector(fromProj, toProj);
+                    projector.project(result.value.geometry)
+                }
+
+                json.features.push(result.value);
+                source.read().then(log);
+            }).catch(error =>
             {
-                console.error('Error during FGDB convert...');
-                console.error(error);
-                console.log('cleaning temp files');
-                cleanupTempFiles('./processing', ['temp.zip']);
-                throw new Error(error);
+                throw new Error(error);    
             });
+        }).catch(error => 
+        { 
+            parentPort.postMessage('Error during shapefile convert...' + error);
+            parentPort.postMessage('cleaning temp files');
+            cleanupTempFiles(tempPath);
+            throw new Error(error);
         });
-    }));
-}*/
+    }
+    else
+    {
+        parentPort.postMessage('Shapefile not found in zip');
+        cleanupTempFiles(tempPath);
+    }
+
+    return json;
+}
+
+async function convertFGDB(url, processDir, projection) 
+{
+    let json = null;
+    let tempPath = process.cwd() + '/processing/' + processDir;
+    // unzip. Make processing dir if it doesn't exist
+    fs.mkdirSync(tempPath, { recursive: true });
+
+    // call the URL zip location and extract the files
+    // fgdb may be in folder?
+    const directory = await unzipper.Open.url(request, url);
+    for(let idx in directory.files)
+    {
+        let file = directory.files[idx];
+        const content = await file.buffer();
+        // write the raw content to the temp path
+        fs.writeFileSync(tempPath + '/' + file.path, content);
+    };
+
+    // find a directory with a .gdb extension
+    let files = fs.readdirSync(tempPath);
+    let gdbPath = '';
+
+    for(let i = 0 ; i < files.length; i++)
+    {
+        let fromPath = path.join(tempPath, files[i]);
+        if(fromPath.includes('.gdb')) gdbPath = fromPath;
+    }
+    
+    console.log('Found FGDB in path: ' + gdbPath);
+    console.log('Processing FGDB...');
+
+    json = await fgdb(gdbPath)
+    .then(function(objectOfGeojson)
+    {
+        console.log('Successfully processed FGDB!');
+        
+        // there may be multiple feature classes, and we may need to do some projection...
+        let featureClassKeys = Object.keys(objectOfGeojson);
+        for(let i = 0; i < featureClassKeys.length; i++)
+        {
+            let key = featureClassKeys[i];
+            let featureClass = objectOfGeojson[key];
+
+            if(featureClass.bbox[0] > 180 || featureClass.bbox[0] < 180)
+            {
+                console.log('Reprojecting feature: ' + key);
+                // not WGS84, reproject
+                // we don't know the source projection, so assume BCAlbers?
+
+                if (!projection) projection = 'EPSG:3005';
+
+                let projector = new Projector(projection, 'EPSG:4326');
+                for(let featureIdx = 0; featureIdx < featureClass.features.length; featureIdx++)
+                {
+                    let feature = featureClass.features[featureIdx];
+                    projector.project(feature.geometry);
+                }
+            }
+        }
+
+        console.log('Sending geojson response...');
+        // send the feature classes back. The Processor will create layers
+        // for each feature class
+        cleanupTempFiles(tempPath);
+        // cleanup temp folder too!
+
+        return objectOfGeojson;
+    },
+    function(error)
+    {
+        console.error('Error during FGDB convert...');
+        console.error(error);
+        console.log('cleaning temp files');
+        cleanupTempFiles(tempPath);
+        throw new Error(error);
+    });
+
+    return json;
+}
+
+function cleanupTempFiles(directory)
+{
+    let files = fs.readdirSync(directory);
+
+    for (const file of files) 
+    {
+        fs.unlinkSync(path.join(directory, file));
+    }
+
+    fs.rmdir(directory);
+}

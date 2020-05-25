@@ -21,18 +21,26 @@ module.exports.requestProcessor = async function(request)
         worker.on('message', (data) =>
         {
             // update the request
-            Request.findById(data._id).then(req =>
+
+            if (data && data.hasOwnProperty('_id'))
             {
-                if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
+                Request.findById(data._id).then(req =>
                 {
-                    console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
-                }
-                else
-                {
-                    console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
-                    req.update(data).catch(err => console.log(err));
-                }
-            });
+                    if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
+                    {
+                        console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
+                    }
+                    else
+                    {
+                        console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
+                        req.update(data).catch(err => console.log(err));
+                    }
+                });
+            }
+            else
+            {
+                console.log(data);
+            }
         });
         worker.on('exit', code =>
         {

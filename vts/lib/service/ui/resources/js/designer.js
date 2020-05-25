@@ -16,15 +16,15 @@ function refreshDiagram()
 
     $('#node_editor').hide();
 }
-function addNode(node)
+function addNode(node, x, y)
 {
     let processor = 
     {
         type: node, 
         processed: false,
         name: '', 
-        x: 0, 
-        y: 0,
+        x: x ? x : 0, 
+        y: y ? y : 0,
         messages: [],
         inputNodes: { features: [] },
         outputNodes: { features: [] },
@@ -713,4 +713,20 @@ function saveNodeUpdates()
     });
 
     $('#node_editor').hide();
+}
+
+function dragTool(event) 
+{
+    event.dataTransfer.setData('tool', event.target.id);
+}
+
+function allowDropTool(event)
+{
+    event.preventDefault();
+}
+
+function dropTool(event)
+{
+    console.log('Drop! ' + event.dataTransfer.getData('tool'));
+    addNode(event.dataTransfer.getData('tool'), event.pageX - 120, event.pageY - 40);
 }

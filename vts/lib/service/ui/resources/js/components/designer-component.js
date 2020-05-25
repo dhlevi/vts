@@ -32,7 +32,7 @@ Vue.component('designer',
                 </ul>
             </div>
         </div>
-        <div class="col s10 primary-color-light" style="height: calc(100vh - 90px);">
+        <div class="col s10 primary-color-light" style="height: calc(100vh - 90px);" ondrop="dropTool(event)" ondragover="allowDropTool(event)">
             <div class="card toolbar z-depth-2 hoverable">
                 <a href="#" onclick="app.tabSwitch('edit-task');" title="Save request as a Scheduled Task"><i class="material-icons">schedule</i></a>
                 <a href="#" onclick="runRequest();" title="Send as an ad hoc request"><i class="material-icons">send</i></a>
@@ -95,6 +95,6 @@ Vue.component('toolbar-buttons',
     props: ['tool', 'index', 'toolSearch'],
     template:   
     `
-    <li v-if="toolSearch === '' || tool.name.toLowerCase().includes(toolSearch.toLowerCase())" v-bind:onclick="'addNode(\\'' + tool.name + '\\');'" v-bind:title="tool.tooltip" style="border-bottom: 1px solid #4a6572; cursor: pointer; text-transform: capitalize;"><i class="material-icons">{{tool.icon}}</i> {{tool.name.replace( /([A-Z])/g, " $1" )}}</li>
+    <li v-bind:id="tool.name" draggable="true" ondragstart="dragTool(event)" v-if="toolSearch === '' || tool.name.toLowerCase().includes(toolSearch.toLowerCase())" v-bind:onclick="'addNode(\\'' + tool.name + '\\');'" v-bind:title="tool.tooltip" style="border-bottom: 1px solid #4a6572; cursor: pointer; text-transform: capitalize;"><i class="material-icons">{{tool.icon}}</i> {{tool.name.replace( /([A-Z])/g, " $1" )}}</li>
     `
 });
