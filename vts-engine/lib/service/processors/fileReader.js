@@ -4,6 +4,7 @@ const fs             = require('fs');
 const DOMParser      = require("xmldom").DOMParser;
 const kmlToGeoJson   = require('@tmcw/togeojson');
 const shapefile      = require('shapefile');
+const gml2json       = require('gml2json');
 const fgdb           = require('fgdb');
 const unzipper       = require('unzipper');
 const Projector      = require('../projector');
@@ -29,17 +30,13 @@ module.exports.process = async function(request, processor)
     {
         result = await convertKMZ(filePath, request.name);
     }
-    else if (dataType === 'wkt')
-    {
-        result = await convertWKT(fs.readFileSync(filePath, 'utf8'));
-    }
     else if (dataType === 'gml')
     {
-        result = await convertGML(fs.readFileSync(filePath, 'utf8'));
+        result = await convertGML(fs.readFileSync(filePath, 'utf8'), projection);
     }
-    else if (dataType === 'shape')
+    else if (dataType.startsWith('shape'))
     {
-        result = await convertShape(filePath, request.name);
+        result = await convertShape(filePath, request.name, projection);
     }
     else if (dataType === 'fgdb')
     {
@@ -48,7 +45,7 @@ module.exports.process = async function(request, processor)
 
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really
-    if (!result || (!result.hasOwnProperty('type') && !result.type.toLowerCase() === 'Featurecollection'))
+    if (!result || !result.hasOwnProperty('type') || result.type.toLowerCase() !== 'featurecollection')
     {
         throw Error('not a feature collection');
     }
@@ -80,9 +77,19 @@ module.exports.process = async function(request, processor)
 
 // Move all of these into a seperate import!
 
-function convertWKT(result) { return result; }
+function convertGML(result, projection) 
+{
+    let json = gml2json.parse(result);
+    
+    // reproject
+    if (projection && projection.length > 0)
+    {
+        let projector = new Projector(projection, 'EPSG:4326');
+        projector.project(json);
+    }
 
-function convertGML(result) { return result; }
+    return json;
+}
 
 async function convertKML(result) 
 {
@@ -142,7 +149,7 @@ async function convertKMZ(path, processDir)
     return result;
 }
 
-async function convertShape(path, processDir) 
+async function convertShape(path, processDir, projection) 
 {
     let json = { type: "FeatureCollection", features: [] };
     let tempPath = process.cwd() + '/processing/' + processDir;
@@ -201,12 +208,16 @@ async function convertShape(path, processDir)
                     parentPort.postMessage('Done parsing shape.');
                 }
 
-                if(prj)
+                if (prj)
                 {
                     let fromProj = '' + fs.readFileSync(tempPath + '/' + prj) + '';
-                    let toProj = 'EPSG:4326';
 
-                    let projector = new Projector(fromProj, toProj);
+                    let projector = new Projector(fromProj, 'EPSG:4326');
+                    projector.project(result.value.geometry)
+                }
+                else if (!prj && projection && projection.length > 0)
+                {
+                    let projector = new Projector(projection, 'EPSG:4326');
                     projector.project(result.value.geometry)
                 }
 

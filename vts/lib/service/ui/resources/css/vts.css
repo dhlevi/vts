@@ -40,24 +40,9 @@ font-family: 'Raleway', sans-serif;
     color: #F9AA33 !important;
 }
 
-.sidenav a 
-{
-    transition: all 0.5s ease;
-    color: white !important;
-}
-
-.sidenav a:hover 
-{
-    background: #F9AA33 !important;
-    color: black !important;
-    border-radius: 100px;
-    margin-left: 5px;
-    margin-right: 4px;
-}
-
 .dashboard-card
 {
-    height: calc(50vh - 118px); 
+    height: calc(50vh - 158px); 
     overflow-y: auto;
 }
 
@@ -201,14 +186,15 @@ font-family: 'Raleway', sans-serif;
 {
     transition: all 0.5s ease;
     color: black;
+    font-size: 24px;
 }
 
 .toolbar a:hover 
 {
-    background: #344955;
-    color: white;
+    border: 1px solid black;
+    background-color: lightgray;
+    color: black;
     font-size: 24px;
-    padding: 5px;
 }
 
 .toolbar::-webkit-scrollbar-track
@@ -356,4 +342,32 @@ font-family: 'Raleway', sans-serif;
 {
     background-color: #4A6572;
     border: 2px solid #232f34;
+}
+
+.menubar
+{
+    height: 40px;
+    border-top: 1px solid #e0e0e02b;
+}
+
+.menubar a 
+{
+    transition: all 0.5s ease;
+    margin-top: 2px;
+    color: white !important;
+}
+
+.menubar a:hover 
+{
+    background: #F9AA33 !important;
+    margin-top: 2px;
+    color: black !important;
+}
+
+.designerLabel
+{
+    border-radius: 3px;
+    padding: 5px;
+    background: #ffffffc9;
+    color: black;
 }

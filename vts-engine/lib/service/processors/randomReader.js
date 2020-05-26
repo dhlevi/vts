@@ -4,10 +4,11 @@ const turf           = require('@turf/turf');
 
 module.exports.process = async function(request, processor)
 {
+    let items = Number(processor.attributes.items);
     let type = processor.attributes.dataType;
-    let results = type.toLowerCase() === 'point'        ? turf.randomPoint(1) :
-                  type.toLowerCase().startsWith('line') ? turf.randomLineString(1) :
-                  type.toLowerCase() === 'polygon'      ? turf.randomPolygon(1) : 
+    let results = type.toLowerCase() === 'point'        ? turf.randomPoint(items) :
+                  type.toLowerCase().startsWith('line') ? turf.randomLineString(items) :
+                  type.toLowerCase() === 'polygon'      ? turf.randomPolygon(items) : 
                   null;
 
     // attach resulting blob to the processor 'features' output node.    

@@ -45,6 +45,16 @@ module.exports.requestProcessor = async function(request)
         worker.on('exit', code =>
         {
             console.log(`Request Worker ${request.name} stopped with exit code ${code}`);
+
+            Request.findById(request._id).then(req =>
+            {
+                if (req.status === 'In Progress')
+                {
+                    req.status = 'Completed';
+                    req.save();
+                }
+            });
+
             resolve(code);
         });
     

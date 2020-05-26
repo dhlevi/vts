@@ -19,7 +19,7 @@ Vue.component('projects',
     <div class="container row">
         <div class="col s12">
             <div class="card primary-color-dark">
-                <div class="card-content white-text" style="height: calc(100vh - 110px); overflow: auto;">
+                <div class="card-content white-text" style="height: calc(100vh - 150px); overflow: auto;">
                     <span class="card-title">Projects</span>
                     <div class="row tag-bar" style="margin-bottom: 5px;">
                         <div class="input-field col s10 white-text">

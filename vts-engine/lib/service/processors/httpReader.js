@@ -5,6 +5,7 @@ const fs             = require('fs');
 const path           = require('path');
 const DOMParser      = require("xmldom").DOMParser;
 const kmlToGeoJson   = require('@tmcw/togeojson');
+const gml2json       = require('gml2json');
 const shapefile      = require('shapefile');
 const fgdb           = require('fgdb');
 const unzipper       = require('unzipper');
@@ -20,7 +21,7 @@ module.exports.process = async function(request, processor)
 
     if (dataType.startsWith('shape'))
     {
-        result = await convertShape(url, request.name);
+        result = await convertShape(url, request.name, projection);
     }
     else if (dataType === 'fgdb')
     {
@@ -34,7 +35,7 @@ module.exports.process = async function(request, processor)
     {
         // Execute a get from the requested URL
         result = await rp(url)
-                        .then(async function (result) 
+                        .then(async function (data) 
                         {
                             // type may be json, kml, kmz, wkt, gml, or a zip
                             // containing a shapefile or fgdb
@@ -42,18 +43,18 @@ module.exports.process = async function(request, processor)
                             // out into json and return
                             if (dataType === 'kml')
                             {
-                                result = await convertKML(result);
-                            }
-                            else if (dataType === 'wkt')
-                            {
-                                result = convertWKT(result);
+                                result = await convertKML(data);
                             }
                             else if (dataType === 'gml')
                             {
-                                result = convertGML(result);
+                                result = convertGML(data);
+                            }
+                            else
+                            {
+                                result = JSON.parse(data);
                             }
 
-                            return JSON.parse(result);
+                            return result;
                         })
                         .catch(err => 
                         {
@@ -63,7 +64,7 @@ module.exports.process = async function(request, processor)
 
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really
-    if (!result || (!result.hasOwnProperty('type') && !result.type.toLowerCase() === 'Featurecollection'))
+    if (!result || !result.hasOwnProperty('type') || result.type.toLowerCase() !== 'featurecollection')
     {
         throw Error('not a feature collection');
     }
@@ -95,9 +96,19 @@ module.exports.process = async function(request, processor)
 
 // Move all of these into a seperate import!
 
-function convertWKT(result) { return result; }
+function convertGML(result, projection)
+{
+    let json = gml2json.parse(result);
+    
+    // reproject
+    if (projection && projection.length > 0)
+    {
+        let projector = new Projector(projection, 'EPSG:4326');
+        projector.project(json);
+    }
 
-function convertGML(result) { return result; }
+    return json;
+}
 
 async function convertKML(result) 
 {
@@ -158,7 +169,7 @@ async function convertKMZ(url, processDir)
     return result;
 }
 
-async function convertShape(url, processDir) 
+async function convertShape(url, processDir, projection) 
 {
     let json = { type: "FeatureCollection", features: [] };
     let tempPath = process.cwd() + '/processing/' + processDir;
@@ -207,12 +218,16 @@ async function convertShape(url, processDir)
                     parentPort.postMessage('Done parsing shape.');
                 }
 
-                if(prj)
+                if (prj)
                 {
                     let fromProj = '' + fs.readFileSync(tempPath + '/' + prj) + '';
-                    let toProj = 'EPSG:4326';
 
-                    let projector = new Projector(fromProj, toProj);
+                    let projector = new Projector(fromProj, 'EPSG:4326');
+                    projector.project(result.value.geometry)
+                }
+                else if (!prj && projection && projection.length > 0)
+                {
+                    let projector = new Projector(projection, 'EPSG:4326');
                     projector.project(result.value.geometry)
                 }
 

@@ -28,8 +28,11 @@ async function processRequest(request)
     // cycle through processors
     let completedProcessors = 0;
     let failed = false;
+    let attempts = 0;
     while (completedProcessors !== request.processors.length)
     {
+        attempts++;
+        parentPort.postMessage('Looping attempt ' + attempts + ' - ' + (completedProcessors !== request.processors.length));
         for (let idx in request.processors)
         {
             let processor = request.processors[idx];
@@ -52,6 +55,13 @@ async function processRequest(request)
             {
                 completedProcessors++;
             }
+
+            // if we've run more times then we have processors, something went wrong
+            // so just fail out.
+            if (attempts > request.processors.length + 1)
+            {
+                failed = true;
+            }
         }
 
         if (failed)
@@ -61,6 +71,7 @@ async function processRequest(request)
     }
 
     // we're done. Update and close off
+    parentPort.postMessage('Finished processing request ' + request.name);
     request.status = failed ? 'Failed' : 'Completed';
     request.metadata.lastUpdatedDate = new Date();
     request.metadata.lastUpdatedBy = request.Engine;
@@ -104,6 +115,7 @@ async function runProcessor(processor, request)
     // of the process method! processor file names must match type 100%
     await require('./processors/' + processor.type).process(request, processor);
     
+    parentPort.postMessage('Finished processing ' + processor.name);
     processor.processed = true;
     request.messages.push({ message: 'Finished processing ' + processor.name + ' - ' + processor.type, sender: request.engine, timestame: new Date()});
 

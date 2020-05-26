@@ -48,11 +48,12 @@ function addNode(node, x, y)
             processor.attributes.source = 'oracle'; // oracle, postgres, mongo, couch, h2, mysql
             processor.attributes.user = '';
             processor.attributes.password = '';
-            processor.attributes.sourceTable = '';
+            processor.attributes.query = ''; // select statement used to get results
             processor.attributes.sourceProjection = '';
         break;
         case 'randomReader':
             processor.attributes.dataType = 'polygon'; // point, line, polygon
+            processor.attributes.items = 1;
         break;
         case 'projector':
             processor.attributes.sourceProjection = '';
@@ -233,167 +234,164 @@ function setupCanvas()
             // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
             ConnectionOverlays:
             [
-                [ "Arrow", {
+                [ 'Arrow', {
                     location: 1,
-                    visible:true,
-                    width:11,
-                    length:11,
-                    id:"ARROW",
+                    visible:  true,
+                    width:    11,
+                    length:   11,
+                    id:       'ARROW',
                     events:{
                         click:function() { /* Some function to run when an overlay is clicked on */ }
                     }
-                }]/*,
-                    [ "Label", {
-                    location: 0.1,
-                    id: "label",
-                    cssClass: "aLabel",
+                }],
+                [ 'Label', {
+                    location: 0.5,
+                    id:       'label',
+                    cssClass: 'designerLabel',
                     events:{
-                        tap:function()
-                        {
-                            //Some function to run when a label is clicked on
-                        }
+                        tap:function() { /* Some function to run when a label is clicked on */ }
                     }
-                }]*/
+                }]
             ],
-            Container: "canvas"
+            Container: 'canvas'
         });
 
         let basicType =
         {
-            connector: "StateMachine",
-            paintStyle: { stroke: "red", strokeWidth: 4 },
-            hoverPaintStyle: { stroke: "blue" },
-            overlays: [ "Arrow" ]
+            connector:       'StateMachine',
+            paintStyle:      { stroke: 'red', strokeWidth: 4 },
+            hoverPaintStyle: { stroke: 'blue' },
+            overlays:        [ 'Arrow' ]
         };
 
-        plumbInst.registerConnectionType("basic", basicType);
+        plumbInst.registerConnectionType('basic', basicType);
 
         // this is the paint style for the connecting lines..
         let connectorPaintStyle =
         {
-            strokeWidth: 2,
-            stroke: "#707070",
-            joinstyle: "round",
-            outlineStroke: "white",
-            outlineWidth: 1
+            strokeWidth:   2,
+            stroke:        'black',
+            joinstyle:     'round',
+            outlineStroke: '#ffffff21',
+            outlineWidth:  1
         },
         // .. and this is the hover style.
         connectorHoverStyle =
         {
-            strokeWidth: 3,
-            stroke: "#f44336",
-            outlineWidth: 2,
-            outlineStroke: "white"
+            strokeWidth:   3,
+            stroke:        '#f44336',
+            outlineWidth:  2,
+            outlineStroke: '#ffffff21'
         },
         endpointHoverStyle =
         {
-            fill: "#f44336",
-            stroke: "#f44336"
+            fill:   '#f44336',
+            stroke: '#f44336'
         },
         // the definition of source endpoints (the small blue ones)
         sourceEndpoint =
         {
-            endpoint: "Dot",
+            endpoint: 'Dot',
             paintStyle:
             {
-                stroke: "#f5f5f5",
-                fill: "#474444",
-                radius: 7,
+                stroke:      '#f5f5f5',
+                fill:        '#474444',
+                radius:      7,
                 strokeWidth: 4
             },
-            //anchor:[ "Perimeter", { shape:"Square" } ],
-            isSource: true,
-            connector: [ "Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ],
-            connectorStyle: connectorPaintStyle,
-            hoverPaintStyle: endpointHoverStyle,
-            maxConnections: -1,
+            isSource:            true,
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ],
+            connectorStyle:      connectorPaintStyle,
+            hoverPaintStyle:     endpointHoverStyle,
+            maxConnections:      -1,
             connectorHoverStyle: connectorHoverStyle,
             dragOptions: {},
-            overlays: [["Label", { location: [0.5, 1.5], label: "Drag", cssClass: "endpointSourceLabel", visible:false }]]
+            // label the nodes... not sure? Only useful for multiple in/out
+            overlays: [['Label', { location: [0.5, 1.5], label: 'Drag', cssClass: 'endpointSourceLabel', visible: false }]]
         },
         // the definition of writer endpoints (the small blue ones)
         writerTargetEndpoint =
         {
-            endpoint: "Dot",
+            endpoint: 'Dot',
             paintStyle:
             {
-                stroke: "#f5f5f5",
-                fill: "#474444",
-                radius: 7,
+                stroke:      '#f5f5f5',
+                fill:        '#474444',
+                radius:      7,
                 strokeWidth: 4
             },
             //anchor:[ "Perimeter", { shape:"Square" } ],
             hoverPaintStyle: endpointHoverStyle,
-            maxConnections: -1,
-            dropOptions: { hoverClass: "hover", activeClass: "active" },
-            isTarget: true,
-            overlays: [[ "Label", { location: [0.5, -0.5], label: "Drop", cssClass: "endpointTargetLabel", visible:false } ]]
+            maxConnections:  -1,
+            dropOptions:     { hoverClass: 'hover', activeClass: 'active' },
+            isTarget:        true,
+            overlays: [[ 'Label', { location: [0.5, -0.5], label: 'Drop', cssClass: 'endpointTargetLabel', visible: false } ]]
         },
         // the definition of target endpoints (will appear when the user drags a connection)
         targetEndpoint =
         {
-            endpoint: "Dot",
+            endpoint: 'Dot',
             paintStyle:
             {
-                stroke: "#f5f5f5",
-                fill: "#474444",
-                radius: 7,
+                stroke:      '#f5f5f5',
+                fill:        '#474444',
+                radius:      7,
                 strokeWidth: 4
             },
             //anchor:[ "Perimeter", { shape:"Square" } ],
             hoverPaintStyle: endpointHoverStyle,
-            maxConnections: -1,
-            dropOptions: { hoverClass: "hover", activeClass: "active" },
-            isTarget: true,
-            overlays: [[ "Label", { location: [0.5, -0.5], label: "Drop", cssClass: "endpointTargetLabel", visible:false } ]]
+            maxConnections:  -1,
+            dropOptions:     { hoverClass: 'hover', activeClass: 'active' },
+            isTarget:        true,
+            overlays: [[ 'Label', { location: [0.5, -0.5], label: 'Drop', cssClass: 'endpointTargetLabel', visible: false } ]]
         },
         readerSourceEndpoint =
         {
-            endpoint: "Dot",
+            endpoint: 'Dot',
             paintStyle:
             {
-                stroke: "#f5f5f5",
-                fill: "#474444",
-                radius: 7,
+                stroke:      '#f5f5f5',
+                fill:        '#474444',
+                radius:      7,
                 strokeWidth: 4
             },
             //anchor:[ "Perimeter", { shape:"Square" } ],
-            isSource: true,
-            connector: [ "Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ],
-            connectorStyle: connectorPaintStyle,
-            hoverPaintStyle: endpointHoverStyle,
-            maxConnections: -1,
+            isSource:            true,
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ],
+            connectorStyle:      connectorPaintStyle,
+            hoverPaintStyle:     endpointHoverStyle,
+            maxConnections:      -1,
             connectorHoverStyle: connectorHoverStyle,
             dragOptions: {},
-            overlays: [["Label", { location: [0.5, 1.5], label: "Drag", cssClass: "endpointSourceLabel", visible:false }]]
+            overlays: [['Label', { location: [0.5, 1.5], label: 'Drag', cssClass: 'endpointSourceLabel', visible:false }]]
         },
         writerSourceEndpoint =
         {
-            endpoint: "Dot",
+            endpoint: 'Dot',
             paintStyle:
             {
-                stroke: "#f5f5f5",
-                fill: "#474444",
-                radius: 7,
+                stroke:      '#f5f5f5',
+                fill:        '#474444',
+                radius:      7,
                 strokeWidth: 4
             },
-            //anchor:[ "Perimeter", { shape:"Square" } ],
-            isSource: true,
-            connector: [ "Flowchart", { stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true } ],
-            connectorStyle: connectorPaintStyle,
-            hoverPaintStyle: endpointHoverStyle,
-            maxConnections: -1,
+            //anchor:[ 'Perimeter', { shape:'Square' } ],
+            isSource:            true,
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ], //'StateMachine'
+            connectorStyle:      connectorPaintStyle,
+            hoverPaintStyle:     endpointHoverStyle,
+            maxConnections:      -1,
             connectorHoverStyle: connectorHoverStyle,
             dragOptions: {},
-            overlays: [["Label", { location: [0.5, 1.5], label: "Drag", cssClass: "endpointSourceLabel", visible:false }]]
+            overlays: [['Label', { location: [0.5, 1.5], label: 'Drag', cssClass: 'endpointSourceLabel', visible:false }]]
         },
         init = function (connection)
         {
-            connection.getOverlay("label").setLabel(connection.sourceId.substring(15) + "-" + connection.targetId.substring(15));
+            connection.getOverlay('label').setLabel(connection.sourceId.substring(15) + '-' + connection.targetId.substring(15));
         };
 
-        targetEP = targetEndpoint;
-        sourceEP = sourceEndpoint;
+        targetEP       = targetEndpoint;
+        sourceEP       = sourceEndpoint;
         writerTargetEP = writerTargetEndpoint;
         writerSourceEP = writerSourceEndpoint;
         readerSourceEP = readerSourceEndpoint;
@@ -418,35 +416,36 @@ function setupCanvas()
 
                 let left = 400 + (350 * col);
 
-                if(payload.hasOwnProperty("x") && payload.x > 200) left = payload.x;
-                if(payload.hasOwnProperty("y") && payload.y > 100) top = payload.y;
+                if(payload.hasOwnProperty('x') && payload.x > 200) left = payload.x;
+                if(payload.hasOwnProperty('y') && payload.y > 100) top = payload.y;
 
                 addProcessorToDiagram(payload, top, left, sourceEndpoint, targetEndpoint);
             }
 
             // listen for new connections; initialise them the same way we initialise the connections at startup.
-            plumbInst.bind("connection", function (connInfo, originalEvent)
+            plumbInst.bind('connection', function (connInfo, originalEvent)
             {
                 init(connInfo.connection);
             });
 
             // make all the window divs draggable
-            //plumbInst.draggable(jsPlumb.getSelector(".flowchart-demo .window"), { grid: [20, 20] });
-            plumbInst.draggable(document.querySelectorAll(".window"), // should probably define a specific class for these, in case of any issues...
+            // or see below to lock to a canvas
+            // plumbInst.draggable(jsPlumb.getSelector(".flowchart-demo .window"), { grid: [20, 20] });
+            plumbInst.draggable(document.querySelectorAll('.window'), // should probably define a specific class for these, in case of any issues...
             {
                 grid: [5, 5],
                 //containment: true, // used to contain to the container div. Need to set container sizes appropriately. Useful when zoom is implemented, otherwise too restrictive
                 stop: function(event, ui)
                 {
-                    let name = event.el.id.replace("flowchartWindow", "");
+                    let name = event.el.id.replace('flowchartWindow', '');
                     for (let i in app.request.processors)
                     {
                         let processor = app.request.processors[i];
 
                         if(processor.name == name)
                         {
-                            processor.x = $("#" + event.el.id).css("left").replace("px", "");
-                            processor.y = $("#" + event.el.id).css("top").replace("px", "");
+                            processor.x = $('#' + event.el.id).css('left').replace('px', '');
+                            processor.y = $('#' + event.el.id).css('top').replace('px', '');
                             break;
                         }
                     }
@@ -468,10 +467,10 @@ function setupCanvas()
                         {
                             let inputNode = inputNodes[node];
 
-                            plumbInst.connect({uuids: ["Window" + inputNode.name + "Source_" + inputNode.node, "Window" + processor.name + "Target_" + key], editable: true});
+                            plumbInst.connect({uuids: ['Window' + inputNode.name + 'Source_' + inputNode.node, 'Window' + processor.name + 'Target_' + key], editable: true});
 
-                            jsPlumb.repaint("flowchartWindow" + inputNode.name);
-                            jsPlumb.repaint("flowchartWindow" + processor.name);
+                            jsPlumb.repaint('flowchartWindow' + inputNode.name);
+                            jsPlumb.repaint('flowchartWindow' + processor.name);
                         }
                     }
                 }
@@ -479,28 +478,27 @@ function setupCanvas()
 
             // set up listeners
             // listeners for connection click, drag, dragStop, and moved
-            plumbInst.bind("click", function (conn, originalEvent)
+            plumbInst.bind('click', function (conn, originalEvent)
             {
-                //conn.toggleType("basic");
-                //console.log("connection " + conn.id + " is being clicked. suspendedElement is ", conn.suspendedElement, " of type ", conn.suspendedElementType);
+                //conn.toggleType('basic');
+                //console.log('connection ' + conn.id + ' is being clicked. suspendedElement is ', conn.suspendedElement, ' of type ', conn.suspendedElementType);
             });
 
-            plumbInst.bind("connectionDrag", function (connection)
+            plumbInst.bind('connectionDrag', function (connection)
             {
-                //console.log("connection " + connection.id + " is being dragged. suspendedElement is ", connection.suspendedElement, " of type ", connection.suspendedElementType);
+                //console.log('connection ' + connection.id + ' is being dragged. suspendedElement is ', connection.suspendedElement, ' of type ', connection.suspendedElementType);
             });
 
-            plumbInst.bind("connectionDragStop", function (connection)
+            plumbInst.bind('connectionDragStop', function (connection)
             {
-                //console.log("connection " + connection.id + " was dragged");
+                //console.log('connection ' + connection.id + ' was dragged');
             });
 
-            plumbInst.bind("connectionMoved", function (params)
+            plumbInst.bind('connectionMoved', function (params)
             {
-                //console.log("connection " + params.connection.id + " was moved");
             });
 
-            plumbInst.bind("connection", function (info)
+            plumbInst.bind('connection', function (info)
             {
                 if(info.sourceId.includes("flowchartWindow") && info.targetId.includes("flowchartWindow"))
                 {
@@ -585,10 +583,6 @@ let readerSourceEP;
 
 function addProcessorToDiagram(processor, top, left, sourceEndpoint, targetEndpoint)
 {
-	/*
-	*  Everything about this method is disgusting. I'll refactor and update if and when this code may actually get used. Until then
-	*  it's a quick and horribly dirty way to get the flowchart container panels up on screen and databound.
-	*/
 	let procType = "";
 
 	let result = processor.type.replace( /([A-Z])/g, " $1" );

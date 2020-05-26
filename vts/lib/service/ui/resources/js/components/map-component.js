@@ -336,7 +336,7 @@ Vue.component('map-viewer',
     template:   
     `
     <div>
-        <div id='viewDiv' style="height: calc(100vh - 66px); width: 100vw;">
+        <div id='viewDiv' style="height: calc(100vh - 106px); width: 100vw;">
         </div>
     </div>
     `

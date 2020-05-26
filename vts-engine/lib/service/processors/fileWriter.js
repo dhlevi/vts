@@ -1,13 +1,16 @@
 const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
+const shpwrite       = require('shp-write');
+const turf           = require('@turf/turf');
+const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
 
     let destinationPath = processor.attributes.path;
-    let type = processor.attributes.dataType;
+    let dataType = processor.attributes.dataType;
 
     let features = [];
 
@@ -29,10 +32,31 @@ module.exports.process = async function(request, processor)
         });
     });
 
-    // use json as the default
+    let data;
     let featureCollection = turf.featureCollection(features);
 
-    let data = JSON.stringify(featureCollection);
+    if (dataType === 'kml')
+    {
+
+    }
+    else if (dataType.startsWith('shape'))
+    {
+        let tempPath = process.cwd() + '/processing/' + request.name;
+
+        fs.mkdirSync(tempPath, { recursive: true }, function(err) 
+        {
+            if (err && err.code != 'EEXIST') throw err;
+        });
+
+        parentPort.postMessage(featureCollection);
+        data = shpwrite.zip(featureCollection, { folder: tempPath, types: { point: 'points', polygon: 'polygons', line: 'linestrings' } });
+        
+        fs.writeFile(tempPath + '/hello.zip', data, function(err){ console.log(err) });
+    }
+    else
+    {
+        data = JSON.stringify(featureCollection);
+    }
 
     fs.writeFile(destinationPath, data, (err) => 
     {
