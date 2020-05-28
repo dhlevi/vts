@@ -36,6 +36,7 @@ EngineController.prototype.init = async function()
                                                     return JSON.parse(result);
                                                })
                                                .catch(function (err) {
+                                                   console.log('Engine route is unaccessible from the VTS server');
                                                });
                         try
                         {
@@ -45,10 +46,12 @@ EngineController.prototype.init = async function()
                             engine['totalRequests'] = engineData.totalRequests;
                             engine['maxMemory'] = engineData.maxMemory;
                             engine['usedMemory'] = engineData.usedMemory;
+                            engine['alive'] = true;
                         }
                         catch(error)
                         {
                             console.log('Route "' + engine.route + '" failed for engine "' + engine.id + '"');
+                            engine['alive'] = false;
                         }
                     }
                 }

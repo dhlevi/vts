@@ -115,6 +115,34 @@ function buildEngineChart()
 		success: function (engines)
 		{
             app.engines = engines;
+            // pull updated stats from engine routes
+            app.engines.forEach(engine =>
+            {
+                if (engine.route && engine.route.startsWith('http'))
+                {
+                    $.ajax
+                    ({
+                        url: engine.route,
+                        type: "get",
+                        success: function (engineData)
+                        {
+                            engine['runningRequests'] = engineData.runningRequests;
+                            engine['queuedRequests']  = engineData.queuedRequests;
+                            engine['uptime']          = engineData.uptime;
+                            engine['totalRequests']   = engineData.totalRequests;
+                            engine['maxMemory']       = engineData.maxMemory;
+                            engine['usedMemory']      = engineData.usedMemory;
+                            engine['alive']           = true;
+                        },
+                        error: function (error)
+                        {
+                            engine['alive'] = false;
+                        }
+                    });
+                }
+            });
+
+            // append engine stats, update dashboard
             if(app.currentTab === 'dashboard')
             {
                 let data = 

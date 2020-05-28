@@ -2,14 +2,7 @@
 set -euo pipefail
 IFS=$'\n\t'
 [ "${VERBOSE:-}" != true ]|| set -x
-cd /vts
-echo "***********************************************"
-echo "* NPM install log"
-echo "***********************************************"
-echo ""
 cd /vts/vts
-npm install
-echo ""
 echo "***********************************************"
 echo "* Starting..."
 echo "***********************************************"

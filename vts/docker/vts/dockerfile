@@ -19,12 +19,17 @@ RUN mkdir /logs
 # clone branch
 RUN git clone -b master https://github.com/dhlevi/vts.git /vts
 
+WORKDIR /vts/vts
+
+RUN npm install
+
+WORKDIR /
 COPY ./entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
 
-# CMD tail -f /dev/null
+#CMD tail -f /dev/null
 
 # docker build . -t vts
-# docker run --name vts_server -p 9988:9988 -e PORT=9988 -e MONGO_CONNECTION=mongodb://admin:password@<mongodb_ip>:27017/vts vts:latest
+# docker run --name vts_server -p 9988:9988 -e PORT=9988 -e MONGO_CONNECTION="mongodb://admin:password@<container-ip>:27017/vts?authSource=admin" vts:latest
 # Get your mongodb IP from: docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' <container name>
 # If you used the docker file here, it'll be vts_mongo

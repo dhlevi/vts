@@ -26,7 +26,7 @@ function shutdownEngine(engine)
         },
         error: function (status)
 		{   
-            M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
+            // M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
 		}
     });
 }
@@ -43,7 +43,7 @@ function startupEngine(engine)
         },
         error: function (status)
 		{   
-            M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
+            // M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
 		}
     });
 }
@@ -60,7 +60,7 @@ function flushEngine(engine)
         },
         error: function (status)
 		{   
-            M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
+            // M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
 		}
     });
 }
@@ -82,7 +82,7 @@ function editEngine(engineId)
         },
         error: function (status)
 		{   
-            M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
+            // M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
             refresh = true;
 		}
     });
@@ -145,7 +145,7 @@ function deleteEngine(engine)
         },
         error: function (status)
 		{   
-            M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
+            // M.toast({ html: 'ERROR: Engine could not be retrieved from the service.'});
 		}
     });
 }
