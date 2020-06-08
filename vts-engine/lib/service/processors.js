@@ -33,7 +33,7 @@ module.exports.requestProcessor = async function(request)
                     else
                     {
                         console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
-                        req.update(data).catch(err => console.log(err));
+                        req.update(data, updatedReq => req = updatedReq).catch(err => console.log(err));
                     }
                 });
             }

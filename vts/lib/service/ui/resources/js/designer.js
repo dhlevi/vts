@@ -157,7 +157,7 @@ function addNode(node, x, y)
             processor.outputNodes['false'] = [];
         break;
         case 'spatialRelationFilter':
-            processor.attributes.type = 'crosses'; // within, contains, crosses, touches
+            processor.attributes.relationType = 'crosses'; // within, contains, crosses, touches
             processor.inputNodes['relator'] = [];
             processor.outputNodes['false'] = [];
         break;
@@ -300,7 +300,7 @@ function setupCanvas()
                 strokeWidth: 4
             },
             isSource:            true,
-            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ],
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 10, cornerRadius: 8, alwaysRespectStubs: false } ],
             connectorStyle:      connectorPaintStyle,
             hoverPaintStyle:     endpointHoverStyle,
             maxConnections:      -1,
@@ -357,7 +357,7 @@ function setupCanvas()
             },
             //anchor:[ "Perimeter", { shape:"Square" } ],
             isSource:            true,
-            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ],
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 10, cornerRadius: 8, alwaysRespectStubs: false } ],
             connectorStyle:      connectorPaintStyle,
             hoverPaintStyle:     endpointHoverStyle,
             maxConnections:      -1,
@@ -377,7 +377,7 @@ function setupCanvas()
             },
             //anchor:[ 'Perimeter', { shape:'Square' } ],
             isSource:            true,
-            connector:           [ 'Flowchart', { stub: [0, 0], gap: 0, cornerRadius: 0, alwaysRespectStubs: false } ], //'StateMachine'
+            connector:           [ 'Flowchart', { stub: [0, 0], gap: 10, cornerRadius: 8, alwaysRespectStubs: false } ], //'StateMachine'
             connectorStyle:      connectorPaintStyle,
             hoverPaintStyle:     endpointHoverStyle,
             maxConnections:      -1,
@@ -387,7 +387,40 @@ function setupCanvas()
         },
         init = function (connection)
         {
-            connection.getOverlay('label').setLabel(connection.sourceId.substring(15) + '-' + connection.targetId.substring(15));
+            // no label atm
+           /* let sourceId = connection.sourceId.substring(15);
+            let targetId = connection.targetId.substring(15);
+            let sourceProcessor;
+            let targetProcessor;
+
+            for(let idx in app.request.processors)
+            {
+                let processor = app.request.processors[idx];
+                
+                if (processor.name === sourceId && !sourceProcessor)
+                {
+                    sourceProcessor = processor;
+                }
+                else if (processor.name === targetId && !targetProcessor)
+                {
+                    targetProcessor = processor;
+                }
+
+                if (sourceProcessor && targetProcessor)
+                    break;
+            }
+
+            let srcLabel = sourceProcessor.type.replace( /([A-Z])/g, " $1" );
+            srcLabel = srcLabel.charAt(0).toUpperCase() + srcLabel.slice(1);
+            
+            if (sourceProcessor.outputNodes.length === 1) srcLabel += ' Features';
+            
+            let tgtLabel = targetProcessor.type.replace( /([A-Z])/g, " $1" );
+            tgtLabel = tgtLabel.charAt(0).toUpperCase() + tgtLabel.slice(1);
+            
+            if (targetProcessor.inputNodes.length === 1) tgtLabel += ' Features';
+            
+            connection.getOverlay('label').setLabel(srcLabel + ' to ' + tgtLabel); */
         };
 
         targetEP       = targetEndpoint;
@@ -519,7 +552,18 @@ function setupCanvas()
                                 {
                                     let inputNodes = processor.inputNodes[targetNode];
                                     if(!inputNodes) inputNodes = [];
-                                    inputNodes.push({ name: sourceId, node: sourceNode });
+
+                                    // only link source node to this nodes set of inputs if
+                                    // there is no circular path back. Does source node depend on the input?
+                                    // go through the source nodes tree. If at any point the it hits, cancel this
+                                    let isCircular = testCircularLinks(sourceId, targetId);
+
+                                    if (!isCircular) {
+                                        inputNodes.push({ name: sourceId, node: sourceNode });
+                                    } else {
+                                        refreshDiagram();
+                                    }
+
                                     break;
                                 }
                             }
@@ -629,28 +673,56 @@ function addProcessorToDiagram(processor, top, left, sourceEndpoint, targetEndpo
 		}
 		else if(outputNodeKeys.length == 2)
 		{
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, sourceEndpoint, { anchor: [ 1, 0.35, -1, -1 ], uuid: "Window" + processor.name + "Source_"  + outputNodeKeys[0] });
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, sourceEndpoint, { anchor: [ 1, 0.65, -1, -1 ], uuid: "Window" + processor.name + "Source_" + outputNodeKeys[1] });
+            let ep1 = JSON.parse(JSON.stringify(sourceEndpoint));
+            let ep2 = JSON.parse(JSON.stringify(sourceEndpoint));
+
+            ep1.overlays[0][1].label = outputNodeKeys[0];
+            ep1.overlays[0][1].visible = true;
+
+            ep2.overlays[0][1].label = outputNodeKeys[1];
+            ep2.overlays[0][1].visible = true;
+
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep1, { anchor: [ 1, 0.55, 0, 0 ], uuid: "Window" + processor.name + "Source_"  + outputNodeKeys[0] });
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep2, { anchor: [ 1, 0.75, 0, 0 ], uuid: "Window" + processor.name + "Source_" + outputNodeKeys[1] });
 		}
 		else if(outputNodeKeys.length == 1)
 		{
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, sourceEndpoint, { anchor: "RightMiddle", uuid: "Window" + processor.name + "Source_" + outputNodeKeys[0] });
+            let ep1 = JSON.parse(JSON.stringify(sourceEndpoint));
+
+            ep1.overlays[0][1].label = outputNodeKeys[0];
+            ep1.overlays[0][1].visible = true;
+
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep1, { anchor: [ 1, 0.65, 0, 0 ], uuid: "Window" + processor.name + "Source_" + outputNodeKeys[0] });
 		}
 
 		if(inputNodeKeys.length == 3)
 		{
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.25, -1, -1 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.25, 0, 0 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
 			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: "LeftMiddle", uuid: "Window" + processor.name + "Target_" + inputNodeKeys[1] });
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.75, -1, -1 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[2] });
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.75, 0, 0 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[2] });
 		}
 		else if(inputNodeKeys.length == 2)
 		{
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.35, -1, -1 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: [ 0, 0.65, -1, -1 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[1] });
+            let ep1 = JSON.parse(JSON.stringify(targetEndpoint));
+            let ep2 = JSON.parse(JSON.stringify(targetEndpoint));
+
+            ep1.overlays[0][1].label = inputNodeKeys[0];
+            ep1.overlays[0][1].visible = true;
+
+            ep2.overlays[0][1].label = inputNodeKeys[1];
+            ep2.overlays[0][1].visible = true;
+
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep1, { anchor: [ 0, 0.55, 0, 0 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep2, { anchor: [ 0, 0.75, 0, 0 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[1] });
 		}
 		else if(inputNodeKeys.length == 1)
 		{
-			plumbInst.addEndpoint("flowchartWindow" + processor.name, targetEndpoint, { anchor: "LeftMiddle", uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
+            let ep1 = JSON.parse(JSON.stringify(targetEndpoint));
+
+            ep1.overlays[0][1].label = inputNodeKeys[0];
+            ep1.overlays[0][1].visible = true;
+
+			plumbInst.addEndpoint("flowchartWindow" + processor.name, ep1, { anchor: [ 0, 0.65, 0, 0 ], uuid: "Window" + processor.name + "Target_" + inputNodeKeys[0] });
 		}
 	}
 }
@@ -667,10 +739,16 @@ function getProcessorPanel(processor, top, left, canvas)
 	else if(title.toLowerCase().includes("reader")) procType = "reader";
 	else procType = "processor";
 
-	let processorHtml  = "<div onclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 250px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
+    let outputs = Object.keys(processor.outputNodes).length;
+    let inputs = Object.keys(processor.inputNodes).length;
+
+    let panelHeight = outputs > 1 || inputs > 1 ? 110 : 90
+    let titleHeight = outputs > 1 || inputs > 1 ? 40 : 20
+
+	let processorHtml  = "<div ondblclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 250px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
 		processorHtml += "<div class=\"card " + procType + " z-depth-0\" style=\"border: 1px solid #e0e0e0;\">";
-		processorHtml += "<div class='card-image' style='height: 60px;'>";
-		processorHtml += "<span class=\"card-title\" style='bottom: -10px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";
+		processorHtml += "<div class='card-image' style='height: " + panelHeight + "px;'>";
+		processorHtml += "<span class=\"card-title\" style='bottom: " + titleHeight + "px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";
         processorHtml += "</div></div></div>";
 
 	$("#" + canvas).append(processorHtml);
@@ -723,4 +801,43 @@ function dropTool(event)
 {
     console.log('Drop! ' + event.dataTransfer.getData('tool'));
     addNode(event.dataTransfer.getData('tool'), event.pageX - 120, event.pageY - 40);
+}
+
+function testCircularLinks(sourceId, targetId)
+{
+    let dependentNodes = [];
+    for (let i in app.request.processors)
+    {
+        let processor = app.request.processors[i];
+        if(processor.name == sourceId)
+        {
+            for(let key in processor.inputNodes) {
+                let inputs = processor.inputNodes[key];
+                dependentNodes = dependentNodes.concat(inputs);
+            }
+            break;
+        }
+    }
+
+    // do we have a hit with targetId?
+    for (let node in dependentNodes) {
+        if (dependentNodes[node].name === targetId) {
+            return true;
+        }
+    }
+
+    // Test the dependents
+    for (let i = 0; i < dependentNodes.length; i++) {
+        for (let key in app.request.processors)
+        {
+            let processor = app.request.processors[key];
+            if(processor.name == dependentNodes[i].name)
+            {
+                let isCircular = testCircularLinks(dependentNodes[i].name, targetId);
+                if (isCircular) return true;
+            }
+        }
+    }
+
+    return false;
 }

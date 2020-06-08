@@ -46,30 +46,27 @@ module.exports.process = async function(request, processor)
                 // extract polygon interior rings, make into geoms
                 if (currentFeature.geometry.type === 'Polygon')
                 {
-                    currentFeature.geometry.coordinates.forEach((ring, index) =>
+                    for (let i = 1; i < currentFeature.geometry.coordinates.length; i++) 
                     {
-                        if (index > 0)
+                        let ring = turf.feature(
                         {
-                            let donut = turf.feature(
-                            {
-                                type: 'Polygon',
-                                coordinates: ring
-                            });
-                            
-                            // generate an ID
-                            let donutId = uuidv4();
-                            processor.outputNodes.tin.push(donutId);
-                            // shove the feature on the disk
-                            let donutData = JSON.stringify(donut);
-        
-                            let donutPath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/donuts/';
+                            type: 'Polygon',
+                            coordinates: currentFeature.geometry.coordinates[i]
+                        });
 
-                            fs.writeFileSync(donutPath + '/' + donutId + '.json', donutData, (err) => 
-                            {
-                                if (err) throw err;
-                            });
-                        }
-                    });
+                        // generate an ID
+                        let donutId = uuidv4();
+                        processor.outputNodes.tin.push(donutId);
+                        // shove the feature on the disk
+                        let donutData = JSON.stringify(ring);
+
+                        let donutPath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/donuts/';
+
+                        fs.writeFileSync(donutPath + '/' + donutId + '.json', donutData, (err) => 
+                        {
+                            if (err) throw err;
+                        });
+                    }
                 }
             });
         });

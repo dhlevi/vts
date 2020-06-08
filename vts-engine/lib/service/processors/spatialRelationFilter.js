@@ -8,7 +8,7 @@ module.exports.process = async function(request, processor)
     processor.outputNodes.features = [];
     processor.outputNodes.false = [];
 
-    let type = processor.attributes.type;
+    let type = processor.attributes.relationType;
 
     let relators = [];
 

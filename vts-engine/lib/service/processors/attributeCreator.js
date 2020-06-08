@@ -33,7 +33,7 @@ module.exports.process = async function(request, processor)
             fields.forEach((field, index) =>
             {
                 let fieldValue = values.length > index ? values[index] : '';
-                let fieldType  = types.length  > index ? types[index]  : 'string';
+                let fieldType  = types.length  > index ? types[index]  : types[0];
 
                 try
                 {

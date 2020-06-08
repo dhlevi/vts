@@ -39,7 +39,7 @@ Vue.component('designer',
                 <a href="#" onclick="app.tabSwitch('edit-project');" title="Save Diagram"><i class="material-icons">save</i></a>
                 <a href="#" onclick="clearDiagram();" title="New Diagram"><i class="material-icons">clear</i></a>
             </div>
-            <div id="creatorContainer">
+            <div id="creatorContainer" onclick="$('#node_editor').hide();" style="height: calc(100vh - 130px);">
                 <div class="designer-canvas jtk-demo-canvas canvas-wide flowchart-demo jtk-surface jtk-surface-nopan zoomItem" id="canvas">
                 </div>
             </div>
@@ -52,7 +52,7 @@ Vue.component('designer',
 Vue.component('node-editor',
 {
     props: ['selectedNode'],
-    template:   
+    template:
     `
     <div id="node_editor" class="primary-color-dark z-depth-2 node-editor" style="display: none;">
         <h4 class="white-text" style="font-size: 18px;">{{selectedNode.title}}</h4>
@@ -82,9 +82,47 @@ Vue.component('node-attribute',
     template:   
     `
     <div class="row">
-        <div class="input-field col s12 white-text">
-            <input v-model="attributes[attributeKey]" v-bind:id="'' + attributeKey + ''" type="text" class="validate white-text">
-            <label class="white-text" v-bind:for="'' + attributeKey + ''">{{attributeKey}}</label>
+        <div v-bind:class="{ 'input-field': attributeKey !== 'dataType' && attributeKey !== 'units' && attributeKey !== 'relationType' }" class="col s12 white-text">
+            <label v-if="attributeKey === 'dataType' || attributeKey === 'units' || attributeKey === 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
+            <select v-if="attributeKey === 'dataType'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
+                <option value="json">GeoJSON</option>
+                <option value="kml">KML</option>
+                <option value="kmz">KMZ</option>
+                <option value="shape">Shapefile (zip)</option>
+                <option value="fgdb">FGDB (zip)</option>
+                <option value="gml">GML</option>
+            </select>
+            <select v-else-if="attributeKey === 'units'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
+                <option value="meters">Meters</option>
+                <option value="millimeters">Millimeters</option>
+                <option value="centimeters">Centimeters</option>
+                <option value="kilometers">Kilometers</option>
+                <option value="acres">Acres</option>
+                <option value="miles">Miles</option>
+                <option value="nauticalmiles">Nautical Miles</option>
+                <option value="inches">Inches</option>
+                <option value="yards">Yards</option>
+                <option value="feet">Feet</option>
+            </select>
+            <select v-else-if="attributeKey === 'relationType'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
+                <option value="crosses">Croses</option>
+                <option value="contains">Contains</option>
+                <option value="disjoint">Disjoint</option>
+                <option value="equal">Equal</option>
+                <option value="overlap">Overlap</option>
+                <option value="parallel">Parallel</option>
+                <option value="pointinpolygon">Point in Polygon</option>
+                <option value="pointonline">Point on Line</option>
+                <option value="within">Within</option>
+            </select>
+            <p v-else-if="attributeKey === 'isConvex' || attributeKey === 'highQuality'">
+                <label>
+                    <input type="checkbox" class="filled-in" checked="checked" v-model="attributes[attributeKey]"/>
+                    <span>{{attributeKey.replace( /([A-Z])/g, " $1" )}}</span>
+                </label>
+            </p>
+            <input v-else v-model="attributes[attributeKey]" v-bind:id="'' + attributeKey + ''" type="text" class="validate white-text">
+            <label v-if="attributeKey !== 'isConvex' && attributeKey !== 'highQuality' && attributeKey !== 'dataType' && attributeKey !== 'units' && attributeKey !== 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
         </div>
     </div>
     `

@@ -264,6 +264,7 @@ font-family: 'Raleway', sans-serif;
     width: 300px;
     position: absolute;
     right: 10px;
+    top: 175px;
     border-radius: 3px;
     padding-left: 12px;
     padding-right: 12px;
@@ -366,8 +367,26 @@ font-family: 'Raleway', sans-serif;
 
 .designerLabel
 {
-    border-radius: 3px;
-    padding: 5px;
-    background: #ffffffc9;
+    margin-top: -10px;
     color: black;
+}
+
+.endpointSourceLabel
+{
+    margin-left: -40px;
+    margin-top: -23px;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 100;
+    text-align: right;
+}
+
+.endpointTargetLabel
+{
+    margin-left: 40px;
+    margin-top: 20px;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 100;
+    text-align: right;
 }

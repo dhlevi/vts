@@ -25,6 +25,7 @@ module.exports.process = async function(request, processor)
     }
     else if (dataType === 'fgdb')
     {
+        parentPort.postMessage('Reading an FGDB');
         result = await convertFGDB(url, request.name, projection);
     }
     else if (dataType === 'kmz')
@@ -263,10 +264,15 @@ async function convertFGDB(url, processDir, projection)
 
     // call the URL zip location and extract the files
     // fgdb may be in folder?
+
+    parentPort.postMessage('Unzipping FGDB...');
     const directory = await unzipper.Open.url(request, url);
+    parentPort.postMessage('Done, looping files.');
+    parentPort.postMessage(directory.files);
     for(let idx in directory.files)
     {
         let file = directory.files[idx];
+        parentPort.postMessage('found a file');
         const content = await file.buffer();
         // write the raw content to the temp path
         fs.writeFileSync(tempPath + '/' + file.path, content);
@@ -276,6 +282,8 @@ async function convertFGDB(url, processDir, projection)
     let files = fs.readdirSync(tempPath);
     let gdbPath = '';
 
+    parentPort.postMessage('Looking for gdb files...');
+    
     for(let i = 0 ; i < files.length; i++)
     {
         let fromPath = path.join(tempPath, files[i]);

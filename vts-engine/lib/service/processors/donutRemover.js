@@ -27,8 +27,7 @@ module.exports.process = async function(request, processor)
                 // extract polygon interior rings, make into geoms
                 if (currentFeature.geometry.type === 'Polygon')
                 {
-                    let exteriorRing = currentFeature.geometry.coordinates[0];
-                    currentFeature.geometry.coordinates = [ exteriorRing ];
+                    currentFeature.geometry.coordinates = [currentFeature.geometry.coordinates[0]];
                 }
 
                 // create a new feature cache

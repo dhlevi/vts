@@ -24,9 +24,23 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            // inject new attribute
-            feature.properties[toName] = feature.properties[fromName];
-            delete feature.properties[fromName];
+            // check for csv
+            let fields = fieldName.split(',');
+            let newFields = defaultValue.split(',');
+
+            fields.forEach((field, index) =>
+            {
+                // inject new attribute name
+                try
+                {
+                    feature.properties[newFields[index].trim()] = feature.properties[field.trim()];
+                    delete feature.properties[field.trim()];
+                }
+                catch(err)
+                {
+                    console.error(err);
+                }
+            });
 
             // create a new feature cache
             // generate an ID

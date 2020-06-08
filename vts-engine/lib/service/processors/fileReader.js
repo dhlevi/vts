@@ -246,14 +246,14 @@ async function convertShape(path, processDir, projection)
     return json;
 }
 
-async function convertFGDB(path, projection) 
+async function convertFGDB(filePath, processDir, projection) 
 {
     let json = null;
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
     fs.mkdirSync(tempPath, { recursive: true });
 
-    await fs.createReadStream(path)
+    await fs.createReadStream(filePath)
     .pipe(unzipper.Extract({ path: tempPath })
                   .on('close', finish => { parentPort.postMessage('Finished unzipping'); })
     ).promise().then(res =>
