@@ -25,8 +25,8 @@ module.exports.process = async function(request, processor)
             let feature = JSON.parse(featureString);
 
             // check for csv
-            let fields = fieldName.split(',');
-            let newFields = defaultValue.split(',');
+            let fields = fromName.split(',');
+            let newFields = toName.split(',');
 
             fields.forEach((field, index) =>
             {

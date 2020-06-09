@@ -41,7 +41,7 @@ module.exports.process = async function(request, processor)
                 if (err) throw err;
             });
 
-            turf.flattenEach(feature, function (currentFeature, featureIndex, multiFeatureIndex) 
+            turf.flattenEach(turf.featureCollection([feature]), function (currentFeature, featureIndex, multiFeatureIndex) 
             {
                 // extract polygon interior rings, make into geoms
                 if (currentFeature.geometry.type === 'Polygon')
@@ -51,16 +51,21 @@ module.exports.process = async function(request, processor)
                         let ring = turf.feature(
                         {
                             type: 'Polygon',
-                            coordinates: currentFeature.geometry.coordinates[i]
+                            coordinates: [currentFeature.geometry.coordinates[i]]
                         });
 
                         // generate an ID
                         let donutId = uuidv4();
-                        processor.outputNodes.tin.push(donutId);
+                        processor.outputNodes.donuts.push(donutId);
                         // shove the feature on the disk
                         let donutData = JSON.stringify(ring);
 
                         let donutPath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/donuts/';
+
+                        fs.mkdirSync(donutPath, { recursive: true }, function(err) 
+                        {
+                            if (err && err.code != 'EEXIST') throw err;
+                        });
 
                         fs.writeFileSync(donutPath + '/' + donutId + '.json', donutData, (err) => 
                         {

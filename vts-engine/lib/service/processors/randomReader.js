@@ -5,7 +5,7 @@ const turf           = require('@turf/turf');
 module.exports.process = async function(request, processor)
 {
     let items = Number(processor.attributes.items);
-    let type = processor.attributes.dataType;
+    let type = processor.attributes.featureType;
     let results = type.toLowerCase() === 'point'        ? turf.randomPoint(items) :
                   type.toLowerCase().startsWith('line') ? turf.randomLineString(items) :
                   type.toLowerCase() === 'polygon'      ? turf.randomPolygon(items) : 

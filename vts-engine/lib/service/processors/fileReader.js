@@ -262,23 +262,11 @@ async function convertFGDB(filePath, processDir, projection)
         return res;
     });
 
-    // find a directory with a .gdb extension
-    let files = fs.readdirSync(tempPath);
-    let gdbPath = '';
-
-    for(let i = 0 ; i < files.length; i++)
-    {
-        let fromPath = path.join(tempPath, files[i]);
-        if(fromPath.includes('.gdb')) gdbPath = fromPath;
-    }
-    
-    console.log('Found FGDB in path: ' + gdbPath);
-    console.log('Processing FGDB...');
-
-    json = await fgdb(gdbPath)
+    // process files extracted to tempPath
+    json = await fgdb(tempPath)
     .then(function(objectOfGeojson)
     {
-        console.log('Successfully processed FGDB!');
+        parentPort.postMessage('Successfully processed FGDB!');
         
         // there may be multiple feature classes, and we may need to do some projection...
         let featureClassKeys = Object.keys(objectOfGeojson);
@@ -289,7 +277,7 @@ async function convertFGDB(filePath, processDir, projection)
 
             if(featureClass.bbox[0] > 180 || featureClass.bbox[0] < 180)
             {
-                console.log('Reprojecting feature: ' + key);
+                parentPort.postMessage('Reprojecting feature: ' + key);
                 // not WGS84, reproject
                 // we don't know the source projection, so assume BCAlbers?
 
@@ -304,7 +292,7 @@ async function convertFGDB(filePath, processDir, projection)
             }
         }
 
-        console.log('Sending geojson response...');
+        parentPort.postMessage('Sending geojson response...');
         // send the feature classes back. The Processor will create layers
         // for each feature class
         cleanupTempFiles(tempPath);
@@ -316,7 +304,7 @@ async function convertFGDB(filePath, processDir, projection)
     {
         console.error('Error during FGDB convert...');
         console.error(error);
-        console.log('cleaning temp files');
+        parentPort.postMessage('cleaning temp files');
         cleanupTempFiles(tempPath);
         throw new Error(error);
     });

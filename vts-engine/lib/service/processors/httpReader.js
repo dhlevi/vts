@@ -278,22 +278,7 @@ async function convertFGDB(url, processDir, projection)
         fs.writeFileSync(tempPath + '/' + file.path, content);
     };
 
-    // find a directory with a .gdb extension
-    let files = fs.readdirSync(tempPath);
-    let gdbPath = '';
-
-    parentPort.postMessage('Looking for gdb files...');
-    
-    for(let i = 0 ; i < files.length; i++)
-    {
-        let fromPath = path.join(tempPath, files[i]);
-        if(fromPath.includes('.gdb')) gdbPath = fromPath;
-    }
-    
-    console.log('Found FGDB in path: ' + gdbPath);
-    console.log('Processing FGDB...');
-
-    json = await fgdb(gdbPath)
+    json = await fgdb(tempPath)
     .then(function(objectOfGeojson)
     {
         console.log('Successfully processed FGDB!');

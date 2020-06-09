@@ -14,7 +14,7 @@ Vue.component('header-component',
                     <a href="index.html" class="brand-logo">Vivid Topology Service</a>
                     <ul id="nav-mobile" class="right hide-on-med-and-down">
                         <li><a href="#">Docs</a></li>
-                        <li><a href="#">About</a></li>
+                        <li><a href="#" onclick="app.tabSwitch('about')">About</a></li>
                     </ul>
                 </div>
             </div>

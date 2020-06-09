@@ -82,8 +82,8 @@ Vue.component('node-attribute',
     template:   
     `
     <div class="row">
-        <div v-bind:class="{ 'input-field': attributeKey !== 'dataType' && attributeKey !== 'units' && attributeKey !== 'relationType' }" class="col s12 white-text">
-            <label v-if="attributeKey === 'dataType' || attributeKey === 'units' || attributeKey === 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
+        <div v-bind:class="{ 'input-field': attributeKey !== 'dataType' && attributeKey !== 'featureType' && attributeKey !== 'units' && attributeKey !== 'relationType' }" class="col s12 white-text">
+            <label v-if="attributeKey === 'dataType' || attributeKey === 'featureType' || attributeKey === 'units' || attributeKey === 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
             <select v-if="attributeKey === 'dataType'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
                 <option value="json">GeoJSON</option>
                 <option value="kml">KML</option>
@@ -91,6 +91,11 @@ Vue.component('node-attribute',
                 <option value="shape">Shapefile (zip)</option>
                 <option value="fgdb">FGDB (zip)</option>
                 <option value="gml">GML</option>
+            </select>
+            <select v-if="attributeKey === 'featureType'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
+                <option value="polygon">Polygon</option>
+                <option value="lines">Line</option>
+                <option value="point">Point</option>
             </select>
             <select v-else-if="attributeKey === 'units'" class="browser-default" v-bind:id="'' + attributeKey + ''" v-model="attributes[attributeKey]">
                 <option value="meters">Meters</option>
@@ -122,7 +127,7 @@ Vue.component('node-attribute',
                 </label>
             </p>
             <input v-else v-model="attributes[attributeKey]" v-bind:id="'' + attributeKey + ''" type="text" class="validate white-text">
-            <label v-if="attributeKey !== 'isConvex' && attributeKey !== 'highQuality' && attributeKey !== 'dataType' && attributeKey !== 'units' && attributeKey !== 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
+            <label v-if="attributeKey !== 'isConvex' && attributeKey !== 'highQuality' && attributeKey !== 'dataType' && attributeKey !== 'featureType' && attributeKey !== 'units' && attributeKey !== 'relationType'" class="white-text" style="text-transform: uppercase;" v-bind:for="'' + attributeKey + ''">{{attributeKey.replace( /([A-Z])/g, " $1" )}}</label>
         </div>
     </div>
     `

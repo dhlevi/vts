@@ -26,15 +26,8 @@ module.exports.requestProcessor = async function(request)
             {
                 Request.findById(data._id).then(req =>
                 {
-                    if (data.status === 'In Progress' && (req.status === 'Complete' || req.status === 'Failed'))
-                    {
-                        console.log(`Request Worker ${request.name} update requested out of sync. Ignoring`);
-                    }
-                    else
-                    {
-                        console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
-                        req.update(data, updatedReq => req = updatedReq).catch(err => console.log(err));
-                    }
+                    console.log(`Request Worker ${request.name} updated request to DB. State: ${data.status}`)
+                    req.update(data, updatedReq => req = updatedReq).catch(err => console.log(err));
                 });
             }
             else

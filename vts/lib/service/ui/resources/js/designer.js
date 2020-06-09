@@ -52,7 +52,7 @@ function addNode(node, x, y)
             processor.attributes.sourceProjection = '';
         break;
         case 'randomReader':
-            processor.attributes.dataType = 'polygon'; // point, line, polygon
+            processor.attributes.featureType = 'polygon'; // point, line, polygon
             processor.attributes.items = 1;
         break;
         case 'projector':

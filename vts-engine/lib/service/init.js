@@ -241,7 +241,7 @@ exports.launch = async function (args)
                 
                 if (engine.currentState !== engine.requestedState) 
                 {
-                    engine.metadata.history.push({ user: 'VTS', date: new Date(), event: 'Received request to transition from ' + engine.currentState + ' to ' + engine.requestedState});
+                    engine.messages.push({ sender: 'VTS', timestamp: new Date(), message: 'Received request to transition from ' + engine.currentState + ' to ' + engine.requestedState});
 
                     if (engine.requestedState === 'Running')
                     {

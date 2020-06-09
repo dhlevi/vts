@@ -33,7 +33,7 @@ let app = new Vue(
         selectedNode: { title: '' },
         lastTab: 'dashboard',
         currentTab: 'dashboard',
-        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'edit-task', 'projects', 'edit-project', 'designer', 'map-viewer'],
+        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'edit-task', 'projects', 'edit-project', 'designer', 'map-viewer', 'about'],
         componentKey: 0,
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'http' },
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'all_inbox' },

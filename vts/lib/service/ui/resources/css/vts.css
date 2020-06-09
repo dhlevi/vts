@@ -109,6 +109,12 @@ font-family: 'Raleway', sans-serif;
     stroke-width: 2px;
 }
 
+.engine .ct-series-b .ct-line, .ct-series-b .ct-point
+{
+    stroke: rgb(1, 180, 31);
+    stroke-width: 2px;
+}
+
 .mem-chart .ct-label
 {
     color: white;
@@ -121,7 +127,7 @@ font-family: 'Raleway', sans-serif;
 
 .ct-series-a .ct-bar, .ct-series-b .ct-line, .ct-series-b .ct-point, .ct-series-b .ct-slice-donut
 {
-    stroke: #25353b;
+    stroke: #253b27;
 }
 
 #requestCountChart .ct-series-a .ct-label

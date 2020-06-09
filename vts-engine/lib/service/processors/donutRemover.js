@@ -22,7 +22,7 @@ module.exports.process = async function(request, processor)
             let feature = JSON.parse(featureString);
 
             // this won't work. Should not be collapsing/flattening geom collections!
-            turf.flattenEach(feature, function (currentFeature, featureIndex, multiFeatureIndex) 
+            turf.flattenEach(turf.featureCollection([feature]), function (currentFeature, featureIndex, multiFeatureIndex) 
             {
                 // extract polygon interior rings, make into geoms
                 if (currentFeature.geometry.type === 'Polygon')

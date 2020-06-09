@@ -2,7 +2,10 @@ const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
 const shpwrite       = require('shp-write');
+const tokml          = require('tokml');
+const togml          = require('geojson-to-gml-3');
 const turf           = require('@turf/turf');
+const AdmZip         = require('adm-zip');
 const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
@@ -37,29 +40,40 @@ module.exports.process = async function(request, processor)
 
     if (dataType === 'kml')
     {
-
+        fs.writeFile(destinationPath, tokml(featureCollection), (err) => 
+        {
+            if (err) throw err;
+        });
+    }
+    else if (dataType === 'kmz')
+    {
+        let kml = tokml(featureCollection);
+        // zip and write
+        let kmz = new AdmZip();
+        kmz.addFile('doc.kml', Buffer.alloc(kml.length, kml));
+        kmz.writeZip(destinationPath);
+    }
+    else if (dataType === 'gml')
+    {
+        fs.writeFile(destinationPath, togml.geomToGml(featureCollection), (err) => 
+        {
+            if (err) throw err;
+        });
     }
     else if (dataType.startsWith('shape'))
     {
-        let tempPath = process.cwd() + '/processing/' + request.name;
-
-        fs.mkdirSync(tempPath, { recursive: true }, function(err) 
+        fs.writeFile(destinationPath, shpwrite.zip(featureCollection), (err) => 
         {
-            if (err && err.code != 'EEXIST') throw err;
+            if (err) throw err;
         });
-
-        parentPort.postMessage(featureCollection);
-        data = shpwrite.zip(featureCollection, { folder: tempPath, types: { point: 'points', polygon: 'polygons', line: 'linestrings' } });
-        
-        fs.writeFile(tempPath + '/hello.zip', data, function(err){ console.log(err) });
     }
     else
     {
         data = JSON.stringify(featureCollection);
+        
+        fs.writeFile(destinationPath, data, (err) => 
+        {
+            if (err) throw err;
+        });
     }
-
-    fs.writeFile(destinationPath, data, (err) => 
-    {
-        if (err) throw err;
-    });
 };
