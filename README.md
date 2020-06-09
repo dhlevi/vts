@@ -6,9 +6,6 @@ useful! Requests can be ad hoc or scheduled to run at repeating intervals.
 The application dashboard:
 ![Dashboard screen](/docs/dashboard.jpg)
 
-Viewing the requests
-![Requets screen](/docs/requests.jpg)
-
 ## What is it?
 
 VTS is a web application, a small rest service, and 1+ "engine" services, backed by a MongoDB instance. Requests, scheduled tasks, and projects can be created via the main web application. These are then pulled for processing by the Engine service (you can run multiple engines) which does the processing.
@@ -30,6 +27,14 @@ Data itself can be transformed by various processors, such as buffers, convex/co
 To create the requests, the web application includes a "request designer" where you can drop processors and wire them together, but you can always create requests in JSON and submit them manually.
 
 ![Engines screen](/docs/designer.jpg)
+
+While your process is running, you can view the request status and see various messages from the engine (errors or just information).
+
+![Requets screen](/docs/requests.jpg)
+
+Additionally, either during or after processing, you can view the process results in a map.
+
+![Map screen](/docs/mapview.jpg)
 
 ## Planned processors
 

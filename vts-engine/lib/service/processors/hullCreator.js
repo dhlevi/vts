@@ -67,7 +67,7 @@ module.exports.process = async function(request, processor)
 
     // Now that we have all of the points from all input sources, we can
     // create a hull. This will go on the hull output node
-    let hull = isConvex ? turf.convex(turf.featureCollection(points)) : turf.featureCollection(points);
+    let hull = isConvex ? turf.convex(turf.featureCollection(points)) : turf.concave(turf.featureCollection(points));
 
     // cache the hull
     let id = uuidv4();
