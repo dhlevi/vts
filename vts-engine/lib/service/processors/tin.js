@@ -50,6 +50,12 @@ module.exports.process = async function(request, processor)
         let tinData = JSON.stringify(poly);
 
         let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
+
+        fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+        {
+            if (err && err.code != 'EEXIST') throw err;
+        });
+        
         fs.writeFileSync(cachePath + '/' + tinId + '.json', tinData, (err) => 
         {
             if (err) throw err;

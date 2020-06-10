@@ -32,9 +32,9 @@ Vue.component('edit-task',
                     </div>
                 </div>
                 <div class="row">
-                    <div class="input-field col s6 white-text">
+                    <div class="col s6 white-text">
                         <label>interval Unit</label>
-                        <select v-model="request.intervalUnit" class="white-text browser-default">
+                        <select v-model="request.intervalUnit" class="browser-default">
                             <!-- option value="Seconds">Seconds</option -->
                             <option value="Minutes">Minutes</option>
                             <option value="Hours">Hours</option>

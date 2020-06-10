@@ -43,6 +43,11 @@ function loadRequests(text, status, tasks)
 function saveProject(isTask, status)
 {
     app.request.scheduledTask = isTask;
+
+    if (isTask && app.request.interval < 1) {
+        app.request.interval = 1;
+    }
+    
     app.request.status = status;
     app.request.name = app.request.name && app.request.name.length > 0 ? app.request.name : uuid();
 
