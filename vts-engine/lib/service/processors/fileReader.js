@@ -123,7 +123,7 @@ async function convertKMZ(path, processDir)
     });
 
     // convert
-    let files = fs.readdirSync(tempPath);
+    let files = fs.existsSync(tempPath) ? fs.readdirSync(tempPath) : [];
 
     let kml;
     // locate the kml file
@@ -171,7 +171,7 @@ async function convertShape(path, processDir, projection)
     parentPort.postMessage('Stream complete, process shapefile.');
 
     // convert
-    let files = fs.readdirSync(tempPath);
+    let files = fs.existsSync(tempPath) ? fs.readdirSync(tempPath) : [];
 
     let shp, dbf, prj, shx, cpg, qpj, sbn, sbx;
 

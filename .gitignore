@@ -1,0 +1,9 @@
+﻿vts/node_modules
+vts-engine/node_modules
+vts/package-lock.json
+vts-engine/package-lock.json
+vts-engine/.vscode/launch.json
+.vscode/launch.json
+vts/logs
+vts/.vscode
+vts-engine/cache

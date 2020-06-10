@@ -30,7 +30,7 @@ DataController.prototype.init = function()
                 {
                     
                     let featurePath = process.cwd() + '/cache/' + req.params.id + '/' + req.params.processorId + '/' + req.params.node;
-                    let files = fs.readdirSync(featurePath);
+                    let files = fs.existsSync(featurePath) ? fs.readdirSync(featurePath) : [];
                     let features = [];
 
                     files.forEach(file =>

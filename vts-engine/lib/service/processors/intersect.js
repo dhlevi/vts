@@ -14,7 +14,7 @@ module.exports.process = async function(request, processor)
     processor.inputNodes.intersector.forEach(clipperNode =>
     {
         let clippersPath = process.cwd() + '/cache/' + request.name + '/' + clipperNode.name + '/' + clipperNode.node + '/';
-        let clipperFiles = fs.readdirSync(clippersPath);
+        let clipperFiles = fs.existsSync(clippersPath) ? fs.readdirSync(clippersPath) : [];
 
         clipperFiles.forEach(file =>
         {
@@ -32,7 +32,7 @@ module.exports.process = async function(request, processor)
     {
         // get the files in the disk cache
         let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
-        let files = fs.readdirSync(tempPath);
+        let files = fs.existsSync(tempPath) ? fs.readdirSync(tempPath) : [];
 
         files.forEach(file =>
         {

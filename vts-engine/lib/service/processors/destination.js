@@ -16,7 +16,7 @@ module.exports.process = async function(request, processor)
     {
         // get the files in the disk cache
         let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
-        let files = fs.readdirSync(tempPath);
+        let files = fs.existsSync(tempPath) ? fs.readdirSync(tempPath) : [];
 
         files.forEach(file =>
         {
