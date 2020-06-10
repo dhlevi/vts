@@ -42,11 +42,17 @@ Currently there are 51 processors (including readers and writers). Documentation
 
 ## Technologies Used
 
-- NodeJS and Express for the webapp and services
-- MongoDB for storage
-- Turf, JSTS, for some processors
-- Docker (makes launching multiple engines nice and easy)
-- ESRI JS API for the map viewer (leaflet version coming soon as well)
+- [NodeJS](https://nodejs.org/en/)
+- [Express](https://expressjs.com/)
+- [Vue](https://vuejs.org/)
+- [Turf](https://turfjs.org/)
+- [JSTS](http://bjornharrtell.github.io/jsts/")
+- [ESRI JS API](https://developers.arcgis.com/javascript/)
+- [Materialize CSS](https://materializecss.com/)
+- [JSPlumb](http://jsplumb.github.io/jsplumb/home.html)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
+- [Docker](https://www.docker.com/)
 
 ## Is it Production Ready?
 

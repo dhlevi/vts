@@ -22,6 +22,11 @@ Vue.component('about',
         <p><a href="https://turfjs.org/" target="_blank">Turf</a></p>
         <p><a href="http://bjornharrtell.github.io/jsts/" target="_blank">JSTS</a></p>
         <p><a href="https://developers.arcgis.com/javascript/" target="_blank">ESRI JS API</a></p>
+        <p><a href="https://materializecss.com/" target="_blank">MaterializeCSS</a></p>
+        <p><a href="http://jsplumb.github.io/jsplumb/home.html" target="_blank">JSPlumb Community Edition</a></p>
+        <p><a href="https://www.mongodb.com/" target="_blank">MongoDB</a></p>
+        <p><a href="https://mongoosejs.com/" target="_blank">Mongoose</a></p>
+        <p><a href="https://www.docker.com/" target="_blank">Docker</a></p>
     </div>
     `
 });
