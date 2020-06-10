@@ -40,7 +40,7 @@ let app = new Vue(
                 { name: 'dbReader', tooltip: 'Database Reader (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'storage' },
                 { name: 'randomReader', tooltip: 'Creates a random point, line or polygon feature to start a process', icon: 'storage' },
                 // processors
-                { name: 'projector', tooltip: 'Reproject feature geometry', icon: 'scatter_plot' },
+                //{ name: 'projector', tooltip: 'Reproject feature geometry', icon: 'scatter_plot' },
                 { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' },
                 { name: 'buffer', tooltip: 'Buffer features', icon: 'settings_overscan' },
                 { name: 'hullCreator', tooltip: 'Create a convex or concave hull from features', icon: 'filter_tilt_shift' },

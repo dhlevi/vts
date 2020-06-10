@@ -179,6 +179,7 @@ function addNode(node, x, y)
         case 'fileWriter':
             processor.attributes.path = '';
             processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml
+            processor.attributes.projection = '';
         break;
         case 'httpWriter':
             processor.attributes.url = '';

@@ -6,6 +6,7 @@ const tokml          = require('tokml');
 const togml          = require('geojson-to-gml-3');
 const turf           = require('@turf/turf');
 const AdmZip         = require('adm-zip');
+const Projector      = require('../projector');
 const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
@@ -14,6 +15,7 @@ module.exports.process = async function(request, processor)
 
     let destinationPath = processor.attributes.path;
     let dataType = processor.attributes.dataType;
+    let projection = processor.attributes.projection;
 
     let features = [];
 
@@ -37,6 +39,10 @@ module.exports.process = async function(request, processor)
 
     let data;
     let featureCollection = turf.featureCollection(features);
+
+    // fgdb currently not supported, and shapefile is buggy
+    // Might move these functions out entirely and only include
+    // 'advanced' read/write types in Java engine
 
     if (dataType === 'kml')
     {
@@ -62,6 +68,44 @@ module.exports.process = async function(request, processor)
     }
     else if (dataType.startsWith('shape'))
     {
+        // reproject if a projection was supplied
+        if (projection && projection.length > 0 && projection !== 'EPSG:4326')
+        {
+            let projector = new Projector('EPSG:4326', projection);
+            featureCollection.features.forEach(feature =>
+            {
+                projector.project(feature.geometry);
+
+                // link crs to https://epsg.io/ if it's an EPSG code
+                // it's a shapefile, so use the esriwkt style
+                if (projection.toLowerCase().includes('epsg:'))
+                {
+                    feature.crs = 
+                    {
+                        type: 'link',
+                        properties: {
+                            href: 'https://epsg.io/' + projection.split(':')[1] + '.esriwkt',
+                            type: 'wkt'
+                        }
+                    };
+                }
+                else // assume it's a named resource and just link it. Might be a projection string though?
+                {
+                    feature.crs = 
+                    {
+                        type: 'name',
+                        properties: {
+                            name: projection
+                        }
+                    };
+                }
+            });
+        }
+
+        // shpwrite library doesn't honour CRS from geojson
+        // makes sense, as technically it's no longer valid
+        // in the spec, but we kinda need this. May need to
+        // customize
         fs.writeFile(destinationPath, shpwrite.zip(featureCollection), (err) => 
         {
             if (err) throw err;
