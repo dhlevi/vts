@@ -1,6 +1,21 @@
 function clearDiagram()
 {
-    app.request.processors = [];
+    app.request = 
+    {
+        priority: 3,
+        name: 'New Request',
+        public: true,
+        processors: [],
+        status: 'Submitted',
+        scheduledTask: false,
+        interval: 0,
+        intervalUnit: 'Minutes',
+        messages: [],
+        tags: [],
+        cachePurged: false,
+        engine: ''
+    };
+
     refreshDiagram();
 }
 

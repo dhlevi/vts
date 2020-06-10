@@ -72,6 +72,7 @@ function runRequest()
     app.request.scheduledTask = false;
     app.request.status = 'Submitted';
     app.request.name = uuid();
+    app.request.messages = [];
 
     $.ajax
     ({
