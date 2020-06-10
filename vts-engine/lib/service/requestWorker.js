@@ -119,6 +119,12 @@ async function runProcessor(processor, request)
     processor.processed = true;
     request.messages.push({ message: 'Finished processing ' + processor.name + ' - ' + processor.type, sender: request.engine, timestame: new Date()});
 
+    for(let node in processor.outputNodes)
+    {
+        let resultUrl = request.engineRoute + '/Requests/' + request.name + '/Features/' + processor.name + '/' + node
+        request.messages.push({message: processor.name + ' "' + node + '" data available at: ' + resultUrl, sender: request.engine, timestame: new Date()});
+    }
+
     parentPort.postMessage(request);
     // not implemented types
     // filter

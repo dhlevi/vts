@@ -71,7 +71,6 @@ function addNode(node, x, y)
             processor.attributes.items = 1;
         break;
         case 'projector':
-            processor.attributes.sourceProjection = '';
             processor.attributes.newProjection = '';
         break;
         case 'buffer':

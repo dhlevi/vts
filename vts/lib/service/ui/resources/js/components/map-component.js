@@ -56,6 +56,7 @@ Vue.component('map-viewer',
 
                     Object.keys(processor.outputNodes).forEach(node =>
                     {
+                        // BAD. put in a promise at least
                         request.open('GET', engineUrl + '/Requests/' + app.request.name + '/Features/' + processor.name + '/' + node, false);
                         request.send(null);
     

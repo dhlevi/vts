@@ -325,7 +325,7 @@ exports.launch = async function (args)
                 Request.findById(dequeuedRequest._id).then(async request =>
                 {
                     currentRunningRequests++;
-                    processors.requestProcessor(request).then(code =>
+                    processors.requestProcessor(request, engine.route).then(code =>
                     {
                         currentRunningRequests--;
                     });
@@ -400,7 +400,7 @@ exports.launch = async function (args)
                             // but we don't want scheduled tasks to get bogged down
                             // in the wait if the server is under heavy load
                             currentRunningRequests++;
-                            processors.requestProcessor(request).then(code =>
+                            processors.requestProcessor(request, engine.route).then(code =>
                             {
                                 currentRunningRequests--;
                             });

@@ -5,7 +5,7 @@ const Request       = mongoose.model('Request', requestSchema);
 
 const { Worker } = require('worker_threads');
 
-module.exports.requestProcessor = async function(request)
+module.exports.requestProcessor = async function(request, engineRoute)
 {
     return new Promise((resolve, reject) =>
     {

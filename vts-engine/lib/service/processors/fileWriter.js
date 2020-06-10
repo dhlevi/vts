@@ -33,6 +33,38 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
+            // reproject if a projection was supplied
+            if (projection && projection.length > 0)
+            {
+                let sourceProj = feature.crs ? feature.crs.properties.name : 'EPSG:4326';
+                let projector = new Projector(sourceProj, projection);
+                projector.project(feature.geometry);
+
+                // link crs to https://epsg.io/ if it's an EPSG code
+                // it's a shapefile, so use the esriwkt style
+                if (projection.toLowerCase().includes('epsg:'))
+                {
+                    feature.crs = 
+                    {
+                        type: 'link',
+                        properties: {
+                            href: 'https://epsg.io/' + projection.split(':')[1] + '.esriwkt',
+                            type: 'wkt'
+                        }
+                    };
+                }
+                else // assume it's a named resource and just link it. Might be a projection string though?
+                {
+                    feature.crs = 
+                    {
+                        type: 'name',
+                        properties: {
+                            name: projection
+                        }
+                    };
+                }
+            }
+
             features.push(feature);
         });
     });
@@ -68,40 +100,6 @@ module.exports.process = async function(request, processor)
     }
     else if (dataType.startsWith('shape'))
     {
-        // reproject if a projection was supplied
-        if (projection && projection.length > 0 && projection !== 'EPSG:4326')
-        {
-            let projector = new Projector('EPSG:4326', projection);
-            featureCollection.features.forEach(feature =>
-            {
-                projector.project(feature.geometry);
-
-                // link crs to https://epsg.io/ if it's an EPSG code
-                // it's a shapefile, so use the esriwkt style
-                if (projection.toLowerCase().includes('epsg:'))
-                {
-                    feature.crs = 
-                    {
-                        type: 'link',
-                        properties: {
-                            href: 'https://epsg.io/' + projection.split(':')[1] + '.esriwkt',
-                            type: 'wkt'
-                        }
-                    };
-                }
-                else // assume it's a named resource and just link it. Might be a projection string though?
-                {
-                    feature.crs = 
-                    {
-                        type: 'name',
-                        properties: {
-                            name: projection
-                        }
-                    };
-                }
-            });
-        }
-
         // shpwrite library doesn't honour CRS from geojson
         // makes sense, as technically it's no longer valid
         // in the spec, but we kinda need this. May need to
