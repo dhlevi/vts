@@ -27,6 +27,30 @@ module.exports.process = async function(request, processor)
 
             projector.project(feature.geometry);
 
+            // link crs to https://epsg.io/ if it's an EPSG code
+            // it's a shapefile, so use the esriwkt style
+            if (projection.toLowerCase().includes('epsg:'))
+            {
+                feature.crs = 
+                {
+                    type: 'link',
+                    properties: {
+                        href: 'https://epsg.io/' + projection.split(':')[1] + '.esriwkt',
+                        type: 'wkt'
+                    }
+                };
+            }
+            else // assume it's a named resource and just link it. Might be a projection string though?
+            {
+                feature.crs = 
+                {
+                    type: 'name',
+                    properties: {
+                        name: projection
+                    }
+                };
+            }
+
             // create a new feature
             // generate an ID
             let id = uuidv4();
