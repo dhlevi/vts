@@ -21,7 +21,19 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            let triangulated = turf.tesselate(feature);
+            // check for null feature.geometry
+            let triangulated;
+            try
+            {
+                triangulated = turf.tesselate(feature);
+            }
+            catch(err)
+            {
+                // log the error, and just re-write the original feature.
+                // parentNode.postMessage!
+                console.log(err);
+                triangulated = feature;
+            }
 
             // create a new feature cache
             // generate an ID

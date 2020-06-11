@@ -16,7 +16,7 @@ module.exports.process = async function(request, processor)
     let dataType = processor.attributes.dataType;
     let projection = processor.attributes.sourceProjection;
     // open the file at the path.
-    let result;
+    let result = []
 
     if (dataType === 'json')
     {

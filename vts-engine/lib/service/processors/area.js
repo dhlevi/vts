@@ -24,7 +24,7 @@ module.exports.process = async function(request, processor)
             let feature = JSON.parse(featureString);
 
             // calculate area in square meters
-            let areaSqM = turf.area(feature);
+            let areaSqM = feature.geometry ? turf.area(feature) : 0;
             // add area to field
             feature.properties[fieldName] = areaSqM;
 

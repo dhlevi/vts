@@ -37,8 +37,17 @@ module.exports.process = async function(request, processor)
                 bufferDistance = Number(distance);
             }
 
-            // apply the buffer
-            let bufferedFeature = turf.buffer(feature, bufferDistance, {units: units});
+            // apply the buffer. Check for null feature.geometry?
+            let bufferedFeature;
+            try
+            {
+                bufferedFeature = turf.buffer(feature, bufferDistance, {units: units});
+            }
+            catch(err)
+            {
+                console.log(err);
+                bufferedFeature = feature;
+            }
 
             // create a new feature
             // generate an ID

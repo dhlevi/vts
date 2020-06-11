@@ -48,7 +48,7 @@ module.exports.process = async function(request, processor)
             turf.flattenEach(feature, function (currentFeature, featureIndex, multiFeatureIndex) 
             {
                 // extract polygon interior rings, make into geoms
-                if (currentFeature.geometry.type === 'LineString')
+                if (currentFeature.geometry && currentFeature.geometry.type === 'LineString')
                 {
                     // if length is a calc, get the value from properties
                     let along = 0;

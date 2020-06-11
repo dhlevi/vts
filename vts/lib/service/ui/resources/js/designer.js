@@ -64,6 +64,7 @@ function addNode(node, x, y)
             processor.attributes.user = '';
             processor.attributes.password = '';
             processor.attributes.query = ''; // select statement used to get results
+            processor.attributes.geometryColumn = 'GEOMETRY';
             processor.attributes.sourceProjection = '';
         break;
         case 'randomReader':

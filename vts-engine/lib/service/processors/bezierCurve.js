@@ -42,7 +42,7 @@ module.exports.process = async function(request, processor)
             });
 
             // if this is a geometry collection of lines, flatten first and process each line
-            if (feature.geometry.type === 'LineString')
+            if (feature.geometry && feature.geometry.type === 'LineString')
             {
                 let resolution = processor.attributes.resolution;
                 let sharpness = processor.attributes.sharpness;
