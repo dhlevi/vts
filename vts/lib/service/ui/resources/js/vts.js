@@ -86,6 +86,7 @@ let app = new Vue(
                 { name: 'attributeCreator', tooltip: 'Add an attribute to all features', icon: 'title'},
                 { name: 'attributeRemover', tooltip: 'Remove an attribute from all features', icon: 'format_clear'},
                 { name: 'attributeRenamer', tooltip: 'Rename an attribute from all features', icon: 'text_fields'},
+                { name: 'attributeKeeper', tooltip: 'Keep/Create only the requested comma separated list of attributes', icon: 'menu_open'},
                 { name: 'attributeCalculator', tooltip: 'Add an attribute that contains a calculation', icon: 'functions'},
                 { name: 'timestamper', tooltip: 'Timestamp all features', icon: 'av_timer'},
                 { name: 'counter', tooltip: 'Counts all features, and saves the count in a property', icon: 'exposure_plus_1' },

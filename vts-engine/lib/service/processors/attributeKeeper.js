@@ -22,13 +22,26 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
+            let fieldsToKeep = [];
             // check for csv
             let fields = fieldName.split(',');
             fields.forEach(field =>
             {
-                // removeattribute
-                delete feature.properties[field.trim()];
+                fieldsToKeep.push(field.trim());
+                // if the property doesn't exist on the object, add it.
+                if (!feature.properties.hasOwnProperty(field.trim()))
+                {
+                    feature.properties[field.trim()] = null;
+                }
             });
+
+            for(let property in feature.properties)
+            {
+                if (!fieldsToKeep.includes(property))
+                {
+                    delete feature.properties[property];
+                }
+            }
 
             // create a new feature cache
             // generate an ID

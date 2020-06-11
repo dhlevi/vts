@@ -61,42 +61,47 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
             // if there is no geom column, then create a null geometry feature
             // and process standard data ETL
 
-            // grab the geom
-            const oraGeom = row[geomColumn];
-            // remove from row
-            delete row[geomColumn];
-            // geojson-ify the geometry object
-
-            if (!projection || projection.length === 0) 
+            let geometry = null;
+            if(geomColumn && geomColumn.length > 0)
             {
-                // determine projection from SDO_SRID, otherwise 
-                // we have to assume it's 4326
-                if (oraGeom.SDO_SRID && oraGeom.SDO_SRID.length !== 0)
+                // grab the geom
+                const oraGeom = row[geomColumn];
+                // remove from row
+                delete row[geomColumn];
+                // geojson-ify the geometry object
+
+                if (!projection || projection.length === 0) 
                 {
-                    projection = await utils.getRequest('https://epsg.io/' + oraGeom.SDO_SRID + '.js');
+                    // determine projection from SDO_SRID, otherwise 
+                    // we have to assume it's 4326
+                    if (oraGeom.SDO_SRID && oraGeom.SDO_SRID.length !== 0)
+                    {
+                        projection = await utils.getRequest('https://epsg.io/' + oraGeom.SDO_SRID + '.js');
+                    }
+                    else 
+                    {
+                        projection = 'EPSG:4326';
+                    }
                 }
-                else 
+
+                geometry = 
                 {
-                    projection = 'EPSG:4326';
+                    type: oraGeom.SDO_GTYPE.endsWith('01') ? 'Point' :
+                        oraGeom.SDO_GTYPE.endsWith('02') ? 'LineString' :
+                        oraGeom.SDO_GTYPE.endsWith('03') ? 'Polygon' :
+                        oraGeom.SDO_GTYPE.endsWith('04') ? 'GeometryCollection' :
+                        oraGeom.SDO_GTYPE.endsWith('05') ? 'MultiPoint' :
+                        oraGeom.SDO_GTYPE.endsWith('06') ? 'MultiLineString' : 
+                                                            'MultiPolygon',
+                    // Need to reformat sdo ordinates to geojson coordinate arrays
+                    coordinates: processSdoOrinates(oraGeom)
+                };
+
+                if (projection != 'EPSG:4326')
+                {
+                    new Projector(projection, 'EPSG:4326').project(geometry);
                 }
-            }
 
-            const geometry = 
-            {
-                type: oraGeom.SDO_GTYPE.endsWith('01') ? 'Point' :
-                      oraGeom.SDO_GTYPE.endsWith('02') ? 'LineString' :
-                      oraGeom.SDO_GTYPE.endsWith('03') ? 'Polygon' :
-                      oraGeom.SDO_GTYPE.endsWith('04') ? 'GeometryCollection' :
-                      oraGeom.SDO_GTYPE.endsWith('05') ? 'MultiPoint' :
-                      oraGeom.SDO_GTYPE.endsWith('06') ? 'MultiLineString' : 
-                                                         'MultiPolygon',
-                // Need to reformat sdo ordinates to geojson coordinate arrays
-                coordinates: processSdoOrinates(oraGeom)
-            };
-
-            if (projection != 'EPSG:4326')
-            {
-                new Projector(projection, 'EPSG:4326').project(geometry);
             }
 
             // push on a new feature

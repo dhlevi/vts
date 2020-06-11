@@ -149,6 +149,9 @@ function addNode(node, x, y)
             processor.attributes.defaultValue = '';
             processor.attributes.type = 'string'; //string, number, date, boolean
         break;
+        case 'attributeKeeper':
+            processor.attributes.fieldName = 'NAME';
+        break;
         case 'attributeRemover':
             processor.attributes.fieldName = 'NAME';
         break;
