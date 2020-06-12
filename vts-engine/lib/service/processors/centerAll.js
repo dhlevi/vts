@@ -37,12 +37,12 @@ module.exports.process = async function(request, processor)
 
     let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
     // create the directory structure
-    fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+    await fs.promises.mkdir(cachePath, { recursive: true }, function(err) 
     {
         if (err && err.code != 'EEXIST') throw err;
     });
 
-    fs.writeFileSync(cachePath + '/' + centerId + '.json', centerData, (err) => 
+    await fs.promises.writeFile(cachePath + '/' + centerId + '.json', centerData, (err) => 
     {
         if (err) throw err;
     });

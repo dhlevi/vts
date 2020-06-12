@@ -63,12 +63,12 @@ module.exports.process = async function(request, processor)
 
         let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
-        fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+        await fs.promises.mkdir(cachePath, { recursive: true }, function(err) 
         {
             if (err && err.code != 'EEXIST') throw err;
         });
 
-        fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
+        await fs.promises.writeFile(cachePath + '/' + id + '.json', data, (err) => 
         {
             if (err) throw err;
         });
@@ -111,7 +111,7 @@ async function convertKMZ(path, processDir)
     let result = null;
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     await fs.createReadStream(path)
     .pipe(unzipper.Extract({ path: tempPath })
@@ -154,7 +154,7 @@ async function convertShape(path, processDir, projection)
     let json = { type: "FeatureCollection", features: [] };
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     parentPort.postMessage('Zip file: ' + path);
     parentPort.postMessage('Unzipping to: ' + tempPath);
@@ -251,7 +251,7 @@ async function convertFGDB(filePath, processDir, projection)
     let json = null;
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     await fs.createReadStream(filePath)
     .pipe(unzipper.Extract({ path: tempPath })

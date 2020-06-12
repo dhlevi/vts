@@ -14,7 +14,7 @@ module.exports.process = async function(request, processor)
     // attach resulting blob to the processor 'features' output node.    
     // and/or write all features to the cache, and attach only the "id"
     processor.outputNodes.features = [];
-    results.features.forEach(feature => 
+    results.features.forEach(async feature => 
     {
         // generate an ID
         let id = uuidv4();
@@ -24,12 +24,12 @@ module.exports.process = async function(request, processor)
 
         let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
-        fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+        await fs.promises.mkdir(cachePath, { recursive: true }, function(err) 
         {
             if (err && err.code != 'EEXIST') throw err;
         });
 
-        fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
+        await fs.promises.writeFile(cachePath + '/' + id + '.json', data, (err) => 
         {
             if (err) throw err;
         });

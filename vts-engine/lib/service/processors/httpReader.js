@@ -83,12 +83,12 @@ module.exports.process = async function(request, processor)
 
         let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
         // create the directory structure
-        fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+        await fs.promises.mkdir(cachePath, { recursive: true }, function(err) 
         {
             if (err && err.code != 'EEXIST') throw err;
         });
 
-        fs.writeFileSync(cachePath + '/' + id + '.json', data, (err) => 
+        await fs.promises.writeFile(cachePath + '/' + id + '.json', data, (err) => 
         {
             if (err) throw err;
         });
@@ -131,7 +131,7 @@ async function convertKMZ(url, processDir)
     let result = null;
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     // call the URL zip location and extract the files
     const directory = await unzipper.Open.url(request, url);
@@ -140,7 +140,7 @@ async function convertKMZ(url, processDir)
         let file = directory.files[idx];
         const content = await file.buffer();
         // write the raw content to the temp path
-        fs.writeFileSync(tempPath + '/' + file.path, content);
+        await fs.promises.writeFile(tempPath + '/' + file.path, content);
     };
 
     // convert
@@ -176,7 +176,7 @@ async function convertShape(url, processDir, projection)
     let tempPath = process.cwd() + '/processing/' + processDir;
 
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     // call the URL zip location and extract the files
     const directory = await unzipper.Open.url(request, url);
@@ -185,7 +185,7 @@ async function convertShape(url, processDir, projection)
         let file = directory.files[idx];
         const content = await file.buffer();
         // write the raw content to the temp path
-        fs.writeFileSync(tempPath + '/' + file.path, content);
+        await fs.promises.writeFile(tempPath + '/' + file.path, content);
     };
 
     // convert
@@ -260,7 +260,7 @@ async function convertFGDB(url, processDir, projection)
     let json = null;
     let tempPath = process.cwd() + '/processing/' + processDir;
     // unzip. Make processing dir if it doesn't exist
-    fs.mkdirSync(tempPath, { recursive: true });
+    await fs.promises.mkdir(tempPath, { recursive: true });
 
     // call the URL zip location and extract the files
     // fgdb may be in folder?
@@ -275,7 +275,7 @@ async function convertFGDB(url, processDir, projection)
         parentPort.postMessage('found a file');
         const content = await file.buffer();
         // write the raw content to the temp path
-        fs.writeFileSync(tempPath + '/' + file.path, content);
+        await fs.promises.writeFile(tempPath + '/' + file.path, content);
     };
 
     json = await fgdb(tempPath)

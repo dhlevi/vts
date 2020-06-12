@@ -78,6 +78,11 @@ function runRequest()
     app.request.status = 'Submitted';
     app.request.name = uuid();
     app.request.messages = [];
+    // set all processors completed flags to false
+    app.request.processors.forEach(processor =>
+    {
+        processor.processed = false;
+    });
 
     $.ajax
     ({

@@ -30,14 +30,14 @@ module.exports.process = async function(request, processor)
 
             let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
             // create the directory structure
-            fs.mkdirSync(cachePath, { recursive: true }, function(err) 
+            await fs.promises.mkdir(cachePath, { recursive: true }, function(err) 
             {
                 if (err && err.code != 'EEXIST') throw err;
             });
 
             // shove the feature on the disk
             let centerData = JSON.stringify(centerPoint);
-            fs.writeFileSync(cachePath + '/' + id + '.json', centerData, (err) => 
+            await fs.promises.writeFile(cachePath + '/' + id + '.json', centerData, (err) => 
             {
                 if (err) throw err;
             });
