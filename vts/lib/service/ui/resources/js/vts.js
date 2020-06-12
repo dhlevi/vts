@@ -39,6 +39,7 @@ let app = new Vue(
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'all_inbox' },
                 { name: 'dbReader', tooltip: 'Database Reader (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'storage' },
                 { name: 'randomReader', tooltip: 'Creates a random point, line or polygon feature to start a process', icon: 'storage' },
+                { name: 'cacheReader', tooltip: 'Reads features from the VTS cache service', icon: 'cached' },
                 // processors
                 { name: 'projector', tooltip: 'Reproject feature geometry', icon: 'scatter_plot' },
                 { name: 'cleanCoords', tooltip: 'Remove redundant coordinates', icon: 'border_style' },

@@ -3,9 +3,9 @@ const geojsonSchemas = require('./geojson');
 
 module.exports.cacheSchema = new Schema(
 {
-    request: { type: require('mongoose').Types.ObjectId, required: true},
+    request: { type: String, required: true},
     processor: { type: String, required: true },
-    geometry: { type: Object, required: true },
+    feature: { type: Object, required: true },
     metadata: 
     {
         createdBy: { type: String, default: 'VTS' },

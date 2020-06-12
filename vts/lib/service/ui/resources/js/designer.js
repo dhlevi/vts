@@ -67,6 +67,9 @@ function addNode(node, x, y)
             processor.attributes.geometryColumn = 'GEOMETRY';
             processor.attributes.sourceProjection = '';
         break;
+        case 'cacheReader':
+            processor.attributes.request = '';
+        break;
         case 'randomReader':
             processor.attributes.featureType = 'polygon'; // point, line, polygon
             processor.attributes.items = 1;

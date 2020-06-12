@@ -5,7 +5,7 @@ const Request       = mongoose.model('Request', requestSchema);
 
 const { Worker } = require('worker_threads');
 
-module.exports.requestProcessor = async function(request, engineRoute)
+module.exports.requestProcessor = async function(request, engineRoute, mongodbConnection)
 {
     return new Promise((resolve, reject) =>
     {
@@ -51,6 +51,10 @@ module.exports.requestProcessor = async function(request, engineRoute)
             resolve(code);
         });
     
+        // set forwarded virtuals
+        request['engineRoute'] = engineRoute;
+        request['mongodbConnection'] = mongodbConnection;
+        
         worker.postMessage(request);
     });
 };

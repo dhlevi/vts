@@ -117,12 +117,19 @@ async function runProcessor(processor, request)
     
     parentPort.postMessage('Finished processing ' + processor.name);
     processor.processed = true;
-    request.messages.push({ message: 'Finished processing ' + processor.name + ' - ' + processor.type, sender: request.engine, timestame: new Date()});
+
+    let countOfFeatures = 0;
+    for(const node in processor.outputNodes)
+    {
+        countOfFeatures + processor.outputNodes[node].length;
+    }
+
+    request.messages.push({ message: 'Finished processing ' + countOfFeatures + ' features from ' + processor.name + ' - ' + processor.type, sender: request.engine, timestame: new Date()});
 
     for(let node in processor.outputNodes)
     {
         let resultUrl = request.engineRoute + '/Requests/' + request.name + '/Features/' + processor.name + '/' + node
-        request.messages.push({message: processor.name + ' "' + node + '" data available at: ' + resultUrl, sender: request.engine, timestame: new Date()});
+        request.messages.push({message: processor.name + '-' + processor.type + ' "' + node + '" data available at: ' + resultUrl, sender: request.engine, timestame: new Date()});
     }
 
     parentPort.postMessage(request);

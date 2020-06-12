@@ -122,15 +122,8 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
 
             let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
             // create the directory structure
-            await fs.mkdir(cachePath, { recursive: true }, function(err) 
-            {
-                if (err && err.code != 'EEXIST') throw err;
-            });
-
-            await fs.writeFile(cachePath + '/' + id + '.json', data, (err) => 
-            {
-                if (err) throw err;
-            });
+            await fs.mkdir(cachePath, { recursive: true });
+            await fs.writeFile(cachePath + '/' + id + '.json', data);
         }
     }
     catch(err)

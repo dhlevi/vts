@@ -53,7 +53,7 @@ module.exports.process = async function(request, processor)
     // attach resulting blob to the processor 'features' output node.    
     // and/or write all features to the cache, and attach only the "id"
     processor.outputNodes.features = [];
-    result.features.forEach(feature => 
+    result.features.forEach(async feature => 
     {
         // generate an ID
         let id = uuidv4();

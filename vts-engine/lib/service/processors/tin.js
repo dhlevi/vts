@@ -41,7 +41,7 @@ module.exports.process = async function(request, processor)
 
     let tin = turf.tin(turf.featureCollection(points));
     
-    tin.features.forEach(poly =>
+    tin.features.forEach(async poly =>
     {
         // generate an ID
         let tinId = uuidv4();

@@ -35,12 +35,19 @@ DataController.prototype.init = function()
 
                     files.forEach(file =>
                     {
-                        // load the feature geometry, push into inputFeatures
-                        let filePath = path.join(featurePath, file);
-                        let featureString = fs.readFileSync(filePath, 'utf8');
-                        let feature = JSON.parse(featureString);
+                        try
+                        {
+                            // load the feature geometry, push into inputFeatures
+                            let filePath = path.join(featurePath, file);
+                            let featureString = fs.readFileSync(filePath, 'utf8');
+                            let feature = JSON.parse(featureString);
 
-                        features.push(feature);
+                            features.push(feature);
+                        }
+                        catch(loadErr)
+                        {
+                            console.error(loadErr);
+                        }
                     });
 
                     let featureCollection = turf.featureCollection(features);

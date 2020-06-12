@@ -56,7 +56,7 @@ module.exports.process = async function(request, processor)
     });
 
     // cache the features
-    features.forEach(feature =>
+    features.forEach(async feature =>
     {
         // create a new feature cache
         // generate an ID

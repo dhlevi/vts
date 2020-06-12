@@ -30,20 +30,22 @@ module.exports.process = async function(request, processor)
     });
     
     // load the features
-    processor.inputNodes.features.forEach(inputNode =>
+    for (let idx = 0; idx < processor.inputNodes.features.length; idx++)
     {
+        let inputNode = processor.inputNodes.features[idx];
         // get the files in the disk cache
         let tempPath = process.cwd() + '/cache/' + request.name + '/' + inputNode.name + '/' + inputNode.node + '/';
         let files = fs.existsSync(tempPath) ? fs.readdirSync(tempPath) : [];
 
-        files.forEach(file =>
+        for (let i = 0; i < files.length; i++)
         {
+            let file = files[i];
             // load the feature geometry, push into inputFeatures
             let filePath = path.join(tempPath, file);
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            relators.forEach(relator =>
+            relators.forEach(async relator =>
             {
                 // there should only be one relator feature at a time!
                 // maybe throw an error if a user links multiple relators?
@@ -114,6 +116,6 @@ module.exports.process = async function(request, processor)
                     if (err) throw err;
                 });
             });
-        });
-    });
+        }
+    }
 };
