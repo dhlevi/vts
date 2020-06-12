@@ -173,6 +173,9 @@ function addNode(node, x, y)
             processor.attributes.query = 'NAME === "Test"';
             processor.outputNodes['false'] = [];
         break;
+        case 'nullGeometryFilter':
+            processor.outputNodes['empty'] = [];
+        break;
         case 'spatialFilter':
             processor.attributes.type = 'Polygon'; // point, line, poly, multi's
             processor.outputNodes['false'] = [];

@@ -81,6 +81,7 @@ let app = new Vue(
                 { name: 'length', tooltip: 'Calculates the length of a feature', icon: 'square_foot' },
                 // array operators
                 { name: 'filter', tooltip: 'Filter features non-spatially by an attribute', icon: 'filter_list'},
+                { name: 'nullGeometryFilter', tooltip: 'Filter features that have empty geometry', icon: 'filter_list'},
                 { name: 'spatialFilter', tooltip: 'Filter features spatially by their type', icon: 'filter_b_and_w'},
                 { name: 'spatialRelationFilter', tooltip: 'Filter features spatially by their relation', icon: 'filter'},
                 // attribute tools

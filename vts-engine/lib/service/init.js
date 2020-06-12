@@ -20,6 +20,9 @@ const Engine        = mongoose.model('Engine', engineSchema);
 const requestModel  = require('../model/request');
 const requestSchema = requestModel.requestSchema;
 const Request       = mongoose.model('Request', requestSchema);
+const cacheModel     = require('../model/cache');
+const cacheSchema    = cacheModel.cacheSchema;
+const Cache          = mongoose.model('Cache', cacheSchema);
 
 // configure express app
 
@@ -354,6 +357,10 @@ exports.launch = async function (args)
                         {
                             rimraf(process.cwd() + '/cache/' + dir, function () { console.log('Cleared cache for ' + dir); });
                         }
+
+                        // also check the MongoDB cache collection, in case a cache was used
+                        await Cache.deleteMany({ request: dir });
+
                     })
                     .catch(error =>
                     {
