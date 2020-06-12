@@ -179,6 +179,13 @@ function addNode(node, x, y)
             processor.inputNodes['relator'] = [];
             processor.outputNodes['false'] = [];
         break;
+        case 'sqlCaller':
+            processor.attributes.connection = '';
+            processor.attributes.source = 'oracle';
+            processor.attributes.user = '';
+            processor.attributes.password = '';
+            processor.attributes.query = '';
+        break;
         case 'fileWriter':
             processor.attributes.path = '';
             processor.attributes.dataType = 'json'; // json, shape, fgdb, csv, kml, kmz, wkt, gml

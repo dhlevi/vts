@@ -42,9 +42,11 @@ module.exports.process = async function(request, processor)
 
 async function processOracle(connOptions, query, geomColumn, request, processor)
 {
+    let connection;
+
     try
     {
-        let connection = await oracledb.getConnection(connOptions);
+        connection = await oracledb.getConnection(connOptions);
 
         // SDO_UTIL.TO_JSON_VARCHAR ?
         // support binding? Probably not needed in the reader
@@ -135,6 +137,9 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
     {
         console.error(err);
     }
+
+    if (connection)
+        await connection.close();
 }
 
 function processSdoOrinates(oraGeom)

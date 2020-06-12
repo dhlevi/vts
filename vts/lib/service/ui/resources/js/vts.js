@@ -90,6 +90,7 @@ let app = new Vue(
                 { name: 'attributeCalculator', tooltip: 'Add an attribute that contains a calculation', icon: 'functions'},
                 { name: 'timestamper', tooltip: 'Timestamp all features', icon: 'av_timer'},
                 { name: 'counter', tooltip: 'Counts all features, and saves the count in a property', icon: 'exposure_plus_1' },
+                { name: 'sqlCaller', tooltip: 'Execute a SQL query and append the resulting attributes to a feature', icon: 'nfc' },
                 // special tools
                 //{ name: 'logger', tooltip: 'Create a log message for all features', icon: ''},
                 { name: 'featureHolder', tooltip: 'Holds features for merging datasets', icon: 'horizontal_split' },

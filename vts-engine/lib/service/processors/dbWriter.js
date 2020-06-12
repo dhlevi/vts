@@ -86,9 +86,11 @@ module.exports.process = async function(request, processor)
 
 async function processOracle(connOptions, features, drop, truncate, table, geomColumn, request, processor)
 {
+    let connection;
+
     try
     {
-        let connection = await oracledb.getConnection(connOptions);
+        connection = await oracledb.getConnection(connOptions);
 
         // pre-processing
         const stmts = [];
@@ -166,7 +168,8 @@ async function processOracle(connOptions, features, drop, truncate, table, geomC
             // Check a feature property flag for insert/update?
             await connection.execute(
                 `INSERT INTO ${table} (${columns}) VALUES (${values})`,
-                feature.properties
+                feature.properties,
+                { autoCommit: true }
             );
         });
     }
@@ -174,6 +177,9 @@ async function processOracle(connOptions, features, drop, truncate, table, geomC
     {
         console.error(err);
     }
+
+    if (connection)
+        await connection.close();
 }
 
 function processElemOrdinates(feature, geometry)
