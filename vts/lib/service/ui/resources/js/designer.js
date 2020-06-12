@@ -194,8 +194,11 @@ function addNode(node, x, y)
             processor.attributes.source = 'oracle'; // oracle, postgres, mongo, couch, h2, mysql
             processor.attributes.user = '';
             processor.attributes.password = '';
-            processor.attributes.destinationTable = '';
-            processor.attributes.upsert = false;
+            processor.attributes.dropTable = false;
+            processor.attributes.emptyTable = false;
+            processor.attributes.table = '';
+            processor.attributes.geometryColumn = 'GEOMETRY';
+            processor.attributes.sourceProjection = '';
         break;
     }
 

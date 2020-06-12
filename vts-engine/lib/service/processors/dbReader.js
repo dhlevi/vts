@@ -86,13 +86,13 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
 
                 geometry = 
                 {
-                    type: oraGeom.SDO_GTYPE.endsWith('01') ? 'Point' :
-                        oraGeom.SDO_GTYPE.endsWith('02') ? 'LineString' :
-                        oraGeom.SDO_GTYPE.endsWith('03') ? 'Polygon' :
-                        oraGeom.SDO_GTYPE.endsWith('04') ? 'GeometryCollection' :
-                        oraGeom.SDO_GTYPE.endsWith('05') ? 'MultiPoint' :
-                        oraGeom.SDO_GTYPE.endsWith('06') ? 'MultiLineString' : 
-                                                            'MultiPolygon',
+                    type: oraGeom.SDO_GTYPE.toString().endsWith('1') ? 'Point' :
+                          oraGeom.SDO_GTYPE.toString().endsWith('2') ? 'LineString' :
+                          oraGeom.SDO_GTYPE.toString().endsWith('3') ? 'Polygon' :
+                          oraGeom.SDO_GTYPE.toString().endsWith('4') ? 'GeometryCollection' :
+                          oraGeom.SDO_GTYPE.toString().endsWith('5') ? 'MultiPoint' :
+                          oraGeom.SDO_GTYPE.toString().endsWith('6') ? 'MultiLineString' : 
+                                                                       'MultiPolygon',
                     // Need to reformat sdo ordinates to geojson coordinate arrays
                     coordinates: processSdoOrinates(oraGeom)
                 };
@@ -139,11 +139,11 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
 
 function processSdoOrinates(oraGeom)
 {
-    if (oraGeom.SDO_GTYPE.endsWith('01')) // point
+    if (oraGeom.SDO_GTYPE.toString().endsWith('1')) // point
     {
         return [oraGeom.SDO_ORDINATES[0], oraGeom.SDO_ORDINATES[1]];
     } 
-    else if (oraGeom.SDO_GTYPE.endsWith('02')) // linestring
+    else if (oraGeom.SDO_GTYPE.toString().endsWith('2')) // linestring
     {
         let coords = [];
         // fine for 2D, but 3d should be +3 and a Z coord?
@@ -154,7 +154,7 @@ function processSdoOrinates(oraGeom)
 
         return coords;
     }
-    else if (oraGeom.SDO_GTYPE.endsWith('03'))
+    else if (oraGeom.SDO_GTYPE.toString().endsWith('3'))
     {
         // polygons may have interior rings
 
@@ -192,7 +192,7 @@ function processSdoOrinates(oraGeom)
         // should have all possible rings, so just return
         return rings;
     }
-    else if (oraGeom.SDO_GTYPE.endsWith('04'))
+    else if (oraGeom.SDO_GTYPE.toString().endsWith('4'))
     {
         // GeometryCollection... unsupported for now
         // but need to figure out how to push this through.
@@ -200,7 +200,7 @@ function processSdoOrinates(oraGeom)
         // to test the elem info array
         return [];
     } 
-    else if (oraGeom.SDO_GTYPE.endsWith('05'))  // MultiPoint
+    else if (oraGeom.SDO_GTYPE.toString().endsWith('5'))  // MultiPoint
     {
         let coords = [];
         // fine for 2D, but 3d should be +3 and a Z coord?
@@ -211,7 +211,7 @@ function processSdoOrinates(oraGeom)
 
         return coords;
     }
-    else if (oraGeom.SDO_GTYPE.endsWith('06'))
+    else if (oraGeom.SDO_GTYPE.toString().endsWith('6'))
     {
         let lines = [];
         let thisIndex = 0;
