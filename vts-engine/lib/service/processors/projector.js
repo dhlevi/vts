@@ -12,11 +12,11 @@ module.exports.process = async function(request, processor)
 
     if (newProjection.toLowerCase().includes('http'))
     {
-        newProjection = await utils.getRequest(newProjection);
+        newProjection = await utils.getHttpRequest(newProjection);
     }
     else if (newProjection.toLowerCase().includes('EPSG:'))
     {
-        newProjection = await utils.getRequest('https://epsg.io/' + newProjection.split(':')[1] + '.js');
+        newProjection = await utils.getHttpRequest('https://epsg.io/' + newProjection.split(':')[1] + '.esriwkt');
     }
 
     // cycle through each input node (data should be loaded by now)
@@ -41,11 +41,11 @@ module.exports.process = async function(request, processor)
             {
                 if (feature.crs.type === 'link')
                 {
-                    sourceProjection = await utils.getRequest(feature.crs.properties.href);
+                    sourceProjection = await utils.getHttpRequest(feature.crs.properties.href);
                 }
                 else if (feature.crs.type === 'name' && feature.crs.properties.name.toLowerCase().includes('EPSG:'))
                 {
-                    sourceProjection = await utils.getRequest('https://epsg.io/' + feature.crs.properties.name.split(':')[1] + '.js');
+                    sourceProjection = await utils.getHttpRequest('https://epsg.io/' + feature.crs.properties.name.split(':')[1] + '.esriwkt');
                 }
                 else
                 {

@@ -2,8 +2,8 @@ const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
 const mongoose       = require('mongoose');
-const cahceModel     = require('../../model/cache');
-const cacheSchema    = cahceModel.cacheSchema;
+const cacheModel     = require('../../model/cache');
+const cacheSchema    = cacheModel.cacheSchema;
 const Cache          = mongoose.model('Cache', cacheSchema);
 const { parentPort } = require('worker_threads');
 

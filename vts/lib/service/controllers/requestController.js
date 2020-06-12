@@ -1,5 +1,7 @@
-const mongoose = require('mongoose');
-const rp       = require('request-promise-native');
+const mongoose  = require('mongoose');
+const rp        = require('request-promise-native');
+const Projector = require('../../helpers/projector')
+const utils     = require('../../helpers/utils');
 
 // schemas
 const engineModel   = require('../../model/engine');
@@ -8,6 +10,9 @@ const Engine        = mongoose.model('Engine', engineSchema);
 const requestModel  = require('../../model/request');
 const requestSchema = requestModel.requestSchema;
 const Request       = mongoose.model('Request', requestSchema);
+const cacheModel     = require('../../model/cache');
+const cacheSchema    = cacheModel.cacheSchema;
+const Cache          = mongoose.model('Cache', cacheSchema);
 
 let RequestController = function(app)
 {
@@ -283,6 +288,95 @@ RequestController.prototype.init = function()
             {
                 console.error(err);
                 res.writeHead(500);
+                res.end();
+            });
+        }
+        catch(err)
+        {
+            console.error(err);
+            res.writeHead(500);
+            res.end();
+        }
+    });
+
+    this.app.get("/Cache/:name", (req, res, next) => 
+    {
+        try
+        {
+            let query = { request: req.params.name };
+            let bbox = [-180, -90, 180, 90];
+
+            // bbox &BBOX=-180,-90,180,90
+            if (req.query.bbox)
+            {
+                let coords = req.query.bbox.split(','); // [-180, -90, 180, 90]
+                bbox = [Number(coords[0].trim()), Number(coords[1].trim()), Number(coords[2].trim()), Number(coords[3].trim())];
+                query['feature.geometry'] =
+                {
+                    $geoWithin: {
+                        $geometry: {
+                            type: 'Polygon',
+                            coordinates: [[
+                              [bbox[0], bbox[1]],
+                              [bbox[2], bbox[1]],
+                              [bbox[2], bbox[3]],
+                              [bbox[0], bbox[3]],
+                              [bbox[0], bbox[1]]
+                            ]]
+                        }
+                    }
+                };
+            }
+
+            Cache.find(query).then(async cacheFeatures =>
+            {
+                let features = [];
+
+                for (let i = 0; i < cacheFeatures.length; i++)
+                {
+                    let cache = cacheFeatures[i];
+
+                    if (cache && cache.feature && cache.feature.geometry)
+                    {
+                        // CRS=epsg:4326
+                        if (req.query.crs && req.query.crs.includes(':'))
+                        {
+                            let sourceProjection = cache.feature.crs ? cache.feature.crs.properties.name : 'EPSG:4326';
+                            let destProjection = await utils.getHttpRequest('https://epsg.io/' + req.query.crs.split(':')[1] + '.esriwkt');
+                            let projector = new Projector(sourceProjection, destProjection);
+                            // project!
+                            if (sourceProjection.toLowerCase() !== req.query.crs.toLowerCase())
+                            {
+                                projector.project(cache.feature.geometry);
+                                
+                                cache.feature.crs = 
+                                {
+                                    type: 'link',
+                                    properties: {
+                                        href: 'https://epsg.io/' + req.query.crs.split(':')[1] + '.esriwkt',
+                                        type: 'wkt'
+                                    }
+                                };
+                            }
+                        }
+
+                        features.push(cache.feature);
+                    }
+                }
+
+                let featureCollection = 
+                {
+                    type: 'FeatureCollection',
+                    bbox: bbox,
+                    features: features
+                }
+
+                res.json(featureCollection);
+            })
+            .catch(err =>
+            {
+                console.error(err);
+                res.writeHead(404);
                 res.end();
             });
         }

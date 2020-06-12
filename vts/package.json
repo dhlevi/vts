@@ -27,6 +27,7 @@
     "mongoose": "^5.7.7",
     "morgan": "^1.10.0",
     "os": "^0.1.1",
+    "proj4": "^2.6.2",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "uuid": "^8.0.0",

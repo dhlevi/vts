@@ -18,11 +18,11 @@ module.exports.process = async function(request, processor)
     // setup the source projection
     if (projection && projection.toLowerCase().includes('http'))
     {
-        projection = await utils.getRequest(projection);
+        projection = await utils.getHttpRequest(projection);
     }
     else if (projection && projection.toLowerCase().includes('EPSG:'))
     {
-        projection = await utils.getRequest('https://epsg.io/' + projection.split(':')[1] + '.js');
+        projection = await utils.getHttpRequest('https://epsg.io/' + projection.split(':')[1] + '.esriwkt');
     }
 
     processor.outputNodes.features = [];
@@ -78,7 +78,7 @@ async function processOracle(connOptions, query, geomColumn, request, processor)
                     // we have to assume it's 4326
                     if (oraGeom.SDO_SRID && oraGeom.SDO_SRID.length !== 0)
                     {
-                        projection = await utils.getRequest('https://epsg.io/' + oraGeom.SDO_SRID + '.js');
+                        projection = await utils.getHttpRequest('https://epsg.io/' + oraGeom.SDO_SRID + '.js');
                     }
                     else 
                     {
