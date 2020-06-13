@@ -1,5 +1,4 @@
 let serviceUrl = "../";
-let serviceUnavailable = false;
 let refresh = true;
 
 let app = new Vue(
@@ -8,6 +7,8 @@ let app = new Vue(
     data: 
     {
         user: '',
+        users: [],
+        selectedUser: { name: '', password: '', email: '', role: 'public'},
         engines: [],
         requests: [],
         requestCounts: [0, 0, 0, 0, 0],
@@ -34,7 +35,7 @@ let app = new Vue(
         selectedNode: { title: '' },
         lastTab: 'dashboard',
         currentTab: 'dashboard',
-        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'edit-task', 'projects', 'edit-project', 'designer', 'map-viewer', 'about'],
+        tabs: ['dashboard', 'engines', 'edit-engine', 'requests', 'tasks', 'edit-task', 'projects', 'edit-project', 'designer', 'map-viewer', 'about', 'users', 'edit-user'],
         componentKey: 0,
         tools: [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'http' },
                 { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'all_inbox' },
@@ -129,6 +130,10 @@ let app = new Vue(
             {
                 loadRequests(null, 'Created', false);
             }
+            else if (tab === 'users')
+            {
+                loadUsers();
+            }
 
             this.lastTab = this.currentTab;
             this.currentTab = tab;
@@ -190,30 +195,29 @@ $(document).ready(function()
 
 function statusCheck()
 {
+    // if we have no token, redirect to login
+    if (!app.user || app.user.length === 0)
+    {
+        window.location.replace("./login.html");
+    }
+
     if (refresh)
     {
         $.ajax
         ({
             url: serviceUrl + 'Ping',
             type: "get",
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+            },
             success: function (result)
             {
-                if (serviceUnavailable)
-                {
-                    M.toast({ html: 'Service is back up and running!'});
-                }
-
-                serviceUnavailable = false;
                 buildDashboard();
             },
             error: function (status)
-            {   
-                if (!serviceUnavailable)
-                {
-                    M.toast({ html: 'Service unavailable. Some functionality may not work in offline mode.'});
-                }
-
-                serviceUnavailable = true;
+            {
+                // service down or token invalid. redirect to login
+                window.location.replace("./login.html");
             }
         });
     }

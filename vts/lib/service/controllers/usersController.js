@@ -117,7 +117,7 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
+    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
     {
         User.findById(req.params.id).then((result) => 
         {
@@ -128,7 +128,7 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
+    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
     {
         if (req.body.password)
         {
@@ -143,7 +143,7 @@ UsersController.prototype.init = function()
         {
             for (let i in req.body) 
             {
-                user[i] = userData[i];
+                user[i] = req.body[i];
             }
 
             user.save(function (err, updatedUser) 

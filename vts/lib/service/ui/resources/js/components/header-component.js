@@ -20,6 +20,7 @@ Vue.component('header-component',
             </div>
         </nav>
         <div class="menubar primary-color-dark">
+          <a href="#" class="waves-effect waves-white btn-flat primary-color-dark" onclick="app.tabSwitch('users')">User Management</a>
           <a href="#" class="waves-effect waves-white btn-flat primary-color-dark" onclick="app.tabSwitch('engines')">Engines</a>
           <a href="#" class="waves-effect waves-white btn-flat primary-color-dark" onclick="app.tabSwitch('requests')">Requests</a>
           <a href="#" class="waves-effect waves-white btn-flat primary-color-dark" onclick="app.tabSwitch('tasks')">Scheduled Tasks</a>

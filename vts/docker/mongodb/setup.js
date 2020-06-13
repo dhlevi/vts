@@ -10,12 +10,7 @@ let res = [
   db.cache.createIndex({ "feature.geometry": "2dsphere" }),
   db.users.createIndex({ name: 1 }, { unique: true } ),
   db.users.createIndex({ name: "text", email: "text" }),
-  db.users.insert({
-    name: "admin",
-    password: "password",
-    email: "mail@place.x",
-    role: "admin"
-  })
+  db.users.insert({ name: "admin", password: "password", email: "mail@place.x", role: "admin" })
 ]
 
 printjson(res)

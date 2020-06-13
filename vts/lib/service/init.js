@@ -6,7 +6,7 @@ const mongoose   = require('mongoose');
 const bodyParser = require('body-parser');
 const winston    = require('winston');
 const expWinston = require('express-winston');
-
+const validation = require('./middleware/auth.validation.middleware');
 // controllers
 const processors        = require('./controllers/processors');
 const EngineController  = require('./controllers/engineController');
@@ -128,15 +128,9 @@ exports.launch = function (args)
         });
     });
 
-    app.get("/Ping", (req, res, next) => 
+    app.get("/Ping", [validation.validJWTNeeded], (req, res, next) => 
     {
         res.json(['Pong']);
-    });
-
-    app.get("/Login", (req, res, next) => 
-    {
-        // poor mans login for demo. Replace with an OAuth or Keycloak with IDIR
-        res.json(['This should be your admin token']);
     });
 
     // register UI components
