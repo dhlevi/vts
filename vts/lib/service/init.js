@@ -124,7 +124,7 @@ exports.launch = function (args)
             ],
             engineLinks: engineController.links(),
             requestLinks: requestController.links(),
-            userLinks: UserController.links()
+            userLinks: userController.links()
         });
     });
 

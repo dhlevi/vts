@@ -1,8 +1,8 @@
-const mongoose  = require('mongoose');
-const rp        = require('request-promise-native');
-const Projector = require('../../helpers/projector')
-const utils     = require('../../helpers/utils');
-
+const mongoose   = require('mongoose');
+const rp         = require('request-promise-native');
+const Projector  = require('../../helpers/projector')
+const utils      = require('../../helpers/utils');
+const validation = require('../middleware/auth.validation.middleware');
 // schemas
 const engineModel   = require('../../model/engine');
 const engineSchema  = engineModel.engineSchema;
@@ -23,7 +23,7 @@ let RequestController = function(app)
 
 RequestController.prototype.init = function()
 {
-    this.app.get("/Requests", (req, res, next) => 
+    this.app.get("/Requests", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {
@@ -101,7 +101,7 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.get("/Requests/Counts", async (req, res, next) => 
+    this.app.get("/Requests/Counts", [validation.validJWTNeeded, validation.requiredRole('public')], async (req, res, next) => 
     {
         try
         {
@@ -129,7 +129,7 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.post("/Requests", (req, res, next) => 
+    this.app.post("/Requests", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {
@@ -186,7 +186,7 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.get("/Requests/:id", (req, res, next) => 
+    this.app.get("/Requests/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {
@@ -219,7 +219,7 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.put("/Requests/:id", async (req, res, next) => 
+    this.app.put("/Requests/:id", [validation.validJWTNeeded, validation.requiredRole('public')], async (req, res, next) => 
     {
         try
         {
@@ -259,7 +259,7 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.delete("/Requests/:id", (req, res, next) => 
+    this.app.delete("/Requests/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {

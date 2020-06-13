@@ -16,6 +16,13 @@ exports.validJWTNeeded = (req, res, next) =>
             else 
             {
                 req.jwt = jwt.verify(authorization[1], secret);
+
+                // check if the token has expired
+                if (req.jwt.stamp < new Date().getTime())
+                {
+                    return res.status(401).send();
+                }
+
                 return next();
             }
         } 
@@ -30,7 +37,7 @@ exports.validJWTNeeded = (req, res, next) =>
     }
 };
 
-exports.minimumPermissionLevelRequired = (role) => 
+exports.requiredRole = (role) => 
 {
     return (req, res, next) => 
     {

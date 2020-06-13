@@ -16,7 +16,7 @@ let UsersController = function(app, jwtsecret)
 
 UsersController.prototype.init = function()
 {
-    this.app.get("/Users", [validation.validJWTNeeded, validation.minimumPermissionLevelRequired('admin')], (req, res, next) =>
+    this.app.get("/Users", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
     {
         let limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
         let page = 0;
@@ -50,7 +50,7 @@ UsersController.prototype.init = function()
             });
     });
 
-    this.app.post("/Users", [validation.validJWTNeeded, validation.minimumPermissionLevelRequired('admin')], (req, res, next) =>
+    this.app.post("/Users", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
     {
         let salt = crypto.randomBytes(16).toString('base64');
         let hash = crypto.createHmac('sha512',salt)
@@ -90,7 +90,8 @@ UsersController.prototype.init = function()
                         email: user[0].email,
                         role: user[0].role,
                         provider: 'name',
-                        name: user[0].name
+                        name: user[0].name,
+                        stamp: new Date().setDate(new Date().getDate() + 1)
                     };
 
                     let refreshId = userAuthResponse.userId + this.jwtSecret;
@@ -99,7 +100,7 @@ UsersController.prototype.init = function()
 
                     userAuthResponse.refreshKey = salt;
                     
-                    let token = jwt.sign(req.body, this.jwtSecret);
+                    let token = jwt.sign(userAuthResponse, this.jwtSecret);
                     let b = new Buffer(hash);
                     let refresh_token = b.toString('base64');
 
@@ -116,7 +117,7 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.minimumPermissionLevelRequired('public')], (req, res, next) =>
+    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
     {
         User.findById(req.params.id).then((result) => 
         {
@@ -127,7 +128,7 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.minimumPermissionLevelRequired('public')], (req, res, next) =>
+    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
     {
         if (req.body.password)
         {
@@ -152,7 +153,7 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.delete("/Users/:id", [validation.validJWTNeeded, validation.minimumPermissionLevelRequired('admin')], (req, res, next) =>
+    this.app.delete("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
     {
         User.remove({ _id: req.params.id })
         .then((result)=>

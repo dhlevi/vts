@@ -19,7 +19,10 @@ function shutdownEngine(engine)
     $.ajax
 	({
 		url: serviceUrl + 'Engines/' + engine + '/Stop',
-		type: "put",
+        type: "put",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engines)
 		{
             M.toast({ html: 'The Engine "' + engines.id + '" has been asked to shut down. Please wait...'});
@@ -36,7 +39,10 @@ function startupEngine(engine)
     $.ajax
 	({
 		url: serviceUrl + 'Engines/' + engine + '/Start',
-		type: "put",
+        type: "put",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engine)
 		{
             M.toast({ html: 'The Engine "' + engine.id + '" has been asked to start up. Please wait...'});
@@ -53,7 +59,10 @@ function flushEngine(engine)
     $.ajax
 	({
 		url: serviceUrl + 'Engines/' + engine + '/Flush',
-		type: "put",
+        type: "put",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engines)
 		{
             M.toast({ html: 'The Engine queue flush was requested...'});
@@ -74,7 +83,10 @@ function editEngine(engineId)
     $.ajax
 	({
 		url: serviceUrl + 'Engines/' + engineId,
-		type: "get",
+        type: "get",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engine)
 		{
             app.selectedEngine = engine;
@@ -119,6 +131,9 @@ function saveEngine()
         contentType:'application/json',
         crossDomain: true,
         withCredentials: true,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (engine)
         {
             M.toast({ html: 'Engine "' + engine.id + '" updated'});
@@ -138,7 +153,10 @@ function deleteEngine(engine)
     $.ajax
 	({
 		url: serviceUrl + 'Engines/' + engine,
-		type: "delete",
+        type: "delete",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engines)
 		{
             M.toast({ html: 'The Engine "' + engines.id + '" registration has been deleted. To recreate it, restart your engine container'});

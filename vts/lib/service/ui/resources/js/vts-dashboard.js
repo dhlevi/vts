@@ -15,6 +15,9 @@ function buildTaskNotification()
         type: "get",
         dataType: 'json',
         contentType:'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (results)
         {
             let list = '<ul class="collection">';
@@ -60,6 +63,9 @@ function buildRequestCountChart()
         type: "get",
         dataType: 'json',
         contentType:'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (results)
         {
             app.requestCounts = results;
@@ -111,7 +117,10 @@ function buildEngineChart()
     $.ajax
 	({
 		url: serviceUrl + 'Engines', // get all engines
-		type: "get",
+        type: "get",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
 		success: function (engines)
 		{
             app.engines = engines;
@@ -124,6 +133,9 @@ function buildEngineChart()
                     ({
                         url: engine.route,
                         type: "get",
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+                        },
                         success: function (engineData)
                         {
                             engine['runningRequests'] = engineData.runningRequests;

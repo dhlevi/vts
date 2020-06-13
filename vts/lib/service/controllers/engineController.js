@@ -1,11 +1,12 @@
-const mongoose = require('mongoose');
-const rp       = require('request-promise-native');
-const request  = require('request');
+const mongoose   = require('mongoose');
+const rp         = require('request-promise-native');
+const request    = require('request');
+const validation = require('../middleware/auth.validation.middleware');
 
 // schemas
-const engineModel = require('../../model/engine');
+const engineModel  = require('../../model/engine');
 const engineSchema = engineModel.engineSchema;
-const Engine = mongoose.model('Engine', engineSchema);
+const Engine       = mongoose.model('Engine', engineSchema);
 
 let EngineController = function(app)
 {
@@ -14,7 +15,7 @@ let EngineController = function(app)
 
 EngineController.prototype.init = async function()
 {
-    this.app.get("/Engines", async (req, res, next) => 
+    this.app.get("/Engines", [validation.validJWTNeeded, validation.requiredRole('public')], async (req, res, next) => 
     {
         try
         {
@@ -74,7 +75,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.get("/Engines/:id", (req, res, next) => 
+    this.app.get("/Engines/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {
@@ -110,7 +111,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.put("/Engines/:id", (req, res, next) => 
+    this.app.put("/Engines/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) => 
     {
         try
         {
@@ -188,7 +189,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.put("/Engines/:id/Message", (req, res, next) => 
+    this.app.put("/Engines/:id/Message", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) => 
     {
         try
         {
@@ -233,7 +234,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.delete("/Engines/:id", (req, res, next) => 
+    this.app.delete("/Engines/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) => 
     {
         try
         {
@@ -275,7 +276,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.put("/Engines/:id/Start", (req, res, next) => 
+    this.app.put("/Engines/:id/Start", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) => 
     {
         try
         {
@@ -312,7 +313,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.put("/Engines/:id/Stop", (req, res, next) => 
+    this.app.put("/Engines/:id/Stop", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) => 
     {
         try
         {
@@ -350,7 +351,7 @@ EngineController.prototype.init = async function()
         }
     });
 
-    this.app.put("/Engines/:id/Flush", (req, res, next) => 
+    this.app.put("/Engines/:id/Flush", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) => 
     {
         try
         {

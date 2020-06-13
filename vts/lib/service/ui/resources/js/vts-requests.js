@@ -27,6 +27,9 @@ function loadRequests(text, status, tasks)
         type: "get",
         dataType: 'json',
         contentType:'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (results)
         {
             if (tasks) app.tasks = results;
@@ -60,6 +63,9 @@ function saveProject(isTask, status)
         contentType:'application/json',
         crossDomain: true,
         withCredentials: true,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (result)
         {
             M.toast({ html: 'Saved!'});
@@ -93,6 +99,9 @@ function runRequest()
         contentType:'application/json',
         crossDomain: true,
         withCredentials: true,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (result)
         {
             M.toast({ html: 'Request submitted'});
@@ -112,6 +121,9 @@ function editRequest(requestId)
         type: "get",
         dataType: 'json',
         contentType:'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (results)
         {
             app.request = results;
@@ -132,6 +144,9 @@ function viewOnMap(requestId)
         type: "get",
         dataType: 'json',
         contentType:'application/json',
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (results)
         {
             app.request = results;
@@ -152,6 +167,9 @@ function deleteRequest(requestId)
         type: "delete",
         crossDomain: true,
         withCredentials: true,
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
         success: function (result)
         {
             M.toast({ html: 'Request Deleted'});

@@ -7,7 +7,7 @@ let app = new Vue(
     el: '#content',
     data: 
     {
-        user: {},
+        user: '',
         engines: [],
         requests: [],
         requestCounts: [0, 0, 0, 0, 0],
@@ -174,6 +174,11 @@ let app = new Vue(
 
 $(document).ready(function()
 {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    app.user = token;
+
     $('.materialboxed').materialbox();
     $('.sidenav').sidenav();
     

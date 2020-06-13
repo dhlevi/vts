@@ -43,8 +43,7 @@
                         </div>
                     </div>
                     <div class="card-action">
-                        <a href="#" onclick="">Create Account</a>
-                        <a href="#" onclick="login()">Login</a>
+                        <a id="submit" href="#" onclick="login()">Login</a>
                     </div>
                 </div>
             </main>
@@ -52,5 +51,14 @@
             </footer>
         </div>
         <script src="resources/js/vts-users.js"></script>
+        <script>
+            $(document).ready(function () {
+                $(document).on("keyup", function (event) {
+                    if (event.which == 13) {
+                        $("#submit").trigger('click');
+                    }
+                });
+            });
+        </script>
     </body>
 </html>
