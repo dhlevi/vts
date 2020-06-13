@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="VTS UI v1.0">
+        <meta name="author" content="Vivid Solutions Inc.">
+        <link rel="shortcut icon" href="resources/icon.gif" type="image/png">
+        <title>Vivid Topology Service</title>
+        <!-- Scripts and CSS -->
+        <!-- JQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <!-- Fonts-->
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Questrial&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+        <!-- Material Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!-- Materialize CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <!-- Materialize -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <!-- vts -->
+        <link rel="stylesheet" href="resources/css/vts.css" type='text/css'>
+    </head>
+    <body class="primary-color">
+        <div id="content">
+            <header>
+            </header>
+            <main>
+                <div class="card primary-color-dark hoverable">
+                    <div class="card-content white-text" style="width: 460px; position: fixed; top: calc(50vh - 135px); left: calc(50vw - 230px);">
+                        <span class="card-title">VTS Login</span>
+                        <div class="row">
+                            <div class="input-field col s12 white-text">
+                                <input placeholder="User Name" id="name" type="text" class="validate white-text">
+                                <label class="white-text" for="name">User Name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 white-text">
+                                <input placeholder="Password" id="password" type="password" class="validate white-text">
+                                <label class="white-text" for="password">Password</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-action">
+                        <a href="#" onclick="">Create Account</a>
+                        <a href="#" onclick="login()">Login</a>
+                    </div>
+                </div>
+            </main>
+            <footer>
+            </footer>
+        </div>
+        <script src="resources/js/vts-users.js"></script>
+    </body>
+</html>

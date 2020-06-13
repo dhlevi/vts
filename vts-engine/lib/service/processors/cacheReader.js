@@ -11,6 +11,7 @@ module.exports.process = async function(request, processor)
 {
     processor.outputNodes.features = [];
     let requestName = processor.attributes.request;
+    let processorName = processor.attributes.processor;
 
     // Need to init mongodb connection here as we're in a worker thread.
     mongoose.connect(request.mongodbConnection, {
@@ -26,7 +27,11 @@ module.exports.process = async function(request, processor)
         socketTimeoutMS: 45000           // Close sockets after 45 seconds of inactivity
     });
 
-    let result = await Cache.find({ request: requestName }).exec();
+    let query = { request: requestName };
+    if (processorName && processorName.length > 0)
+        query['processor'] = processorName;
+
+    let result = await Cache.find(query).exec();
     result.forEach(async cache => 
     {
         let feature = cache.feature;

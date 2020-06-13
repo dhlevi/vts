@@ -69,6 +69,7 @@ function addNode(node, x, y)
         break;
         case 'cacheReader':
             processor.attributes.request = '';
+            processor.attributes.processor = '';
         break;
         case 'randomReader':
             processor.attributes.featureType = 'polygon'; // point, line, polygon

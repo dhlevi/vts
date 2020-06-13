@@ -11,6 +11,7 @@ const expWinston = require('express-winston');
 const processors        = require('./controllers/processors');
 const EngineController  = require('./controllers/engineController');
 const RequestController = require('./controllers/requestController');
+const UserController    = require('./controllers/usersController');
 
 // configure express app
 
@@ -64,6 +65,7 @@ let logpath = './logs/';
 
 let engineController = new EngineController(app);
 let requestController = new RequestController(app);
+let userController = new UserController(app, 'vtsSecret'); // obviously you want to move the secret elsewhere...
 let startTime = Date.now();
 
 // server launch point
@@ -107,6 +109,7 @@ exports.launch = function (args)
     // register endpoints
     engineController.init();
     requestController.init();
+    userController.init();
 
     app.get("/", (req, res, next) => 
     {
@@ -120,7 +123,8 @@ exports.launch = function (args)
                 { rel: 'self', title: 'API Login', method: 'POST', href: '/Login' }
             ],
             engineLinks: engineController.links(),
-            requestLinks: requestController.links()
+            requestLinks: requestController.links(),
+            userLinks: UserController.links()
         });
     });
 

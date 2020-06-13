@@ -46,7 +46,7 @@ module.exports.process = async function(request, processor)
             let cache = new Cache(
             {
                 request: request.name,
-                processor: processor.name,
+                processor: inputNode.name,
                 feature: feature,
                 metadata: { createdBy: 'VTS', createdDate: new Date() }
             });
