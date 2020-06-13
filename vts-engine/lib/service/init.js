@@ -393,6 +393,8 @@ exports.launch = async function (args)
                         // delete any existing cache
                         let cacheDir = process.cwd() + '/cache/' + request.name;
                         await rimraf(cacheDir, function () { console.log('Cleared cache for ' + cacheDir); });
+                        Cache.deleteMany({ request: request.name });
+                        
                         // queue the request
 
                         // Convert the interval to milliseconds
