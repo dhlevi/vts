@@ -194,6 +194,11 @@ UsersController.prototype.init = function()
                     user[i] = req.body[i];
                 }
 
+                if (req.jwt.role === 'public')
+                {
+                    user.role = 'public';
+                }
+
                 user.save(function (err, updatedUser) 
                 {
                     res.status(204).send({});

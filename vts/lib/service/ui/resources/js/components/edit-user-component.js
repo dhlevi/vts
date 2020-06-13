@@ -37,7 +37,7 @@ Vue.component('edit-user',
                         <label class="white-text" for="password">Password</label>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" v-if="selectedUser.role === 'admin'">
                     <div class="col s6 white-text">
                         <label>Role</label>
                         <select v-model="selectedUser.role" class="browser-default">
