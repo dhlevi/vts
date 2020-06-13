@@ -50,7 +50,7 @@ module.exports.process = async function(request, processor)
                 feature: feature,
                 metadata: { createdBy: 'VTS', createdDate: new Date() }
             });
-            parentPort.postMessage('Caching feature ' + feature);
+            
             cache.save();
         }
     }
