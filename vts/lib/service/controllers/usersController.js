@@ -44,7 +44,7 @@ UsersController.prototype.init = function()
                     for (let i in users) 
                     {
                         delete users[i].password;
-                        userModel.links(user[i]);
+                        userModel.links(users[i]);
                     }
 
                     if (req.jwt.role === 'public')
@@ -128,25 +128,6 @@ UsersController.prototype.init = function()
                 {
                     return res.status(400).send({errors: ['Invalid name or password']});
                 }
-            }
-        });
-    });
-
-    this.app.get("/Users/:name", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
-    {
-        User.findOne({ name: req.params.name}).then((result) => 
-        {
-            delete result.password;
-            delete result.__v;
-
-            if(req.jwt.role === 'public' && req.jwt.name !== result.name)
-            {
-                res.status(400).send({errors: ['Invalid name or password']});
-            }
-            else
-            {
-                userModel.links(result);
-                res.json(result);
             }
         });
     });

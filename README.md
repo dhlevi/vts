@@ -36,6 +36,10 @@ Additionally, either during or after processing, you can view the process result
 
 ![Map screen](/docs/mapview.jpg)
 
+VTS has very simple user management. A Default admin user can be created. From there, administrator users can create other admin or public access users. Public access users can create projects and requests, but cannot create scheduled tasks, view the engine details, or view other users requests.
+
+![User Management screen](/docs/users.jpg)
+
 ## Planned processors
 
 Currently there are 51 processors (including readers and writers). Documentation for each one is in progress!
@@ -78,6 +82,8 @@ Run your MongoDB image:
 
 - docker run --name vts_mongo -p 27017:27017 mongodb:latest mongod
 
+A default "Admin" user will be created for VTS: admin/password. You can change the admin user name/password at any time from the admin page.
+
 Get your MongoDB address, so you can configure it with vts/engine:
 
 - docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' vts_mongo
@@ -91,7 +97,9 @@ Configure ports and engine ID's as needed!
 
 ### Manually
 
-Fork the code. If you don't have a MongoDB instance (or even if you do) use the provided dockerfile for setting up your MongoDB.
+Fork the code. If you don't have a MongoDB instance (or even if you do) use the provided dockerfile for setting up your MongoDB. Check the setup.js file in ./docker/mongodb for the collection and index settings.
+
+Note: The mongodb setup.js script will create A default "Admin" user for VTS: admin/password. You can change the admin user name/password at any time from the admin page. If you do not use the setup script, make sure to create an admin user manually in mongodb or you won't be able to log in!
 
 Once MongoDB is up and running, you can launch the VTS service going to the VTS folder:
 
