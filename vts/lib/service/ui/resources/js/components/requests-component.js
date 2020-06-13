@@ -64,7 +64,7 @@ Vue.component('view-requests',
         <a href="#!" v-bind:onclick="'editRequest(\\'' + request._id + '\\')'" class="secondary-content"><i class="material-icons white-text">edit</i></a>
         <a v-if="request.status !=='Created'" href="#!" v-bind:onclick="'$(\\'#logs_' + index + '\\').slideToggle();'" class="secondary-content"><i class="material-icons white-text">textsms</i></a>
         <span class="title" style="font-weight: bold;">{{request.name}}</span>
-        <p style="padding: 0px; margin: 0px; font-size: 10px;">Engine: {{request.engine}} | Submitted by {{request.metadata.createUser}} | Status: {{request.status}}</p>
+        <p style="padding: 0px; margin: 0px; font-size: 10px;">Engine: {{request.engine}} | Submitted by {{request.metadata.createdBy}} | Status: {{request.status}}</p>
         <p v-if="request.description" style="padding: 0px; margin: 0px; font-size: 10px;">{{request.description}}</p>
         <ul v-bind:id="'logs_' + index" class="collection" style="display: none; max-height: 400px; overflow: auto;">
             <view-messages v-for="(message, index) in request.messages"

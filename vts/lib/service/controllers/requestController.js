@@ -43,6 +43,11 @@ RequestController.prototype.init = function()
                 }
             };
 
+            if(req.jwt.role === 'public')
+            {
+                match.$match['metadata.createdBy'] = req.jwt.name;
+            }
+
             aggregate.push(match);
 
             if (text)
@@ -151,6 +156,7 @@ RequestController.prototype.init = function()
                 // send to mongo
                 delete requestData._id;
                 let newRequest = new Request(requestData);
+                newRequest.metadata.createdBy = req.jwt.name;
                 newRequest.status = !newRequest.status ? newRequest.status = 'Submitted' : newRequest.status;
                 // name cannot contain special chars, spaces, etc. Lower case, remove special, and replace space with dash
                 newRequest.name = newRequest.name.replace(/[^a-zA-Z0-9 -]/g, '').toLowerCase().replace(/\s+/g, '-');
@@ -230,7 +236,7 @@ RequestController.prototype.init = function()
                     let updatedRequest = new Request(req.body);
                     updatedRequest.metadata.revision += 1;
                     updatedRequest.metadata.lastUpdatedDate = new Date();
-                    updatedRequest.metadata.lastUpdatedBy = 'VTS';
+                    updatedRequest.metadata.lastUpdatedBy = req.jwt.name;
 
                     updatedRequest = await request.update(updatedRequest);
 

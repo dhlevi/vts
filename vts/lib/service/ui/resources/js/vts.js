@@ -224,3 +224,26 @@ function statusCheck()
 
     setTimeout(statusCheck, 5000);
 }
+
+function editUser()
+{
+    $.ajax
+    ({
+        url: serviceUrl + 'Users',
+        type: "get",
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader('Authorization', 'Bearer ' + app.user);
+        },
+        success: function (result)
+        {
+            app.selectedUser = result[0];
+            delete app.selectedUser.password;
+            refresh = false;
+            app.tabSwitch('edit-user');
+        },
+        error: function (status)
+        {
+            M.toast({ html: 'Could not fetch user info'});
+        }
+    });
+}

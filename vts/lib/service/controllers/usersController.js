@@ -16,7 +16,7 @@ let UsersController = function(app, jwtsecret)
 
 UsersController.prototype.init = function()
 {
-    this.app.get("/Users", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
+    this.app.get("/Users", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
     {
         let limit = req.query.limit && req.query.limit <= 100 ? parseInt(req.query.limit) : 10;
         let page = 0;
@@ -44,8 +44,23 @@ UsersController.prototype.init = function()
                     for (let i in users) 
                     {
                         delete users[i].password;
+                        userModel.links(user[i]);
                     }
-                    res.json(users);
+
+                    if (req.jwt.role === 'public')
+                    {
+                        for (let i in users) 
+                        {
+                            if (users[i].name === req.jwt.name)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        res.json(users);
+                    }
                 }
             });
     });
@@ -117,18 +132,45 @@ UsersController.prototype.init = function()
         });
     });
 
-    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
+    this.app.get("/Users/:name", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
+    {
+        User.findOne({ name: req.params.name}).then((result) => 
+        {
+            delete result.password;
+            delete result.__v;
+
+            if(req.jwt.role === 'public' && req.jwt.name !== result.name)
+            {
+                res.status(400).send({errors: ['Invalid name or password']});
+            }
+            else
+            {
+                userModel.links(result);
+                res.json(result);
+            }
+        });
+    });
+
+    this.app.get("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
     {
         User.findById(req.params.id).then((result) => 
         {
             delete result.password;
             delete result.__v;
 
-            res.json(result);
+            if(req.jwt.role === 'public' && req.jwt.name !== result.name)
+            {
+                res.status(400).send({errors: ['Invalid name or password']});
+            }
+            else
+            {
+                userModel.links(result);
+                res.json(result);
+            }
         });
     });
 
-    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('admin')], (req, res, next) =>
+    this.app.put("/Users/:id", [validation.validJWTNeeded, validation.requiredRole('public')], (req, res, next) =>
     {
         if (req.body.password)
         {
@@ -141,15 +183,22 @@ UsersController.prototype.init = function()
         // add a check to the jwt token
         User.findById(req.params.id, function (err, user) 
         {
-            for (let i in req.body) 
+            if (req.jwt.role === 'public' && req.jwt.name !== user.name)
             {
-                user[i] = req.body[i];
+                res.status(400).send({errors: ['Invalid name or password']});
             }
-
-            user.save(function (err, updatedUser) 
+            else
             {
-                res.status(204).send({});
-            });
+                for (let i in req.body) 
+                {
+                    user[i] = req.body[i];
+                }
+
+                user.save(function (err, updatedUser) 
+                {
+                    res.status(204).send({});
+                });
+            }
         });
     });
 
