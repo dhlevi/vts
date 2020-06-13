@@ -102,7 +102,7 @@ let app = new Vue(
                 { name: 'fileWriter', tooltip: 'Write results to a file (GeoJSON, KML, KMZ, CSV, WKT, GML, Shape(zip), FGDB(zip))', icon: 'publish' },
                 { name: 'httpWriter', tooltip: 'Write results to an HTTP service', icon: 'backup' },
                 { name: 'dbWriter', tooltip: 'Write results to a DB (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'dns' },
-                { name: 'cacheWriter', tooltip: 'Write results to the VTS cache and serve', icon: 'dns' }]
+                { name: 'cacheWriter', tooltip: 'Write results to the VTS cache and serve', icon: 'layers' }]
     },
     methods: 
     {
