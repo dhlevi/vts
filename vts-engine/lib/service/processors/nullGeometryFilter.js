@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
 const turf           = require('@turf/turf');
+const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
 {
@@ -24,7 +25,7 @@ module.exports.process = async function(request, processor)
             let featureString = fs.readFileSync(filePath, 'utf8');
             let feature = JSON.parse(featureString);
 
-            let passed = feature.geometry && feature.geometry !== null;
+            let passed = feature && feature.geometry && feature.geometry !== null;
 
             // write to the appropriate outputNode
             let id = uuidv4();

@@ -359,7 +359,7 @@ exports.launch = async function (args)
                         }
 
                         // also check the MongoDB cache collection, in case a cache was used
-                        await Cache.deleteMany({ request: dir });
+                        Cache.deleteMany({ request: dir });
 
                     })
                     .catch(error =>
