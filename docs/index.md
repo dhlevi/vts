@@ -4,11 +4,11 @@ The Vivid Topology Service is an application that allows for ETL and transformat
 useful! Requests can be ad hoc or scheduled to run at repeating intervals.
 
 The application dashboard:
-![Dashboard screen](/docs/dashboard.jpg)
+![Dashboard screen](dashboard.jpg)
 
 ## Documentation
 
-See the [Install Guide](/docs/index.md)
+See the [Install Guide](index.md)
 
 ## What is it?
 
@@ -18,7 +18,7 @@ VTS is a web application, a small rest service, and 1+ "engine" services, backed
 
 Engines are where VTS does the work within a request. You can run multiple engines, and specify if an engine can handle scheduled tasks, ad hoc requests (or both). You can edit the external route for an engine (it needs to be valid or the engine won't function), and view messages and metadata log events.
 
-![Engines screen](/docs/engines.jpg)
+![Engines screen](engines.jpg)
 
 From the Engines UI, you can also temporarily halt an engine or flush the processing queue to clear up memory.
 
@@ -30,19 +30,19 @@ Data itself can be transformed by various processors, such as buffers, convex/co
 
 To create the requests, the web application includes a "request designer" where you can drop processors and wire them together, but you can always create requests in JSON and submit them manually.
 
-![Engines screen](/docs/designer.jpg)
+![Engines screen](designer.jpg)
 
 While your process is running, you can view the request status and see various messages from the engine (errors or just information).
 
-![Requets screen](/docs/requests.jpg)
+![Requets screen](requests.jpg)
 
 Additionally, either during or after processing, you can view the process results in a map.
 
-![Map screen](/docs/mapview.jpg)
+![Map screen](mapview.jpg)
 
 VTS has very simple user management. A Default admin user can be created. From there, administrator users can create other admin or public access users. Public access users can create projects and requests, but cannot create scheduled tasks, view the engine details, or view other users requests.
 
-![User Management screen](/docs/users.jpg)
+![User Management screen](users.jpg)
 
 ## Planned processors
 
@@ -72,6 +72,6 @@ Too many to list if this goes beyond the prototype stage.
 
 ## How do I run it?
 
-See the [Install Guide](/docs/install.md)
+See the [Install Guide](install.md)
 
-![Vivid Logo](/docs/vivid_logo.jpg)
+![Vivid Logo](vivid_logo.jpg)
