@@ -8,7 +8,7 @@ The application dashboard:
 
 ## Documentation
 
-See the [Install Guide](index.md)
+In progress. See the [Documentation](documentation.md) guides.
 
 ## What is it?
 
