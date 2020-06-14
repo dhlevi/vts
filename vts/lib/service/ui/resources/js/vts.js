@@ -50,7 +50,7 @@ let app = new Vue(
                 { name: 'difference', tooltip: 'Clip the difference between two feature sets', icon: 'flip_to_back' },
                 { name: 'dissolve', tooltip: 'Dissolve all features', icon: 'donut_small' },
                 { name: 'intersect', tooltip: 'Intersect all features by another feature set', icon: 'branding_watermark' },
-                { name: 'simplify', tooltip: 'Simplify all features', icon: 'timeline' },
+                { name: 'simplify', tooltip: 'Simplify all features', icon: 'change_history' },
                 { name: 'tesselate', tooltip: 'Tesselate all features', icon: 'details' },
                 { name: 'union', tooltip: 'Union all features', icon: 'link' },
                 { name: 'scale', tooltip: 'Scale all features', icon: 'aspect_ratio' },
@@ -70,6 +70,10 @@ let app = new Vue(
                 { name: 'tin', tooltip: 'Creates a TIN (triangulated irregular network) from a set of points', icon: 'sports_soccer' },
                 { name: 'donutExtractor', tooltip: 'Creates a new set of data containing extracted donuts', icon: 'vignette' },
                 { name: 'donutRemover', tooltip: 'Removes all donuts from polygons', icon: 'wb_iridescent' },
+                { name: 'boundingBoxReplace', tooltip: 'Replaces all features with their bounding box', icon: 'launch' },
+                { name: 'boundingBoxCreator', tooltip: 'Create a bounding box from min/max XY coordinates', icon: 'open_in_new' },
+                { name: 'hullReplace', tooltip: 'Replaces all features with their convex or concave hull', icon: 'amp_stories' },
+                { name: 'lineCreator', tooltip: 'Creates a linestring from feature vertices. For point features, merge into a multipoint feature first.', icon: 'timeline' },
                 // measurement
                 { name: 'along', tooltip: 'Creates a point as a new feature at a given distance along a line', icon: 'share' },
                 { name: 'area', tooltip: 'Gets the area of a feature', icon: 'texture' },
@@ -81,6 +85,7 @@ let app = new Vue(
                 { name: 'centroid', tooltip: 'Finds the centroid of a feature by taking the mean of all vertices', icon: 'my_location' },
                 { name: 'destination', tooltip: 'Given a distance and bearing, finds the destination point for all point features', icon: 'place' },
                 { name: 'length', tooltip: 'Calculates the length of a feature', icon: 'square_foot' },
+                { name: 'vertexCounter', tooltip: 'Calculates the number of vertices in a feature', icon: 'linear_scale' },
                 // array operators
                 { name: 'filter', tooltip: 'Filter features non-spatially by an attribute', icon: 'filter_list'},
                 { name: 'nullGeometryFilter', tooltip: 'Filter features that have empty geometry', icon: 'highlight_alt'},

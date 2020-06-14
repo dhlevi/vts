@@ -39,8 +39,8 @@ Vue.component('designer',
                 <a href="#" onclick="app.tabSwitch('edit-project');" title="Save Diagram"><i class="material-icons">save</i></a>
                 <a href="#" onclick="clearDiagram();" title="New Diagram"><i class="material-icons">clear</i></a>
             </div>
-            <div id="creatorContainer" onclick="$('#node_editor').hide();" style="height: calc(100vh - 130px);">
-                <div class="designer-canvas jtk-demo-canvas canvas-wide flowchart-demo jtk-surface jtk-surface-nopan zoomItem" id="canvas">
+            <div id="creatorContainer" class="creatorContainer">
+                <div onclick="saveNodeUpdates();" class="designer-canvas jtk-canvas canvas-wide flowchart-area jtk-surface jtk-surface-nopan" id="canvas">
                 </div>
             </div>
             <node-editor v-bind:selected-node="selectedNode"></node-editor>
@@ -54,7 +54,7 @@ Vue.component('node-editor',
     props: ['selectedNode'],
     template:
     `
-    <div id="node_editor" class="primary-color-dark z-depth-2 node-editor" style="display: none;">
+    <div id="node_editor" class="primary-color-dark z-depth-2 node-editor col s9" style="display: none;">
         <h4 class="white-text" style="font-size: 18px;">{{selectedNode.title}}</h4>
         <div id="nodeEditorContent" style="height: calc(100vh - 364px); overflow-y: scroll;">
             <!-- node attributes -->

@@ -78,11 +78,24 @@ function addNode(node, x, y)
         case 'projector':
             processor.attributes.newProjection = '';
         break;
+        case 'boundingBoxCreator':
+            processor.attributes.minx = '-180';
+            processor.attributes.miny = '-90';
+            processor.attributes.maxx = '180';
+            processor.attributes.maxy = '90';
+            processor.inputNodes['bbox'] = [];
+        break;
         case 'buffer':
             processor.attributes.distance = 0;
             processor.attributes.units = 'kilometers'; // see turf. kilo, meter, mile, feet etc
         break;
+        case 'vertexCounter':
+            processor.attributes.fieldName = 'VERTEX_COUNT';
+        break;
         case 'hullCreator':
+            processor.attributes.isConvex = true;
+        break;
+        case 'hullReplace':
             processor.attributes.isConvex = true;
         break;
         case 'difference':
@@ -499,11 +512,10 @@ function setupCanvas()
 
             // make all the window divs draggable
             // or see below to lock to a canvas
-            // plumbInst.draggable(jsPlumb.getSelector(".flowchart-demo .window"), { grid: [20, 20] });
-            plumbInst.draggable(document.querySelectorAll('.window'), // should probably define a specific class for these, in case of any issues...
+            plumbInst.draggable(document.querySelectorAll('.flowchart-area .window'), // should probably define a specific class for these, in case of any issues...
             {
                 grid: [5, 5],
-                //containment: true, // used to contain to the container div. Need to set container sizes appropriately. Useful when zoom is implemented, otherwise too restrictive
+                //containment: true
                 stop: function(event, ui)
                 {
                     let name = event.el.id.replace('flowchartWindow', '');
@@ -784,7 +796,7 @@ function getProcessorPanel(processor, top, left, canvas)
 	let processorHtml  = "<div ondblclick=\"editNode('" + processor.name + "');\" class=\"window jtk-node\" id=\"flowchartWindow" + processor.name + "\" style=\"width: 250px; position: absolute; left: " + left + "px; top: " + top + "px;\">";
 		processorHtml += "<div class=\"card " + procType + " z-depth-0\" style=\"border: 1px solid #e0e0e0;\">";
 		processorHtml += "<div class='card-image' style='height: " + panelHeight + "px;'>";
-		processorHtml += "<span class=\"card-title\" style='bottom: " + titleHeight + "px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";
+        processorHtml += "<span class=\"card-title\" style='bottom: " + titleHeight + "px;'>" + processor.name + " | <span style='font-size: 16px; font-style: italic;'>" + title + "</span></span>";
         processorHtml += "</div></div></div>";
 
 	$("#" + canvas).append(processorHtml);
@@ -812,15 +824,18 @@ function editNode(processorId)
 
 function saveNodeUpdates()
 {
-    app.request.processors.forEach(processor => 
+    if ($('#node_editor').is(':visible'))
     {
-        if (processor.name === app.selectedNode.processor.name)
+        app.request.processors.forEach(processor => 
         {
-            processor.attributes = app.selectedNode.processor.attributes;
-        }
-    });
+            if (processor.name === app.selectedNode.processor.name)
+            {
+                processor.attributes = app.selectedNode.processor.attributes;
+            }
+        });
 
-    $('#node_editor').hide();
+        $('#node_editor').hide();
+    }
 }
 
 function dragTool(event) 
