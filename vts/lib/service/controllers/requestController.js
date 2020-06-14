@@ -305,11 +305,11 @@ RequestController.prototype.init = function()
         }
     });
 
-    this.app.get("/Cache/:name", (req, res, next) => 
+    this.app.get("/Cache/:name/:node", (req, res, next) => 
     {
         try
         {
-            let query = { request: req.params.name };
+            let query = { request: req.params.name, processor: req.params.node };
             let bbox = [-180, -90, 180, 90];
 
             // bbox &BBOX=-180,-90,180,90
@@ -402,6 +402,7 @@ RequestController.prototype.links = function()
         { rel: 'fetch', title: 'Find Requests', method: 'GET', href: '/Requests' },
         { rel: 'create', title: 'Create Request', method: 'POST', href: '/Requests' },
         { rel: 'stats', title: 'Counts of current request status', method: 'GET', href: '/Requests/Counts' }
+        { rel: 'fetch', title: 'Cache writer values', method: 'GET', href: '/Cache/:name/:node' }
     ];
 
     return links;

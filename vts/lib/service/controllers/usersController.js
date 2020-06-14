@@ -203,7 +203,8 @@ UsersController.prototype.links = function()
     let links = 
     [
         { rel: 'fetch', title: 'Find Users', method: 'GET', href: '/Users' },
-        { rel: 'create', title: 'Create User', method: 'POST', href: '/Users' }
+        { rel: 'create', title: 'Create User', method: 'POST', href: '/Users' },
+        { rel: 'fetch', title: 'Login', method: 'POST', href: '/Login' }
     ];
 
     return links;

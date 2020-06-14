@@ -205,3 +205,52 @@ Projects can have a unique name as an identifier, and a description. If you incl
 #### Clear Designer
 
 This will clear the workflow, removing all processors and options that were placed there.
+
+## Using the VTS API
+
+VTS is a restful API. Most functions are accessible through the UI and require a login token to be accessed. Some are publically available and used primarily for retrieving processed data.
+
+VTS can be used entirely through the API, without going through the UI directly. As mentioned above, you will need to log in and fetch a token before accessing most VTS endpoints.
+
+VTS uses Hateoas, and almost all results from the endpoints will return links allowing you to easily navigate the API.
+
+### /
+
+You can get top-level details from the root of the API. this will include links for the rest of the API. Remember, many endpoints will require a bearer token to retrieve results.
+
+### /Users
+
+So if you want to get your token, you're going to want the /Users endpoints.
+
+/Users/Login will allow you to provide your user details for logging in a retrieving an access token. Below is a postman example, but you can use any prefered tool for hittin API's that you like.
+
+![Login with Postman](login_api.jpg)
+
+Once logged in, use the accessToken value in your authentication header.
+
+### API Map
+
+```bash
+{GET}              /
+{GET, POST}        /Users
+{POST}             /Users/Login
+{GET, PUT, DELETE} /Users/:id
+{GET, POST}        /Requests
+{GET}              /Requests/Counts
+{GET, PUT, DELETE} /Requests/:id
+{GET}              /Cache/:name/:processor
+{GET, POST}        /Engines
+{GET, PUT, DELETE} /Engines/:id
+{PUT}              /Engines/:id/Flush
+{PUT}              /Engines/:id/Start
+{PUT}              /Engines/:id/Stop
+```
+
+Engines have only one accessible endpoint in addition to the top-level.
+
+```bash
+{GET} /
+{GET} /Requests/:id/Features/:processorId/:node
+```
+
+This is used by the map viewer for showing results, and can also be accessed as a geojson service. Note that requests are regularly purged. If you intend to persist a cache, use the cache writer and the VTS /Cache endpoint.
