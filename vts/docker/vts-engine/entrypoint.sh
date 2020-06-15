@@ -7,6 +7,7 @@ echo "***********************************************"
 echo "* Starting..."
 echo "***********************************************"
 echo ""
+export NODE_ENV=production
 node index.js -port $PORT -id $ID -route $ROUTE -email me@place.com -mongo_connection $MONGO_CONNECTION -logpath /logs
 echo ""
 echo "###############################################"
