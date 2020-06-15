@@ -2,6 +2,73 @@
 
 There are a number of processors that can be used by VTS workflows. Below is a description of each, and their editable parameters.
 
+- [Readers](#readers)
+  * [Cache Reader](#cache-reader)
+  * [DB Reader](#db-reader)
+  * [File Reader](#file-reader)
+  * [HTTP Reader](#http-reader)
+  * [Random Reader](#random-reader)
+- [Processors](#processors)
+  * [Along](#along)
+  * [Area](#area)
+  * [Attribute Calculator](#attribute-calculator)
+  * [Attribute Creator](#attribute-creator)
+  * [Attribute Keeper](#attribute-keeper)
+  * [Attribute Remover](#attribute-remover)
+  * [Atribute Renamer](#atribute-renamer)
+  * [Bezier Curve](#bezier-curve)
+  * [Bounding Box](#bounding-box)
+  * [Bounding Box Creator](#bounding-box-creator)
+  * [Bounding Box Replace](#bounding-box-replace)
+  * [Buffer](#buffer)
+  * [Center](#center)
+  * [Center All](#center-all)
+  * [Center of Mass](#center-of-mass)
+  * [Center of Mass All](#center-of-mass-all)
+  * [Centroid](#centroid)
+  * [Clean Coords](#clean-coords)
+  * [Counter](#counter)
+  * [Destination](#destination)
+  * [Difference](#difference)
+  * [Dissolve](#dissolve)
+  * [Donut Extractor](#donut-extractor)
+  * [Donut Remover](#donut-remover)
+  * [Exploder](#exploder)
+  * [Feature Holder](#feature-holder)
+  * [Filter](#filter)
+  * [Flatten](#flatten)
+  * [Flip](#flip)
+  * [Hull Replace](#hull-replace)
+  * [Hull Creator](#hull-creator)
+  * [Intersect](#intersect)
+  * [Length](#length)
+  * [Line Chunk](#line-chunk)
+  * [Line Creator](#line-creator)
+  * [Line to Polygon](#line-to-polygon)
+  * [Merge](#merge)
+  * [Null Polygon Filter](#null-polygon-filter)
+  * [Polygon to Line](#polygon-to-line)
+  * [Projector](#projector)
+  * [Reduce Precision](#reduce-precision)
+  * [Rotate](#rotate)
+  * [Scale](#scale)
+  * [Simplify](#simplify)
+  * [Spatial Filter](#spatial-filter)
+  * [Spatial Relation Filter](#spatial-relation-filter)
+  * [SQL Caller](#sql-caller)
+  * [Tesselate](#tesselate)
+  * [Timestampper](#timestampper)
+  * [TIN](#tin)
+  * [Translate](#translate)
+  * [Union](#union)
+  * [Un-Kink](#un-kink)
+  * [Vertex Counter](#vertex-counter)
+  * [Voronoi](#voronoi)
+- [Writers](#writers)
+  * [Cache Writer](#cache-writer)
+  * [DB Writer](#db-writer)
+  * [File Writer](#file-writer)
+
 ## Readers
 
 Readers bring data into the workflow and are essential for starting a process. They include only one output node (features)
@@ -234,43 +301,98 @@ Line to polygon closes a linestring and returns the resulting polygon features.
 
 ### Merge
 
-Merge aggregates all features together.
+Merge aggregates all features together into a multigeometry.
 
 ### Null Polygon Filter
 
+Null Polygon filter checks if a feature has a null geometry. Null Geometry Filter has two output points. `Features` for all features that do not contain null geometry, and `empty` for all features that do contain a null geometry.
+
 ### Polygon to Line
+
+Polygon to Line disconnects a polygons exterior ring and returns a linestring. Interior rings are destroyed.
 
 ### Projector
 
+Projector takes projection and reprojects the geometry. The projection can be an EPSG code or a proj4 string.
+
 ### Reduce Precision
+
+Reduce precision reduces the precision of all vertices in each feature. You can supply a precision number indicating how many decimals to keep.
 
 ### Rotate
 
+Rotate spins a geometry around its centroid by a given radius.
+
 ### Scale
+
+Scale re-scales a geometry from it's centroid by a scale factor.
 
 ### Simplify
 
+Simplify simplifies the features using the Douglas-Peucker algorithm. You can provide a tolerance value to simplify with.
+
 ### Spatial Filter
+
+Spatial filter allows you to filter geometry by a specific geometry type. Options are Point, Line, Polygon, and multi feature geometry.
+
+Spatial Filter contains two output nodes. `Features` which contain all values that match the filter, and `false` which contains all features that do not.
 
 ### Spatial Relation Filter
 
+Spatial Relation filter filters all features by their spatial relationship to a relator feature.
+
+Spatial Relation Filter contains two input nodes. `Features` which contains all features to relate, and `Relator` which contains the features to compare with.
+
+Relation options include `Crosses`, `Contains`, `Disjoint`, `Equal`, `Overlap`, `Parallel`, `Point in Polygon`, `Point on Line`, and `Within`.
+
+Spatial Relation Filter contains two output nodes. `Features` which contain all values that match the filter, and `false` which contains all features that do not.
+
 ### SQL Caller
+
+SQL Caller executes a SQL expression for each feature, and appends the resulting attributes. SQL Caller currently supports Oracle (experimentally).
+
+You must supply a valid connection, including user name and password, and a query to execute. You can bind feature attributes to the query where clause. Query format is standard SQL.
+
+```sql
+SELECT t.att, t.otherAtt
+  FROM myTable t
+ WHERE t.att = :myFeatureAttribute
+   AND t.therAtt < :myOtherAttribute
+```
+
+SQL Caller will only keep the first row returned, so queries that return multiple row results will ignore every row after the first.
 
 ### Tesselate
 
+Tesselate transforms feature geometry into triangles.
+
 ### Timestampper
+
+Timestampper creates an attribute on each feature containing the current date and time. You can provide the name for the timestamp attribute.
 
 ### TIN
 
+TIN generates TIN polygons from passed in features. Line and polygon features will be exploded into points before processing.
+
 ### Translate
+
+Translate moves features a specified distance along a rhumb Line on the provided direction angle. You can provide a distance, a direction and a unit of measure.
 
 ### Union
 
+Union creates a union feature from all passed in features, dissolving where necessary.
+
 ### Un-Kink
+
+Un-Kink removes self-intersections from polygons by splitting the geometry into a multipolygon at the point of self-intersection.
 
 ### Vertex Counter
 
+Vertex counter adds an attribute to each feature with the count of its vertices. You can provide a name for the count attribute.
+
 ### Voronoi
+
+Voronoi generates a voronoi diagram from all passed in features. Linestring and polygon features will be exploded into their point values.
 
 ## Writers
 
@@ -278,6 +400,18 @@ Writers typically end a workflow, storing the features that have been processed 
 
 ### Cache Writer
 
+Cache Writer writes all passed in features to the VTS Feature Cache. The Cache key is the name of the request, and the name of the processor passed in. The VTS cache will be destroyed with the request is destroyed so this is most useful for persiting test data temporarily or for scheduled task persistence.
+
 ### DB Writer
 
+DB Writer writes all features to a database. Currently only Oracle is experimentally supported, with Postgres in the works.
+
+You must supply a valid connection string to the database, as well as a username and password. You have options to drop and recreate the table, or truncate the table before writing. Additionally, a projection EPSG code or proj4 string can be supplied to project the geometry before it is inserted.
+
+Currently only insert operations are functional, with support for update operations in progress
+
 ### File Writer
+
+File Writer writes all provided features to a file on a provided path. The VTS engine requires access to the path provided. Any existing file of the same name will be overwritten. You can currently write to GeoJSON, KML, KMZ, GML and Shapefile.
+
+Support for URL paths is experimental and may not function as expected. An HTTP writer is in progress to support post/put operations to HTTP sources.

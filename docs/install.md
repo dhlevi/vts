@@ -1,5 +1,14 @@
 # Installation
 
+- [Docker](#docker)
+- [Manually](#manually)
+  * [MongoDB](#mongodb)
+    + [Collections](#collections)
+    + [Indexes](#indexes)
+    + [Default admin user](#default-admin-user)
+  * [NodeJS](#nodejs)
+  * [Running VTS/Engines](#running-vts-engines)
+
 ## Docker
 
 Go to the "docker" folder in vts. There are 3 folders in "docker" containing dockerfiles and scripts for MongoDB, VTS, and VTS Engine.
