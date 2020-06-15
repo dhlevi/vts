@@ -118,55 +118,123 @@ Bounding box replace replaces all passed in features with their respective bound
 
 ### Buffer
 
+Buffer buffers supplied features. Point and linestring features will be converted to polygons.
+
+You can supply a distance and a unit of measure. The Distance value can be negative, which will shrink your features.
+
 ### Center
+
+Center identifies the median center point of each feature.
 
 ### Center All
 
+Center all identified the median center point for all features passed in
+
 ### Center of Mass
+
+Center of Mass identifies the greatest center of mass of features.
 
 ### Center of Mass All
 
+Center of Mass All identifies the center of mass for all features combined.
+
 ### Centroid
+
+Centroid identifies the calculated centroid of each feature.
 
 ### Clean Coords
 
+Clean Coords removes duplicate and unecessary vertices from linestring and polygon features.
+
 ### Counter
+
+Counter counts the number of features and stores the count in an attribute. You can supply a name for the attribute
 
 ### Destination
 
+Destination calculates a destination point along a linestring or polygon permimeter. You supply a distance , bearing, and a unit of measure.
+
 ### Difference
+
+Difference "clips" features by a passed in clipper feature or features.
+
+Difference has two input nodes. `Features` which are the featurs that will be clipped, and `Clipper` which is the features that will be used to do the clipping.
 
 ### Dissolve
 
+Dissolve will dissolve all features together, resulting in a merged polygon.
+
 ### Donut Extractor
+
+Donut extractor will extract interior rings from all polygon features.
+
+Donut extractor has two output nodes. `Features`, which contains all passed in features, and `Donuts` which will contain the extracted interior rings.
 
 ### Donut Remover
 
+Donut remover will remove all interior rings from passed in polygon features.
+
 ### Exploder
+
+Exploder converts all linestring and polygon features into collections of vertices. Point features will be unaffected.
 
 ### Feature Holder
 
+Feature Holder is a utility processor that performs no attribute or geometry transformations, but collects all features together. Useful for merging multiple workflow paths together.
+
 ### Filter
+
+Filter performs an attribute filter on all features. The filter is an expression, written in javascript. You can supply an expression using any attributes from your features.
+
+```javascript
+myAttribute === 'Test' && otherAttibute >= (a / b)
+```
+
+Filter contains two output nodes. `Feature` which will contain all features that "Passed" the expression. Features that did not pass the expression are returned on a node called `False`
 
 ### Flatten
 
+Flatten "squishes" multi-geometry features together where possible. Like dissolve for multigeometry features.
+
 ### Flip
+
+Flip flips the features coordinates from XY to YX.
 
 ### Hull Replace
 
+Hull Replace will replace all features with their calculated hull. You can select convex or concave hulls.
+
 ### Hull Creator
+
+Hull creator will create a convex or concave hull for all passed in features.
 
 ### Intersect
 
+Intersect performs an intersection on all passed in features with an "Intersector" feature or features.
+
+Intersect has two input nodes. `Features` which contain the features to be intersected, and `Intersector` which contains the feature to do the intersecting.
+
 ### Length
+
+Length calculates the length of a line or polygon permimeter.
+
+You can supply the name of the attribute where the calculated length will be stored, and a Unit of measure.
 
 ### Line Chunk
 
+Line Chunk Divides a LineString into chunks of a specified length. If the line is shorter than the segment length then the original line is returned. You can supply the length where the chunking will occur, and a unit of measure.
+
 ### Line Creator
+
+Line Creator will create a line from points. This does not create a line from all passed in features, so to create a line from points ensure you merge them together into a multigeometry feature. Polygon features will have a line generated from their vertices.
 
 ### Line to Polygon
 
+Line to polygon closes a linestring and returns the resulting polygon features.
+
 ### Merge
+
+Merge aggregates all features together.
 
 ### Null Polygon Filter
 
