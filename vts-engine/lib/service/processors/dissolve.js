@@ -30,15 +30,19 @@ module.exports.process = async function(request, processor)
     // dissolve features
     let dissolved = turf.dissolve(turf.featureCollection(features));
 
-    // create a new feature cache
-    // generate an ID
-    let id = uuidv4();
-    processor.outputNodes.features.push(id);
-    // shove the feature on the disk
-    let data = JSON.stringify(dissolved);
+    for (let i = 0; i < dissolved.features.length; i++)
+    {
+        let dissolvedFeature = dissolved.features[i];
+        // create a new feature cache
+        // generate an ID
+        let id = uuidv4();
+        processor.outputNodes.features.push(id);
+        // shove the feature on the disk
+        let data = JSON.stringify(dissolvedFeature);
 
-    let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
-    // create the directory structure
-    await fs.promises.mkdir(cachePath, { recursive: true });
-    await fs.promises.writeFile(cachePath + '/' + id + '.json', data);
+        let cachePath = process.cwd() + '/cache/' + request.name + '/' + processor.name + '/features/';
+        // create the directory structure
+        await fs.promises.mkdir(cachePath, { recursive: true });
+        await fs.promises.writeFile(cachePath + '/' + id + '.json', data);
+    }
 };
