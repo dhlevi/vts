@@ -401,7 +401,7 @@ RequestController.prototype.links = function()
     [
         { rel: 'fetch', title: 'Find Requests', method: 'GET', href: '/Requests' },
         { rel: 'create', title: 'Create Request', method: 'POST', href: '/Requests' },
-        { rel: 'stats', title: 'Counts of current request status', method: 'GET', href: '/Requests/Counts' }
+        { rel: 'stats', title: 'Counts of current request status', method: 'GET', href: '/Requests/Counts' },
         { rel: 'fetch', title: 'Cache writer values', method: 'GET', href: '/Cache/:name/:node' }
     ];
 
