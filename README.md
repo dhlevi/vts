@@ -75,5 +75,3 @@ Too many to list if this goes beyond the prototype stage.
 ## How do I run it?
 
 See the [Install Guide](/docs/install.md)
-
-![Vivid Logo](/docs/vivid_logo.jpg)
