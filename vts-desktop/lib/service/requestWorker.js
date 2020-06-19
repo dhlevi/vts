@@ -1,29 +1,12 @@
-const { parentPort, isMainThread } = require('worker_threads');
-
-if (!isMainThread)
-{
-    parentPort.on('message', async (request) => 
-    {
-        console.log('Starting process...');
-
-        request = await processRequest(request);
-
-        parentPort.postMessage(request);
-        parentPort.close();
-    });
-}
-
-async function processRequest(request)
+module.exports.processRequest = async function(request)
 {
     // update request status
     request.status = 'In Progress';
     request.metadata.lastUpdatedDate = new Date();
-    request.metadata.lastUpdatedBy = request.Engine;
     request.metadata.revision += 1;
-    request.messages.push({ message: 'Started processing Request', sender: request.engine, timestame: new Date() });
-    request.metadata.history.push({ event: 'Request Dequeued', user: request.engine, date: new Date() });
-    
-    parentPort.postMessage(request);
+    request.messages.push({ message: 'Started processing Request', sender: 'vts', timestame: new Date() });
+    request.metadata.history.push({ event: 'Request Dequeued', user: 'vts', date: new Date() });
+
 
     // cycle through processors
     let completedProcessors = 0;
@@ -32,7 +15,6 @@ async function processRequest(request)
     while (completedProcessors !== request.processors.length)
     {
         attempts++;
-        parentPort.postMessage('Looping attempt ' + attempts + ' - ' + (completedProcessors !== request.processors.length));
         for (let idx in request.processors)
         {
             let processor = request.processors[idx];
@@ -47,7 +29,7 @@ async function processRequest(request)
                     console.log('Error occured during processing: ' + error);
                     failed = true;
                     completedProcessors = request.processors.length;
-                    request.messages.push({ message: 'Error occured during processing of processor ' + processor.name + ':' + processor.type + '. Error: ' + error, sender: request.Engine, timestame: new Date()});
+                    request.messages.push({ message: 'Error occured during processing of processor ' + processor.name + ':' + processor.type + '. Error: ' + error, sender: 'vts', timestame: new Date()});
                     break;
                 }
             }
@@ -71,13 +53,11 @@ async function processRequest(request)
     }
 
     // we're done. Update and close off
-    parentPort.postMessage('Finished processing request ' + request.name);
     request.status = failed ? 'Failed' : 'Completed';
     request.metadata.lastUpdatedDate = new Date();
-    request.metadata.lastUpdatedBy = request.Engine;
     request.metadata.revision += 1;
-    request.messages.push({ message: failed ? 'Request processing failed due to errors' : 'Successfully processed Request', sender: request.engine, timestame: new Date()});
-    request.metadata.history.push({ event: 'Request completed', user: request.engine, date: new Date() });
+    request.messages.push({ message: failed ? 'Request processing failed due to errors' : 'Successfully processed Request', sender: 'vts', timestame: new Date()});
+    request.metadata.history.push({ event: 'Request completed', user: 'vts', date: new Date() });
 
     return request;
 }
@@ -113,9 +93,8 @@ async function runProcessor(processor, request)
     // features is the array storing all resulting feature ID's for the process. This is attached to the processor output
     // This requires all processors to be very specific on their implementation
     // of the process method! processor file names must match type 100%
-    await require('./processors/' + processor.type).process(request, processor);
+    await require(process.cwd() + '/lib/service/processors/' + processor.type).process(request, processor);
     
-    parentPort.postMessage('Finished processing ' + processor.name);
     processor.processed = true;
 
     let countOfFeatures = 0;
@@ -124,13 +103,7 @@ async function runProcessor(processor, request)
         countOfFeatures + processor.outputNodes[node].length;
     }
 
-    request.messages.push({ message: 'Finished processing ' + countOfFeatures + ' features from ' + processor.name + ' - ' + processor.type, sender: request.engine, timestame: new Date()});
+    request.messages.push({ message: 'Finished processing ' + countOfFeatures + ' features from ' + processor.name + ' - ' + processor.type, sender: 'vts', timestame: new Date()});
 
-    for(let node in processor.outputNodes)
-    {
-        let resultUrl = request.engineRoute + '/Requests/' + request.name + '/Features/' + processor.name + '/' + node
-        request.messages.push({message: processor.name + '-' + processor.type + ' "' + node + '" data available at: ' + resultUrl, sender: request.engine, timestame: new Date()});
-    }
-
-    parentPort.postMessage(request);
+    return request;
 }

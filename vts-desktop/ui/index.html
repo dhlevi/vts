@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="VTS UI v1.0">
+        <meta name="author" content="Vivid Solutions Inc.">
+        <link rel="shortcut icon" href="resources/icon.gif" type="image/png">
+        <title>Vivid Topology Service</title>
+        <!-- Scripts and CSS -->
+        <!-- JQuery -->
+        <script src="jquery-3.0.0.min.js"></script>
+        <!-- Fonts-->
+        <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Questrial&family=Raleway:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+        <!-- Material Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!-- Materialize CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <!-- Materialize -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        <!-- Chartist -->
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+        <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+        <!-- js plumb -->
+        <script src='resources/js/jsplumb.js'></script>
+        <!-- Leaflet -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+        <!-- ESRI Leaflet -->
+        <script src="https://unpkg.com/esri-leaflet@2.1.3/dist/esri-leaflet.js" integrity="sha512-pijLQd2FbV/7+Jwa86Mk3ACxnasfIMzJRrIlVQsuPKPCfUBCDMDUoLiBQRg7dAQY6D1rkmCcR8286hVTn/wlIg==" crossorigin=""></script>
+        <!-- Vue Dev -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <!-- Vue Prod -->
+        <!-- script src="https://cdn.jsdelivr.net/npm/vue"></script -->
+
+        <!-- ArcGIS js api-->
+        <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/css/main.css">
+        <!-- <script src="https://js.arcgis.com/4.15/"></script> -->
+        <script src="https://unpkg.com/esri-loader"></script>
+        <script src="https://unpkg.com/terraformer@1.0.8"></script>
+        <script src="https://unpkg.com/terraformer-arcgis-parser@1.0.5"></script>
+        <script src="https://unpkg.com/terraformer-wkt-parser@1.1.2"></script>
+
+        <!-- vts -->
+        <link rel="stylesheet" href="resources/css/vts.css" type='text/css'>
+    </head>
+    <body class="primary-color">
+        <div id="content">
+            <header>
+                <header-component></header-component>
+            </header>
+            <main>
+                <component v-bind:is="currentTabComponent"
+                           v-bind:tools="tools"
+                           v-bind:selected-node="selectedNode"
+                           v-bind:tool-search="toolSearch"
+                           v-bind:current-tab="currentTab"
+                           v-bind:key="componentKey">
+                </component>
+            </main>
+            <footer>
+            </footer>
+        </div>
+        <!-- templates, init, util scripts etc -->
+        <script src="resources/js/components/header-component.js"></script>
+        <script src="resources/js/components/designer-component.js"></script>
+        <script src="resources/js/components/map-component.js"></script>
+        <script src="resources/js/components/about-component.js"></script>
+        <script src="resources/js/vts.js"></script>
+        <script src="resources/js/designer.js"></script>
+    </body>
+</html>

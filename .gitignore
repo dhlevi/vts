@@ -7,3 +7,6 @@ vts-engine/.vscode/launch.json
 vts/logs
 vts/.vscode
 vts-engine/cache
+vts-desktop/node_modules
+vts-desktop/package-lock.json
+vts-desktop/cache

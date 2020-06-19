@@ -1,5 +1,7 @@
 # Vivid Topology Service (VTS)
 
+[![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/made-with-crayons.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/60-percent-of-the-time-works-every-time.svg)](https://forthebadge.com) [![forthebadge](https://forthebadge.com/images/badges/contains-technical-debt.svg)](https://forthebadge.com)
+
 The Vivid Topology Service is an application that allows for ETL and transformation of spatial data from a number of source formats. For instance, you can open a shapefile from a local path or on the web, buffer all features contained, add a calculated Area attribute, and write it to a KML file. Or perhaps something more 
 useful! Requests can be ad hoc or scheduled to run at repeating intervals.
 
