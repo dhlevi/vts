@@ -1,5 +1,5 @@
 const rp             = require('request-promise-native');
-const request      = require('request');
+const request        = require('request');
 const { v4: uuidv4 } = require('uuid');
 const fs             = require('fs');
 const path           = require('path');
@@ -10,6 +10,7 @@ const shapefile      = require('shapefile');
 const fgdb           = require('fgdb');
 const unzipper       = require('unzipper');
 const Projector      = require('../projector');
+const rimraf         = require('rimraf');
 const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
@@ -62,6 +63,11 @@ module.exports.process = async function(request, processor)
                             throw Error(err)
                         });
     }
+
+
+    // clear processors path (if it exists)
+    let processorDir = process.cwd() + '/processing/' + request.name;
+    await rimraf(processorDir, function () { console.log('Cleared cache for ' + processorDir); });
 
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really

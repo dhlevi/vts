@@ -8,6 +8,7 @@ const gml2json       = require('gml2json');
 const fgdb           = require('fgdb');
 const unzipper       = require('unzipper');
 const Projector      = require('../projector');
+const rimraf         = require('rimraf');
 const { parentPort } = require('worker_threads');
 
 module.exports.process = async function(request, processor)
@@ -43,6 +44,10 @@ module.exports.process = async function(request, processor)
         result = await convertFGDB(filePath, request.name, projection);
     }
 
+    // clear processors path (if it exists)
+    let processorDir = process.cwd() + '/processing/' + request.name;
+    await rimraf(processorDir, function () { parentPort.postMessage('Cleared cache for ' + processorDir); });
+
     // after extracting the data, validate we have a geojson blob. If its a parse from
     // a different type, it should be fine, just external GeoJSON needs a check really
     if (!result || !result.hasOwnProperty('type') || result.type.toLowerCase() !== 'featurecollection')
@@ -53,8 +58,9 @@ module.exports.process = async function(request, processor)
     // attach resulting blob to the processor 'features' output node.    
     // and/or write all features to the cache, and attach only the "id"
     processor.outputNodes.features = [];
-    result.features.forEach(async feature => 
+    for(let i = 0; i < result.features.length; i++) 
     {
+        let feature = result.features[i];
         // generate an ID
         let id = uuidv4();
         processor.outputNodes.features.push(id);
