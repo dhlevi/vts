@@ -78,7 +78,7 @@ module.exports.process = async function(request, processor)
         {
             if (err) throw err;
         });
-    });
+    }
 };
 
 // Move all of these into a seperate import!
