@@ -55,6 +55,32 @@ export default class API {
     }
   }
 
+  public static async fetchRequestCounts (user: AuthenticatedUser): Promise<any> {
+    const response = await this.getRequest('Requests/Counts', {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async fetchScheduledTasks (user: AuthenticatedUser): Promise<any> {
+    const response = await this.getRequest('Requests?tasks=true', {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
   public static getRequest (path: string, headers: any): Promise<Response> {
     return this.request(path, 'GET', null, headers)
   }
