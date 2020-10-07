@@ -1,0 +1,479 @@
+/* 
+Fonts:
+font-family: 'Lato', sans-serif;
+font-family: 'Questrial', sans-serif;
+font-family: 'Raleway', sans-serif;
+*/
+
+.primary-color
+{
+    background: #344955;
+    color: white;
+}
+
+.primary-color-dark
+{
+    background: #232f34;
+    color: white;
+}
+
+.primary-color-light
+{
+    background: #4A6572;
+    color: white;
+}
+
+.login-background
+{
+    height: 99vh;
+    background: #344955;
+    background: radial-gradient(circle, #344955 0%, #000000 133%);
+}
+
+.content-background
+{
+    background: #d8dedf;
+    color: black;
+}
+
+.secondary-color
+{
+    background: #F9AA33;
+    color: black;
+}
+
+.secondary-color-text
+{
+    color: #F9AA33 !important;
+}
+
+.dashboard-card
+{
+    height: calc(50vh - 158px); 
+    overflow-y: auto;
+}
+
+.dashboard-card::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.dashboard-card::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.dashboard-card::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+#enginesChart .ct-label
+{
+    color: white;
+}
+
+#enginesChart .ct-grid
+{
+    stroke: #ffffff94;
+}
+
+#enginesChart .ct-series-a .ct-line, .ct-series-a .ct-point
+{
+    stroke: orange;
+    stroke-width: 2px;
+}
+
+#enginesChart .ct-series-b .ct-line, .ct-series-b .ct-point
+{
+    stroke: green;
+    stroke-width: 2px;
+}
+
+#enginesChart .ct-series-c .ct-line, .ct-series-c .ct-point
+{
+    stroke: red;
+    stroke-width: 2px;
+}
+
+.engine .ct-label
+{
+    color: white;
+}
+
+.engine .ct-grid
+{
+    stroke: #ffffff94;
+}
+
+.engine .ct-series-a .ct-line, .ct-series-a .ct-point
+{
+    stroke: orange;
+    stroke-width: 2px;
+}
+
+.engine .ct-series-b .ct-line, .ct-series-b .ct-point
+{
+    stroke: rgb(1, 180, 31);
+    stroke-width: 2px;
+}
+
+.mem-chart .ct-label
+{
+    color: white;
+}
+
+.ct-series-a .ct-bar, .ct-series-a .ct-line, .ct-series-a .ct-point, .ct-series-a .ct-slice-donut
+{
+    stroke: orange;
+}
+
+.ct-series-a .ct-bar, .ct-series-b .ct-line, .ct-series-b .ct-point, .ct-series-b .ct-slice-donut
+{
+    stroke: #253b27;
+}
+
+#requestCountChart .ct-series-a .ct-label
+{
+    color: white;
+}
+
+.tag-bar
+{
+    border-top: solid 1px #344955;
+    border-bottom: solid 1px #344955;
+    padding-top: 5px;
+    background: #25353b;
+    cursor: pointer;
+}
+@media only screen and (min-width: 993px)
+{
+    .container
+    {
+        width: 85%;
+    }
+}
+
+.collection .collection-item
+{
+    background-color: #344955;
+    padding: 5px 10px;
+    color: white;
+    border-bottom: 1px solid #e0e0e02b;
+}
+
+.collection::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.collection::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.collection::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.toolbar
+{
+    max-height: 50px;
+    height: 50px;
+    overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    padding: 10px;
+}
+
+.toolbar a 
+{
+    transition: all 0.5s ease;
+    color: black;
+    font-size: 24px;
+}
+
+.toolbar a:hover 
+{
+    border: 1px solid black;
+    background-color: lightgray;
+    color: black;
+    font-size: 24px;
+}
+
+.toolbar::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.toolbar::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.toolbar::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.designer-canvas
+{
+    background-color: #4A6572;
+    overflow: auto;
+}
+
+.designer-canvas::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.designer-canvas::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.designer-canvas::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.reader
+{
+    background: #004d40;
+    color: white;
+}
+
+.processor
+{
+    background: #f57f17;
+    color: black;
+}
+
+.writer
+{
+    background: #b71c1c;
+    color: white;
+}
+
+.node-editor
+{
+    z-index: 100;
+    float: right !important;
+    position: absolute;
+    right: 10px !important;
+    top: 175px;
+    border-radius: 3px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+#nodeEditorContent
+{
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#nodeEditorContent::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+#nodeEditorContent::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+#nodeEditorContent::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.request-item
+{
+    border-bottom: solid 1px #344955;
+    padding-top: 5px;
+    background: #25353b;
+    cursor: pointer;
+}
+
+.tool-menu
+{
+    overflow: auto; height: 100%
+}
+.tool-menu li
+{
+    transition: all 0.5s ease;
+    
+    border-bottom: 1px solid rgb(74, 101, 114);
+    cursor: pointer;
+    text-transform: capitalize;
+}
+
+.tool-menu li:hover 
+{
+    border-bottom: 1px solid rgb(74, 101, 114);
+    cursor: pointer;
+    text-transform: capitalize;
+    
+    background: #F9AA33 !important;
+    color: black !important;
+}
+
+.tool-menu::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.tool-menu::-webkit-scrollbar
+{
+    width: 10px;
+    background-color: #232f34;
+}
+
+.tool-menu::-webkit-scrollbar-thumb
+{
+    background-color: #4A6572;
+    border: 2px solid #232f34;
+}
+
+.menubar
+{
+    height: 40px;
+    border-top: 1px solid #e0e0e02b;
+}
+
+.menubar a 
+{
+    transition: all 0.5s ease;
+    margin-top: 2px;
+    color: white !important;
+}
+
+.menubar a:hover 
+{
+    background: #F9AA33 !important;
+    margin-top: 2px;
+    color: black !important;
+}
+
+.designerLabel
+{
+    margin-top: -10px;
+    color: black;
+}
+
+.endpointSourceLabel
+{
+    margin-left: -40px;
+    margin-top: -23px;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 100;
+    text-align: right;
+}
+
+.endpointTargetLabel
+{
+    margin-left: 40px;
+    margin-top: 20px;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: 100;
+    text-align: right;
+}
+
+/* designer */
+
+.creatorContainer {
+    /* for IE10+ touch devices */
+    touch-action:none;
+    height: calc(100vh - 205px);
+}
+
+.flowchart-area {
+    height: calc(100vh - 205px);
+}
+
+.flowchart-area .window .card {
+    margin: 0px;
+}
+
+.flowchart-area .window:hover {
+    box-shadow: 2px 2px 19px #444;
+    -o-box-shadow: 2px 2px 19px #444;
+    -webkit-box-shadow: 2px 2px 19px #444;
+    -moz-box-shadow: 2px 2px 19px #444;
+}
+
+.flowchart-area .active {
+    border: 1px dotted green;
+}
+
+.flowchart-area .hover {
+    border: 1px dotted red;
+}
+
+.flowchart-area .jtk-connector {
+    z-index: 4;
+}
+
+.flowchart-area .jtk-endpoint, .endpointTargetLabel, .endpointSourceLabel {
+    z-index: 21;
+    cursor: pointer;
+}
+
+.flowchart-area .aLabel {
+    background-color: white;
+    padding: 0.4em;
+    font: 12px sans-serif;
+    color: #444;
+    z-index: 21;
+    border: 1px dotted gray;
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.flowchart-area .aLabel.jtk-hover {
+    background-color: #5C96BC;
+    color: white;
+    border: 1px solid white;
+}
+
+.window.jtk-connected {
+    border: 1px solid green;
+}
+
+.jtk-drag {
+    outline: 4px solid rgb(255, 166, 0) !important;
+}
+
+path, .jtk-endpoint {
+    cursor: pointer;
+}
+
+.jtk-overlay {
+    background-color:transparent;
+}

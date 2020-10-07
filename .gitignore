@@ -10,3 +10,6 @@ vts-engine/cache
 vts-desktop/node_modules
 vts-desktop/package-lock.json
 vts-desktop/cache
+vts-ts/dist
+vts-ts/node_modules
+vts-ts/package-lock.json
