@@ -13,33 +13,39 @@
         ></v-img>
       </template>
 
-      <v-app-bar-nav-icon></v-app-bar-nav-icon>
+      <v-img
+        lazy-src="https://picsum.photos/id/11/10/6"
+        max-height="50"
+        max-width="150"
+        src="https://picsum.photos/id/11/500/300"
+        style="margin-right: 15px;"
+      ></v-img>
 
       <v-toolbar-title>Vivid Topology Service</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
       <v-btn icon>
-        <v-icon>mdi-magnify</v-icon>
+        <v-icon>mdi-file-document-outline</v-icon>
       </v-btn>
 
       <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
+        <v-icon>mdi-information</v-icon>
       </v-btn>
 
       <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
+        <v-icon>mdi-account</v-icon>
       </v-btn>
 
       <template v-slot:extension>
-        <v-tabs align-with-title>
-          <v-tab @click="showTab('dashboard')">Dashboard</v-tab>
-          <v-tab @click="showTab('users')">User Management</v-tab>
-          <v-tab @click="showTab('engines')">Engines</v-tab>
-          <v-tab @click="showTab('requests')">Requests</v-tab>
-          <v-tab @click="showTab('tasks')">Scheduled Tasks</v-tab>
-          <v-tab @click="showTab('projects')">Projects</v-tab>
-          <v-tab @click="showTab('designer')">Designer</v-tab>
+        <v-tabs center-active show-arrows id="tabs" align-with-title>
+          <v-tab key="dashboard" @click="showTab('dashboard')">Dashboard</v-tab>
+          <v-tab v-if="user.role === 'admin'" key="users" @click="showTab('users')">User Management</v-tab>
+          <v-tab v-if="user.role === 'admin'" key="engines" @click="showTab('engines')">Engines</v-tab>
+          <v-tab key="requests" @click="showTab('requests')">Requests</v-tab>
+          <v-tab v-if="user.role === 'admin'" key="tasks" @click="showTab('tasks')">Scheduled Tasks</v-tab>
+          <v-tab key="projects" @click="showTab('projects')">Projects</v-tab>
+          <v-tab key="designer" @click="showTab('designer')">Designer</v-tab>
         </v-tabs>
       </template>
     </v-app-bar>
@@ -56,8 +62,9 @@ export default class AppBar extends Vue {
   readonly user!: AuthenticatedUser
 
   showTab (tab: string) {
-    console.log(`showing tab ${tab}`)
-    router.push(tab)
+    if (router.currentRoute.name !== tab) {
+      router.push(tab)
+    }
   }
 }
 </script>

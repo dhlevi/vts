@@ -1,68 +1,68 @@
 <template>
-  <v-row style="margin-top: 115px;">
-    <v-col lg="6" sm="12">
-      <div style="padding: 10px;">
-        <v-card elevation="1" class="dashboard-card primary-color-dark">
-          <v-card-title>VTS Engines</v-card-title>
-          <div id="enginesChart"></div>
-          <v-card-text style="color: white;">
-            <p id="runningEnginesMessage">{{engineMessage}}</p>
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn submit color="amber darken-4" text>Manage</v-btn>
-            <v-btn submit color="amber darken-4" text>Start All</v-btn>
-            <v-btn submit color="amber darken-4" text>Stop All</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-      <div style="padding: 10px;">
-        <v-card elevation="1" class="dashboard-card primary-color-dark">
-          <v-card-title>Projects</v-card-title>
-          <v-card-text style="color: white;">
-            A Project is a request that has been created, but not yet submitted. Projects will be persisted until manually deleted, and can be edited and re-run as a request, or saved as a scheduled task, at any time.
-          </v-card-text>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn submit color="amber darken-4" text>Manage</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-    </v-col>
-    <v-col lg="6" sm="12">
-      <div style="padding: 10px;">
-        <v-card elevation="1" class="dashboard-card primary-color-dark">
-          <v-card-title>Requests</v-card-title>
-          <div id="requestCountChart"></div>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn submit color="amber darken-4" text>Create</v-btn>
-            <v-btn submit color="amber darken-4" text>Manage</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-      <div style="padding: 10px;">
-        <v-card elevation="1" class="dashboard-card primary-color-dark">
-          <v-card-title>Scheduled Tasks</v-card-title>
-          <v-list dense disabled>
-            <v-list-item-group v-model="tasks" color="transparent">
-            <v-list-item v-for="(task, i) in tasks" :key="i">
-              <v-list-item-content>
-                <v-list-item-title v-text="task.label"></v-list-item-title>
-                <v-list-item-subtitle v-text="task.time"></v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-          </v-list>
-          <v-divider></v-divider>
-          <v-card-actions>
-            <v-btn submit color="amber darken-4" text>Create</v-btn>
-            <v-btn submit color="amber darken-4" text>Manage</v-btn>
-          </v-card-actions>
-        </v-card>
-      </div>
-    </v-col>
-  </v-row>
+  <div style="width: 100%; margin-top: 115px;">
+    <v-row v-if="user.role === 'admin'">
+      <v-col cols="12">
+        <div style="padding: 10px;">
+          <v-card elevation="1" class="dashboard-card primary-color-dark">
+            <v-card-title>VTS Engines</v-card-title>
+            <div id="enginesChart"></div>
+            <v-card-text style="color: white;">
+              <p id="runningEnginesMessage">{{engineMessage}}</p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn submit color="amber darken-4" text @click="createEngineChart()">Refresh</v-btn>
+              <v-btn submit color="amber darken-4" text @click="startEngines()">Start All</v-btn>
+              <v-btn submit color="amber darken-4" text @click="stopEngines()" >Stop All</v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col lg="6" sm="12">
+        <div style="padding: 10px;">
+          <v-card elevation="1" class="dashboard-card primary-color-dark">
+            <v-card-title>Requests</v-card-title>
+            <div id="requestCountChart"></div>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn submit color="amber darken-4" text @click="createRequestChart()">Refresh</v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+      </v-col>
+      <v-col lg="6" sm="12">
+        <div style="padding: 10px;">
+          <v-card elevation="1" class="dashboard-card primary-color-dark">
+            <v-card-title>Scheduled Tasks</v-card-title>
+            <v-list dense disabled>
+              <v-list-item-group color="transparent">
+              <v-list-item v-for="(task, i) in tasks" :key="i">
+                <v-list-item-content>
+                  <v-list-item-title v-text="task.label"></v-list-item-title>
+                  <v-list-item-subtitle v-text="task.time"></v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+            </v-list>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn submit color="amber darken-4" text @click="scheduledTaskList()">Refresh</v-btn>
+            </v-card-actions>
+          </v-card>
+        </div>
+      </v-col>
+    </v-row>
+    <v-snackbar v-model="snackbar" :timeout="timeout" absolute right rounded="pill" top>
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false" >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </div>
 </template>
 <script lang="ts">
 import AuthenticatedUser from '@/model/authenticated-user'
@@ -77,6 +77,9 @@ export default class Dashboard extends Vue {
   @Prop()
   readonly user!: AuthenticatedUser
 
+  private snackbar = false
+  private timeout = 2000
+  private snackbarText = ''
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public engineData: Array<any> = []
   public engineMessage = 'There are no engines running'
@@ -93,6 +96,11 @@ export default class Dashboard extends Vue {
   }
 
   public tasks: Array<unknown> = []
+
+  private engineTimeout: NodeJS.Timeout|null = null
+  private requestsTimeout: NodeJS.Timeout|null = null
+  private tasksTimeout: NodeJS.Timeout|null = null
+
   mounted () {
     if (this.user.name === 'noAuth') {
       // verify token is valid, if not, fetch new token, if still bad, then just load login screen
@@ -132,7 +140,10 @@ export default class Dashboard extends Vue {
         }]
       ])
 
-      this.createEngineChart()
+      if (this.user.role === 'admin') {
+        this.createEngineChart()
+      }
+
       this.createRequestChart()
       this.scheduledTaskList()
     }
@@ -179,7 +190,7 @@ export default class Dashboard extends Vue {
     }
 
     // update the chart every few seconds
-    setTimeout(() => this.createEngineChart(), 1000)
+    this.engineTimeout = setTimeout(() => this.createEngineChart(), 1000)
   }
 
   async createRequestChart () {
@@ -191,7 +202,7 @@ export default class Dashboard extends Vue {
     }
 
     // update the chart every few seconds
-    setTimeout(() => this.createRequestChart(), 1000)
+    this.requestsTimeout = setTimeout(() => this.createRequestChart(), 1000)
   }
 
   async scheduledTaskList () {
@@ -216,7 +227,42 @@ export default class Dashboard extends Vue {
       this.tasks.push({ label: 'No Scheduled Tasks!', time: '' })
     }
 
-    setTimeout(() => this.scheduledTaskList(), 1000)
+    this.tasksTimeout = setTimeout(() => this.scheduledTaskList(), 1000)
+  }
+
+  startEngines () {
+    this.engineData.forEach(engine => {
+      API.startupEngine(this.user, engine._id)
+    })
+
+    this.snackbarText = 'Engines are starting. Please wait...'
+    this.snackbar = true
+  }
+
+  stopEngines () {
+    this.engineData.forEach(engine => {
+      API.shutdownEngine(this.user, engine._id)
+    })
+
+    this.snackbarText = 'Engines are starting. Please wait...'
+    this.snackbar = true
+  }
+
+  destroyed () {
+    if (this.engineTimeout) {
+      clearTimeout(this.engineTimeout)
+      this.engineTimeout = null
+    }
+
+    if (this.requestsTimeout) {
+      clearTimeout(this.requestsTimeout)
+      this.requestsTimeout = null
+    }
+
+    if (this.tasksTimeout) {
+      clearTimeout(this.tasksTimeout)
+      this.tasksTimeout = null
+    }
   }
 }
 </script>
