@@ -1,4 +1,5 @@
 import AuthenticatedUser from '@/model/authenticated-user'
+import Engine from '@/model/engine'
 
 export default class API {
   private static url = 'http://localhost:9988/' // UI microservice URL, not the ENGINE microservice URL!!!
@@ -99,16 +100,28 @@ export default class API {
     }
   }
 
-  public static async fetchEngine (user: AuthenticatedUser, route: string): Promise<any> {
-    const request: any = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.accessToken}`
-      }
+  public static async fetchEngine (user: AuthenticatedUser, engineId: string): Promise<any> {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
     }
 
-    const response = await fetch(route, request)
+    const response = await this.getRequest(`Engines/${engineId}`, headers)
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async fetchEngineStatus (user: AuthenticatedUser, route: string): Promise<any> {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    }
+
+    const response = await fetch(route, { method: 'GET', headers: headers })
 
     if (response.status === 200) {
       return await response.json()
@@ -130,8 +143,78 @@ export default class API {
     }
   }
 
-  public static async fetchScheduledTasks (user: AuthenticatedUser): Promise<any> {
-    const response = await this.getRequest('Requests?tasks=true', {
+  public static async fetchRequests (user: AuthenticatedUser, text: string): Promise<any> {
+    let path = 'Requests?tasks=false'
+
+    if (text && text !== '') {
+      path += `&text=${encodeURIComponent(text)}`
+    }
+
+    const response = await this.getRequest(path, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async fetchVtsRequest (user: AuthenticatedUser, requestId: string): Promise<any> {
+    const response = await this.getRequest(`Requests/${requestId}`, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async deleteVtsRequest (user: AuthenticatedUser, requestId: string): Promise<any> {
+    const response = await this.deleteRequest(`Requests/${requestId}`, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async fetchScheduledTasks (user: AuthenticatedUser, text: string): Promise<any> {
+    let path = 'Requests?tasks=true'
+
+    if (text && text !== '') {
+      path += `&text=${encodeURIComponent(text)}`
+    }
+
+    const response = await this.getRequest(path, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async fetchProjects (user: AuthenticatedUser, text: string): Promise<any> {
+    let path = 'Requests?tasks=false&status=Created'
+
+    if (text && text !== '') {
+      path += `&text=${encodeURIComponent(text)}`
+    }
+
+    const response = await this.getRequest(path, {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${user.accessToken}`
     })
@@ -158,6 +241,45 @@ export default class API {
 
   public static async shutdownEngine (user: AuthenticatedUser, engineId: string): Promise<any> {
     const response = await this.putRequest(`Engines/${engineId}/Stop`, null, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async flushEngine (user: AuthenticatedUser, engineId: string): Promise<any> {
+    const response = await this.putRequest(`Engines/${engineId}/Flush`, null, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async updateEngine (user: AuthenticatedUser, engine: Engine): Promise<any> {
+    const response = await this.putRequest(`Engines/${engine._id}`, engine, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async deleteEngine (user: AuthenticatedUser, engineId: string): Promise<any> {
+    const response = await this.deleteRequest(`Engines/${engineId}`, {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${user.accessToken}`
     })

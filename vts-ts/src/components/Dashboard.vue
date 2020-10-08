@@ -157,7 +157,7 @@ export default class Dashboard extends Vue {
 
     for (const engine of this.engineData) {
       if (engine.route && engine.route.startsWith('http')) {
-        const engineStatus = await API.fetchEngine(this.user, engine.route)
+        const engineStatus = await API.fetchEngineStatus(this.user, engine.route)
 
         engine.alive = false
 
@@ -206,7 +206,7 @@ export default class Dashboard extends Vue {
   }
 
   async scheduledTaskList () {
-    const results = await API.fetchScheduledTasks(this.user)
+    const results = await API.fetchScheduledTasks(this.user, '')
     this.tasks = []
 
     if (results && results.length > 0) {

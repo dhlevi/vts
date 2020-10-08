@@ -11,23 +11,23 @@
           <v-divider></v-divider>
           <v-list dense flat>
             <v-list-item-group color="blue">
-            <v-list-item v-for="(user, i) in users" :key="i" @click="viewUser(user)">
-              <v-list-item-icon>
-                <v-icon v-if="user.role === 'admin'" color="red">mdi-account</v-icon>
-                <v-icon v-if="user.role === 'public'" color="blue">mdi-account</v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title v-text="user.name"></v-list-item-title>
-                <v-list-item-subtitle v-text="user.role + ' | ' + user.email"></v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
+              <v-list-item v-for="(user, i) in users" :key="i" @click="viewUser(user)">
+                <v-list-item-icon>
+                  <v-icon v-if="user.role === 'admin'" color="red">mdi-account</v-icon>
+                  <v-icon v-if="user.role === 'public'" color="blue">mdi-account</v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="user.name"></v-list-item-title>
+                  <v-list-item-subtitle v-text="user.role + ' | ' + user.email"></v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
           </v-list>
         </v-card>
       </v-col>
     </v-row>
     <v-dialog v-model="addUserDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
-      <v-card>
+      <v-card class="primary-color-dark">
         <v-card-title>
           <span class="headline">User Profile</span>
         </v-card-title>
