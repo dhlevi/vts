@@ -10,6 +10,7 @@ import Requests from './components/Requests.vue'
 import Tasks from './components/Tasks.vue'
 import Projects from './components/Projects.vue'
 import Designer from './components/Designer.vue'
+import MapView from './components/MapView.vue'
 
 Vue.use(VueRouter)
 
@@ -27,7 +28,8 @@ export default new VueRouter({
         { path: '/requests', component: Requests, name: 'requests' },
         { path: '/tasks', component: Tasks, name: 'tasks' },
         { path: '/projects', component: Projects, name: 'projects' },
-        { path: '/designer', component: Designer, name: 'designer' }
+        { path: '/designer', component: Designer, name: 'designer' },
+        { path: '/map/:id', component: MapView, name: 'map' }
       ]
     }
   ]

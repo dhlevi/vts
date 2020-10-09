@@ -291,6 +291,21 @@ export default class API {
     }
   }
 
+  public static async fetchRequestJson (route: string, requestName: string, processorName: string, node: string) {
+    const response = await fetch(`${route}/Requests/${requestName}/Features/${processorName}/${node}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
   public static putRequest (path: string, body: any, headers: any): Promise<Response> {
     return this.request(path, 'PUT', body, headers)
   }

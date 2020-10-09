@@ -75,6 +75,7 @@ import VtsRequest from '@/model/request'
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
 import API from '@/service/api-service'
+import router from '../router'
 
 @Component
 export default class Requests extends Vue {
@@ -91,10 +92,6 @@ export default class Requests extends Vue {
 
   beforeMount () {
     this.fetchRequests()
-  }
-
-  mounted () {
-    // mount
   }
 
   async fetchRequests () {
@@ -115,6 +112,9 @@ export default class Requests extends Vue {
 
   viewRequestMap () {
     // view request in map page
+    if (this.selectedRequest) {
+      this.$router.push(`Map/${this.selectedRequest._id}`)
+    }
   }
 
   editRequest () {

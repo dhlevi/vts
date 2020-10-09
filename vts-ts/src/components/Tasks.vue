@@ -94,10 +94,6 @@ export default class Tasks extends Vue {
     this.fetchRequests()
   }
 
-  mounted () {
-    // mount
-  }
-
   async fetchRequests () {
     this.requests = await API.fetchScheduledTasks(this.user, this.searchText)
     if (!this.requestTimeout) {

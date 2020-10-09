@@ -81,10 +81,6 @@ export default class Projects extends Vue {
     this.fetchRequests()
   }
 
-  mounted () {
-    // mount
-  }
-
   async fetchRequests () {
     this.requests = await API.fetchProjects(this.user, this.searchText)
     if (!this.requestTimeout) {

@@ -63,7 +63,7 @@ export default class AppBar extends Vue {
 
   showTab (tab: string) {
     if (router.currentRoute.name !== tab) {
-      router.push(tab)
+      this.$router.push(`/${tab}`)
     }
   }
 }

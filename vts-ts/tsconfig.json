@@ -17,9 +17,10 @@
       "jest",
       "vuetify",
       "node",
-      "chartist"
+      "chartist",
+      "leaflet"
     ],
-    "typeRoots": [ 
+    "typeRoots": [
       "./node_modules/@types",
       "./node_modules/vuetify/types",
       "./types"
@@ -38,6 +39,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "types/leaflet.vectorgrid.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",

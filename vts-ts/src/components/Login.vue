@@ -24,7 +24,6 @@
 import AuthenticatedUser from '@/model/authenticated-user'
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
-import router from '../router'
 import API from '../service/api-service'
 
 @Component
@@ -39,7 +38,7 @@ export default class Login extends Vue {
   mounted () {
     if (this.user.name !== 'noAuth') {
       // verify token is valid, if not, fetch new token, if still bad, then just load login screen
-      router.push('/dashboard')
+      this.$router.push('/dashboard')
     }
   }
 
@@ -49,7 +48,7 @@ export default class Login extends Vue {
 
     if (newUser) {
       this.updateUser(newUser)
-      router.push('/dashboard')
+      this.$router.push('/dashboard')
     } else {
       this.loggingIn = false
     }

@@ -67,7 +67,6 @@
 <script lang="ts">
 import AuthenticatedUser from '@/model/authenticated-user'
 import Chartist from 'chartist'
-import router from '../router'
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
 import API from '@/service/api-service'
@@ -104,7 +103,7 @@ export default class Dashboard extends Vue {
   mounted () {
     if (this.user.name === 'noAuth') {
       // verify token is valid, if not, fetch new token, if still bad, then just load login screen
-      router.push('/')
+      this.$router.push('/')
     } else {
       this.engineChart = new Chartist.Line('#enginesChart', this.engineChartData, {
         showPoint: false,
