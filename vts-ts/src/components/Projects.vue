@@ -14,6 +14,7 @@
             </v-col>
           </v-row>
           <v-divider></v-divider>
+          <v-divider></v-divider>
           <v-list dense flat>
             <v-list-item-group color="blue">
               <v-list-item v-for="(request, i) in requests" :key="i" @click="viewRequest(request)">
@@ -39,8 +40,13 @@
     <v-dialog v-if="selectedRequest != null" v-model="viewRequestDialog" fullscreen hide-overlay transition="dialog-bottom-transition">
       <v-card class="primary-color-dark">
         <v-card-title>
-          <span class="headline">Project: {{selectedRequest.name}}</span>
+          <span class="headline">{{selectedRequest.name}}</span>
         </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          {{selectedRequest.description}}
+        </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDialog()">

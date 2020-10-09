@@ -38,7 +38,7 @@
       </v-btn>
 
       <template v-slot:extension>
-        <v-tabs center-active show-arrows id="tabs" align-with-title>
+        <v-tabs color="blue-grey darken-4" center-active show-arrows id="tabs" align-with-title>
           <v-tab key="dashboard" @click="showTab('dashboard')">Dashboard</v-tab>
           <v-tab v-if="user.role === 'admin'" key="users" @click="showTab('users')">User Management</v-tab>
           <v-tab v-if="user.role === 'admin'" key="engines" @click="showTab('engines')">Engines</v-tab>

@@ -1,5 +1,6 @@
 import AuthenticatedUser from '@/model/authenticated-user'
 import Engine from '@/model/engine'
+import VtsRequest from '@/model/request'
 
 export default class API {
   private static url = 'http://localhost:9988/' // UI microservice URL, not the ENGINE microservice URL!!!
@@ -196,6 +197,19 @@ export default class API {
     }
 
     const response = await this.getRequest(path, {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    })
+
+    if (response.status === 200) {
+      return await response.json()
+    } else {
+      return null
+    }
+  }
+
+  public static async updateRequest (user: AuthenticatedUser, request: VtsRequest): Promise<any> {
+    const response = await this.putRequest(`Requests/${request._id}`, request, {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${user.accessToken}`
     })

@@ -12,7 +12,7 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn submit color="deep-purple lighten-2" text @click="login">
+          <v-btn submit color="blue-grey" text @click="login">
             Login
           </v-btn>
         </v-card-actions>

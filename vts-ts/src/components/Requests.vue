@@ -40,16 +40,17 @@
         <v-card-title>
           <span class="headline">Request: {{selectedRequest.name}}</span>
         </v-card-title>
-          <v-list dense flat disabled style="max-height: 500px;">
-            <v-list-item-group color="blue">
-              <v-list-item v-for="(message, i) in selectedRequest.messages" :key="i">
-                <v-list-item-content>
-                  <v-list-item-title v-text="message.message"></v-list-item-title>
-                  <v-list-item-subtitle v-text="`From ${message.sender} on ${message.timestamp}`"></v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
+        <v-list dense flat disabled style="max-height: 500px;">
+          <v-list-item-group color="blue">
+            <v-list-item v-for="(message, i) in selectedRequest.messages" :key="i">
+              <v-list-item-content>
+                <v-list-item-title v-text="message.message"></v-list-item-title>
+                <v-list-item-subtitle v-text="`From ${message.sender} on ${message.timestamp}`"></v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDialog()">
@@ -111,7 +112,6 @@ export default class Requests extends Vue {
   }
 
   viewRequestMap () {
-    // view request in map page
     if (this.selectedRequest) {
       this.$router.push(`Map/${this.selectedRequest._id}`)
     }

@@ -41,16 +41,56 @@
         <v-card-title>
           <span class="headline">Request: {{selectedRequest.name}}</span>
         </v-card-title>
-          <v-list dense flat disabled style="max-height: 500px;">
-            <v-list-item-group color="blue">
-              <v-list-item v-for="(message, i) in selectedRequest.messages" :key="i">
-                <v-list-item-content>
-                  <v-list-item-title v-text="message.message"></v-list-item-title>
-                  <v-list-item-subtitle v-text="`From ${message.sender} on ${message.timestamp}`"></v-list-item-subtitle>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
-          </v-list>
+        <v-divider></v-divider>
+        <v-card-text>
+          {{selectedRequest.description}}
+          <v-container>
+
+            <v-expansion-panels>
+              <v-expansion-panel>
+                <v-expansion-panel-header>Task Attributes</v-expansion-panel-header>
+                <v-expansion-panel-content>
+                  <v-row>
+                    <v-col cols="12">
+                      <v-textarea v-model="selectedRequest.description" label="Description"></v-textarea>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field v-model="selectedRequest.interval" label="Interval*" type="number" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-autocomplete
+                        :items="['Minutes', 'Hours', 'Days']"
+                        label="Minutes"
+                        v-model="selectedRequest.intervalUnit"
+                        required
+                      ></v-autocomplete>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-text-field v-model="selectedRequest.priority" label="Priority*" type="number" required></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-btn color="blue darken-1" text @click="saveEdits()">
+                        Save Changes
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-expansion-panel-content>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-container>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-list dense flat disabled style="max-height: 500px;">
+          <v-list-item-group color="blue">
+            <v-list-item v-for="(message, i) in selectedRequest.messages" :key="i">
+              <v-list-item-content>
+                <v-list-item-title v-text="message.message"></v-list-item-title>
+                <v-list-item-subtitle v-text="`From ${message.sender} on ${message.timestamp}`"></v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="closeDialog()">
@@ -108,14 +148,24 @@ export default class Tasks extends Vue {
   viewRequest (request: VtsRequest) {
     this.selectedRequest = request
     this.viewRequestDialog = true
+    console.log(request)
   }
 
   viewRequestMap () {
-    // view request in map page
+    if (this.selectedRequest) {
+      this.$router.push(`Map/${this.selectedRequest._id}`)
+    }
   }
 
   editRequest () {
     // view request in designer
+  }
+
+  async saveEdits () {
+    if (this.selectedRequest) {
+      await API.updateRequest(this.user, this.selectedRequest)
+      this.fetchRequests()
+    }
   }
 
   async deleteRequest () {
