@@ -168,7 +168,7 @@ RequestController.prototype.init = function()
                 newRequest.save().then(savedRequest =>
                 {
                     requestModel.links(savedRequest);
-                    res.json(savedRequest);
+                    res.status(201).send(savedRequest);
                 })
                 .catch(err =>
                 {

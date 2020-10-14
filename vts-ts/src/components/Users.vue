@@ -68,7 +68,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-snackbar v-model="snackbar" :timeout="timeout" absolute right rounded="pill" top>
+    <v-snackbar v-model="snackbar" :timeout="timeout" absolute right rounded="pill" bottom>
       {{ snackbarText }}
       <template v-slot:action="{ attrs }">
         <v-btn color="blue" text v-bind="attrs" @click="snackbar = false" >

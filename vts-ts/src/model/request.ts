@@ -1,4 +1,5 @@
 import { Message, Metadata } from './engine'
+import Processor from './processor'
 
 export default class VtsRequest {
   public _id: string
@@ -11,7 +12,7 @@ export default class VtsRequest {
   public name: string
   public nextRunTime: Date
   public priority: number
-  public processors: Array<any>
+  public processors: Array<Processor>
   public public: boolean
   public scheduledTask: boolean
   public status: string
@@ -23,7 +24,7 @@ export default class VtsRequest {
     this.cachePurged = blob.cachePurged || null
     this.engine = blob.engine || null
     this.interval = blob.interval || null
-    this.intervalUnit = blob.intervalUnit || null
+    this.intervalUnit = blob.intervalUnit || 'Minutes'
     this.messages = blob.messages || []
     this.metadata = blob.metadata || null
     this.name = blob.name || null

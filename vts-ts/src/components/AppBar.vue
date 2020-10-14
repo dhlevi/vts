@@ -1,6 +1,6 @@
 <template>
     <v-app-bar
-      absolute
+      fixed
       color="#6A76AB"
       dark
       src="https://picsum.photos/1920/1080?random"

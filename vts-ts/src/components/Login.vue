@@ -5,14 +5,14 @@
         <v-card-title>Login to VTS</v-card-title>
         <v-card-text>
           <v-row align="center" class="mx-0">
-            <v-text-field v-model="name" label="Name" type="text" outlined></v-text-field>
+            <v-text-field v-model="name" label="Name" type="text" outlined @keyup="login($event)"></v-text-field>
           </v-row>
           <v-row align="center" class="mx-0">
-            <v-text-field v-model="password" label="Password" type="password" outlined></v-text-field>
+            <v-text-field v-model="password" label="Password" type="password" outlined @keyup="login($event)"></v-text-field>
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn submit color="blue-grey" text @click="login">
+          <v-btn type="submit" color="blue-grey" text @click="login(null)">
             Login
           </v-btn>
         </v-card-actions>
@@ -42,7 +42,11 @@ export default class Login extends Vue {
     }
   }
 
-  async login () {
+  async login (event: KeyboardEvent) {
+    if (event && event.key !== 'Enter') {
+      return
+    }
+
     this.loggingIn = true
     const newUser = await API.login(this.name || '', this.password || '')
 

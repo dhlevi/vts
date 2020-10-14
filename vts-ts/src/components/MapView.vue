@@ -3,8 +3,8 @@
     <l-map ref="map" style="width: 100%; height: 100%;">
       <l-control-layers ref="layerList" position="topright"></l-control-layers>
       <l-tile-layer
-          url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       />
       <l-geo-json v-for="(jsonObject, i) in jsonObjects" :key="i"
                   :geojson="jsonObject.json"
@@ -92,22 +92,18 @@ export default class MapView extends Vue {
       }
 
       if (engine) {
-        const map = (this.$refs.map as LMap).mapObject
+        // const map = (this.$refs.map as LMap).mapObject
 
         for (const processor of this.request.processors) {
           for (const node of Object.keys(processor.outputNodes)) {
             const geojson = await API.fetchRequestJson(engine.route, this.request.name, processor.name, node)
-            console.log(`fetched for ${processor.name}/${node}`)
-            console.log(geojson)
             if (geojson) {
-              console.log('Found geometry')
               // strip out any null features
               geojson.features = geojson.features.filter(function (el: any) {
                 return el != null
               })
 
               if (geojson && geojson.features && geojson.features.length > 0) {
-                console.log('creating layer...')
                 const color = '#000000'.replace(/0/g, function () { return (~~(Math.random() * 16)).toString(16) })
                 this.jsonObjects.push({
                   json: geojson,

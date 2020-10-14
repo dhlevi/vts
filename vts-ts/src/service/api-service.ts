@@ -24,6 +24,21 @@ export default class API {
     }
   }
 
+  public static async createRequest (user: AuthenticatedUser, request: VtsRequest) {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${user.accessToken}`
+    }
+
+    const response = await this.postRequest('Requests', request, headers)
+
+    if (response.status === 201) {
+      return new AuthenticatedUser(await response.json())
+    } else {
+      return null
+    }
+  }
+
   public static async fetchUsers (user: AuthenticatedUser) {
     const headers = {
       'Content-Type': 'application/json',

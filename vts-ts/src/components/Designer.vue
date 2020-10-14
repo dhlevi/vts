@@ -1,9 +1,9 @@
 <template>
   <v-row style="margin-top: 115px; width: 100%; height: calc(100vh - 145px);">
     <v-col cols="3">
-      <v-list dense flat style="height: calc(100vh - 170px); overflow-y: auto">
+      <v-list class="vts-scroller" dense flat style="height: calc(100vh - 170px); overflow-y: auto">
         <v-list-item-group color="blue">
-          <v-list-item v-for="(tool, i) in tools" :key="i" @click="addTool(tool)">
+          <v-list-item v-for="(tool, i) in tools" :key="i" @click="addTool(tool)" :title="tool.tooltip" v-on:contextmenu="openMenu($event, 'tool')">
             <v-list-item-icon style="margin-left: 0px; margin-right: 5px; margin-top: 10px; margin-bottom: 0px;">
               <v-icon>mdi-{{ tool.icon }}</v-icon>
             </v-list-item-icon>
@@ -18,10 +18,10 @@
     <v-col cols="9">
       <v-row no-gutters style="height: 55px;">
         <v-toolbar dense>
-          <v-btn icon><v-icon>mdi-run-fast</v-icon></v-btn>
-          <v-btn icon><v-icon>mdi-clock-outline</v-icon></v-btn>
-          <v-btn icon><v-icon>mdi-content-save</v-icon></v-btn>
-          <v-btn icon @click="clearDiagram()"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon title="Run as an ad-hoc request" @click="runRequest()"><v-icon>mdi-run-fast</v-icon></v-btn>
+          <v-btn icon title="Run as a scheduled task"><v-icon>mdi-clock-outline</v-icon></v-btn>
+          <v-btn icon title="Save as a project"><v-icon>mdi-content-save</v-icon></v-btn>
+          <v-btn icon title="Clear the diagram" @click="clearDiagram()"><v-icon>mdi-close</v-icon></v-btn>
         </v-toolbar>
       </v-row>
       <v-row no-gutters style="width: 100%; height: calc(100% - 40px);">
@@ -31,16 +31,45 @@
         </div>
       </v-row>
     </v-col>
+    <ul id="toolContextMenu" ref="toolContextMenu" class="toolContextMenu" tabindex="-1" v-if="viewMenu" @blur="closeMenu()" :style="'top:' + top + '; left:' + left">
+      <li>First list item</li>
+      <li>Second list item</li>
+    </ul>
+    <ul id="processorContextMenu" ref="processorContextMenu" class="toolContextMenu" tabindex="-1" v-if="viewProcessorMenu" @blur="closeMenu()" :style="'top:' + top + '; left:' + left">
+      <li>First list item</li>
+      <li>Second list item</li>
+    </ul>
+    <v-snackbar v-model="snackbar" :timeout="timeout" absolute right rounded="pill" bottom>
+      {{ snackbarText }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false" >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-row>
 </template>
 <script lang="ts">
 import AuthenticatedUser from '@/model/authenticated-user'
 import VtsRequest from '@/model/request'
+import Processor from '@/model/processor'
 import API from '@/service/api-service'
 import Vue from 'vue'
 import { Component, Prop } from 'vue-property-decorator'
 import * as jsPlumb from '@jsplumb/community'
 import { BrowserJsPlumbInstance } from '@jsplumb/community'
+
+class Tool {
+  public name: string
+  public tooltip: string
+  public icon: string
+
+  constructor (name: string, tooltip: string, icon: string) {
+    this.name = name
+    this.tooltip = tooltip
+    this.icon = icon
+  }
+}
 
 @Component
 export default class Designer extends Vue {
@@ -56,7 +85,17 @@ export default class Designer extends Vue {
   private writerSourceEndpoint: any|null = null
   private readerSourceEndpoint: any|null = null
 
-  public tools: Array<any> = [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'http' },
+  public viewMenu = false
+  public top = '0px'
+  public left = '0px'
+
+  public viewProcessorMenu = false
+
+  public snackbarText = ''
+  private snackbar = false
+  private timeout = 2000
+
+  public tools: Array<Tool> = [{ name: 'httpReader', tooltip: 'HTTP Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'http' },
     { name: 'fileReader', tooltip: 'File Reader (GeoJSON, KML, KMZ, GML, Shape(root level zip), FGDB(root level zip))', icon: 'all_inbox' },
     { name: 'dbReader', tooltip: 'Database Reader (Oracle, Postgis, Couch, Mongo, MS Sql)', icon: 'storage' },
     { name: 'randomReader', tooltip: 'Creates a random point, line or polygon feature to start a process', icon: 'storage' },
@@ -445,9 +484,8 @@ export default class Designer extends Vue {
     }
   }
 
-  addProcessorToDiagram (processor: any, top: number, left: number) {
+  addProcessorToDiagram (processor: Processor, top: number, left: number) {
     if (this.plumbInst) {
-      // this.sourceEndpoint, this.targetEndpoint
       let procType = ''
       const result = processor.type.replace(/([A-Z])/g, ' $1')
       const title = result.charAt(0).toUpperCase() + result.slice(1)
@@ -531,7 +569,7 @@ export default class Designer extends Vue {
     }
   }
 
-  getProcessorPanel (processor: any, top: number, left: number, div: string) {
+  getProcessorPanel (processor: Processor, top: number, left: number, div: string) {
     // wrapper
     const result = processor.type.replace(/([A-Z])/g, ' $1')
     const title = result.charAt(0).toUpperCase() + result.slice(1)
@@ -561,7 +599,12 @@ export default class Designer extends Vue {
 
     if (root && child && this.plumbInst) {
       root.appendChild(child)
-      this.plumbInst.setDraggable(document.getElementById(`flowchartWindow${processor.name}`)!, true)
+      const childEl = document.getElementById(`flowchartWindow${processor.name}`)
+
+      if (childEl) {
+        childEl.addEventListener('contextmenu', (event) => this.openMenu(event, 'processor'))
+        this.plumbInst.setDraggable(childEl, true)
+      }
     }
   }
 
@@ -578,8 +621,270 @@ export default class Designer extends Vue {
     }
   }
 
-  addTool (tool: any) {
-    // empty
+  async runRequest () {
+    this.request.scheduledTask = false
+    this.request.status = 'Submitted'
+    this.request.name = this.uuid()
+    this.request.messages = []
+
+    // set all processors completed flags to false
+    this.request.processors.forEach(processor => {
+      processor.processed = false
+    })
+
+    const result = await API.createRequest(this.user, this.request)
+
+    this.snackbarText = result ? 'Successfully submitted request' : 'Request submission failed'
+    this.snackbar = true
+  }
+
+  addTool (tool: Tool) {
+    const processor = new Processor(tool.name, tool.name)
+
+    switch (tool.name) {
+      case 'httpReader':
+        processor.attributes.url = ''
+        processor.attributes.dataType = 'json' // json, shape, fgdb, csv, kml, kmz, wkt, gml
+        processor.attributes.sourceProjection = ''
+        break
+      case 'fileReader':
+        processor.attributes.path = ''
+        processor.attributes.dataType = 'json' // json, shape, fgdb, csv, kml, kmz, wkt, gml
+        processor.attributes.sourceProjection = ''
+        break
+      case 'dbReader':
+        processor.attributes.connection = ''
+        processor.attributes.source = 'oracle' // oracle, postgres, mongo, couch, h2, mysql
+        processor.attributes.user = ''
+        processor.attributes.password = ''
+        processor.attributes.query = '' // select statement used to get results
+        processor.attributes.geometryColumn = 'GEOMETRY'
+        processor.attributes.sourceProjection = ''
+        break
+      case 'cacheReader':
+        processor.attributes.request = ''
+        processor.attributes.processor = ''
+        break
+      case 'randomReader':
+        processor.attributes.featureType = 'polygon' // point, line, polygon
+        processor.attributes.items = 1
+        break
+      case 'projector':
+        processor.attributes.newProjection = ''
+        break
+      case 'boundingBoxCreator':
+        processor.attributes.minx = '-180'
+        processor.attributes.miny = '-90'
+        processor.attributes.maxx = '180'
+        processor.attributes.maxy = '90'
+        processor.inputNodes.bbox = []
+        break
+      case 'buffer':
+        processor.attributes.distance = 0
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        break
+      case 'vertexCounter':
+        processor.attributes.fieldName = 'VERTEX_COUNT'
+        break
+      case 'hullCreator':
+        processor.attributes.isConvex = true
+        break
+      case 'hullReplace':
+        processor.attributes.isConvex = true
+        break
+      case 'difference':
+        processor.inputNodes.clipper = []
+        break
+      case 'intersect':
+        processor.inputNodes.intersector = []
+        break
+      case 'simplify':
+        processor.attributes.tolerance = 1
+        processor.attributes.highQuality = false
+        break
+      case 'voronoi':
+        processor.attributes.bbox = '-180,-85,180,-85'
+        break
+      case 'scale':
+        processor.attributes.factor = 1
+        processor.attributes.location = 'centroid' // sw/se/nw/ne/center/centroid
+        break
+      case 'rotate':
+        processor.attributes.angle = 0
+        processor.attributes.pivot = 'centroid' // sw/se/nw/ne/center/centroid
+        break
+      case 'translate':
+        processor.attributes.distance = 0
+        processor.attributes.direction = 0
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        break
+      case 'reducePrecision':
+        processor.attributes.precision = 6
+        break
+      case 'bezierCurve':
+        processor.attributes.resolution = 10000
+        processor.attributes.sharpness = 0.85
+        processor.outputNodes.curves = []
+        break
+      case 'lineChunk':
+        processor.attributes.length = 0
+        processor.attributes.reverse = false
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        break
+      case 'along':
+        processor.attributes.length = 0
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        processor.outputNodes.points = []
+        break
+      case 'area':
+        processor.attributes.fieldName = 'AREA_SQ_M'
+        break
+      case 'counter':
+        processor.attributes.fieldName = 'COUNT'
+        break
+      case 'donutExtractor':
+        processor.outputNodes.donuts = []
+        break
+      case 'destination':
+        processor.attributes.dstance = 0
+        processor.attributes.bearing = 0
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        processor.outputNodes.destinations = []
+        break
+      case 'length':
+        processor.attributes.units = 'kilometers' // see turf. kilo, meter, mile, feet etc
+        processor.attributes.fieldName = 'LENGTH'
+        break
+      case 'attributeCreator':
+        processor.attributes.fieldName = 'NAME'
+        processor.attributes.defaultValue = ''
+        processor.attributes.type = 'string' // string, number, date, boolean
+        break
+      case 'attributeKeeper':
+        processor.attributes.fieldName = 'NAME'
+        break
+      case 'attributeRemover':
+        processor.attributes.fieldName = 'NAME'
+        break
+      case 'attributeRenamer':
+        processor.attributes.fromName = 'NAME'
+        processor.attributes.toName = 'NEW_NAME'
+        break
+      case 'attributeCalculator':
+        processor.attributes.calculation = 'NAME + NAME2'
+        processor.attributes.fieldName = 'CALC'
+        break
+      case 'timestamper':
+        processor.attributes.fieldName = 'TIMESTAMP'
+        break
+      case 'filter':
+        processor.attributes.query = 'NAME === "Test"'
+        processor.outputNodes.false = []
+        break
+      case 'nullGeometryFilter':
+        processor.outputNodes.empty = []
+        break
+      case 'spatialFilter':
+        processor.attributes.type = 'Polygon' // point, line, poly, multi's
+        processor.outputNodes.false = []
+        break
+      case 'spatialRelationFilter':
+        processor.attributes.relationType = 'crosses' // within, contains, crosses, touches
+        processor.inputNodes.relator = []
+        processor.outputNodes.false = []
+        break
+      case 'sqlCaller':
+        processor.attributes.connection = ''
+        processor.attributes.source = 'oracle'
+        processor.attributes.user = ''
+        processor.attributes.password = ''
+        processor.attributes.query = ''
+        break
+      case 'fileWriter':
+        processor.attributes.path = ''
+        processor.attributes.dataType = 'json' // json, shape, fgdb, csv, kml, kmz, wkt, gml
+        processor.attributes.projection = ''
+        break
+      case 'httpWriter':
+        processor.attributes.url = ''
+        processor.attributes.dataType = 'json' // json, shape, fgdb, csv, kml, kmz, wkt, gml
+        processor.attributes.upsert = false // upsert means we'll put for existig, insert for new. If false, always post
+        break
+      case 'dbWriter':
+        processor.attributes.connection = ''
+        processor.attributes.source = 'oracle' // oracle, postgres, mongo, couch, h2, mysql
+        processor.attributes.user = ''
+        processor.attributes.password = ''
+        processor.attributes.dropTable = false
+        processor.attributes.emptyTable = false
+        processor.attributes.table = ''
+        processor.attributes.geometryColumn = 'GEOMETRY'
+        processor.attributes.sourceProjection = ''
+        break
+    }
+
+    // need to set a name
+    let uniqueId = false
+    let name = '' + Math.floor(Math.random() * 1000) + 1
+    while (!uniqueId && this.request.processors.length > 0) {
+      for (const processor of this.request.processors) {
+        if (processor.name === name) {
+          uniqueId = false
+          break
+        } else uniqueId = true
+      }
+      name = '' + Math.floor(Math.random() * 1000) + 1
+    }
+
+    processor.name = name
+
+    this.request.processors.push(processor)
+
+    this.addProcessorToDiagram(processor, 0, 0)
+
+    if (this.plumbInst) {
+      this.plumbInst.repaintEverything()
+    }
+  }
+
+  openMenu (event: MouseEvent, type: string) {
+    if (type === 'tool') {
+      this.viewMenu = true
+    } else {
+      this.viewProcessorMenu = true
+    }
+
+    Vue.nextTick(() => {
+      if (type === 'tool') (this.$refs.toolContextMenu as HTMLElement).focus()
+      else (this.$refs.processorContextMenu as HTMLElement).focus()
+      this.setMenu(event.y, event.x, type)
+    })
+
+    event.preventDefault()
+  }
+
+  setMenu (top: number, left: number, type: string) {
+    const element = type === 'tool' ? (this.$refs.toolContextMenu as HTMLElement) : (this.$refs.processorContextMenu as HTMLElement)
+    const largestHeight = window.innerHeight - element.offsetHeight - 25
+    const largestWidth = window.innerWidth - element.offsetWidth - 25
+
+    if (top > largestHeight) top = largestHeight
+    if (left > largestWidth) left = largestWidth
+
+    this.top = top + 'px'
+    this.left = left + 'px'
+  }
+
+  closeMenu () {
+    this.viewMenu = false
+    this.viewProcessorMenu = false
+  }
+
+  uuid () {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0; const v = c === 'x' ? r : (r & 0x3 | 0x8)
+      return v.toString(16)
+    })
   }
 }
 </script>
@@ -854,5 +1159,49 @@ path, .jtk-endpoint {
   left: 0;
   max-width: 100%;
   padding: 24px;
+}
+
+.toolContextMenu {
+    background: #FAFAFA;
+    border: 1px solid #BDBDBD;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 250px;
+    z-index: 999999;
+}
+
+.toolContextMenu li {
+    border-bottom: 1px solid #E0E0E0;
+    margin: 0;
+    padding: 5px 35px;
+}
+
+.toolContextMenu li:last-child {
+    border-bottom: none;
+}
+
+.toolContextMenu li:hover {
+    background: #1E88E5;
+    color: #FAFAFA;
+}
+
+.vts-scroller::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background-color: #232f34;
+}
+
+.vts-scroller::-webkit-scrollbar {
+    width: 10px;
+    background-color: #232f34;
+}
+
+.vts-scroller::-webkit-scrollbar-thumb {
+    background-color: #4A6572;
+    border: 2px solid #232f34;
 }
 </style>
