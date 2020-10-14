@@ -167,8 +167,8 @@ export default class Engines extends Vue {
   public editEngineDialog = false
   public selectedEngine: Engine = new Engine({})
 
-  beforeMount () {
-    this.fetchEngines()
+  async mounted () {
+    await this.fetchEngines()
   }
 
   @Watch('panelIndex')

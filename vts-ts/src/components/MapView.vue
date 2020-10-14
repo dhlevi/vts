@@ -73,7 +73,7 @@ export default class MapView extends Vue {
 
   public jsonObjects: Array<any> = []
 
-  async beforeMount () {
+  async mounted () {
     this.requestId = (this as any).$router.history.current.params.id
     this.request = await API.fetchVtsRequest(this.user, this.requestId)
     this.fetchGeoJson()
@@ -126,10 +126,6 @@ export default class MapView extends Vue {
         }
       }
     }
-  }
-
-  mounted () {
-    // mounted actions
   }
 
   @Watch('$route')

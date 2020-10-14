@@ -28,7 +28,8 @@ export default new VueRouter({
         { path: '/requests', component: Requests, name: 'requests' },
         { path: '/tasks', component: Tasks, name: 'tasks' },
         { path: '/projects', component: Projects, name: 'projects' },
-        { path: '/designer', component: Designer, name: 'designer' },
+        { path: '/designer/', component: Designer, name: 'designer' },
+        { path: '/designer/:id', component: Designer, name: 'designerEdit' },
         { path: '/map/:id', component: MapView, name: 'map' }
       ]
     }

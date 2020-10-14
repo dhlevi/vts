@@ -83,8 +83,8 @@ export default class Projects extends Vue {
   public viewRequestDialog = false
   private requestTimeout: NodeJS.Timeout|null = null
 
-  beforeMount () {
-    this.fetchRequests()
+  async mounted () {
+    await this.fetchRequests()
   }
 
   async fetchRequests () {
@@ -104,7 +104,9 @@ export default class Projects extends Vue {
   }
 
   editRequest () {
-    // view request in designer
+    if (this.selectedRequest) {
+      this.$router.push(`designer/${this.selectedRequest._id}`)
+    }
   }
 
   async deleteRequest () {
