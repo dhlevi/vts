@@ -13,3 +13,5 @@ vts-desktop/cache
 vts-ts/dist
 vts-ts/node_modules
 vts-ts/package-lock.json
+vts-ts/.vscode/launch.json
+vts-ts/debug.log
